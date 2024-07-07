@@ -1,6 +1,6 @@
-package net.jaju.subservermod.network.packet;
+package net.jaju.subservermod.landsystem.network.packet;
 
-import net.jaju.subservermod.network.ClientPacketHandler;
+import net.jaju.subservermod.landsystem.network.ClientPacketHandler;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.network.NetworkEvent;
 

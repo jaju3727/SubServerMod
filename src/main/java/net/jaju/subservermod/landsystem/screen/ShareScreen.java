@@ -1,20 +1,17 @@
 package net.jaju.subservermod.landsystem.screen;
 
 import net.jaju.subservermod.Subservermod;
-import net.jaju.subservermod.network.ClientPacketHandler;
-import net.jaju.subservermod.network.ModNetworking;
-import net.jaju.subservermod.network.packet.LandManagerMethodPacket;
-import net.jaju.subservermod.network.packet.PlayerNamePacket;
+import net.jaju.subservermod.landsystem.network.ClientPacketHandler;
+import net.jaju.subservermod.ModNetworking;
+import net.jaju.subservermod.landsystem.network.packet.LandManagerMethodPacket;
+import net.jaju.subservermod.landsystem.network.packet.PlayerNamePacket;
 import net.jaju.subservermod.util.CustomPlainTextButton;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.components.ImageButton;
-import net.minecraft.client.gui.components.ImageWidget;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.SubscribeEvent;

@@ -4,9 +4,15 @@ import com.mojang.logging.LogUtils;
 import net.jaju.subservermod.item.ModCreativeModTabs;
 import net.jaju.subservermod.item.ModItem;
 import net.jaju.subservermod.landsystem.ChunkOwnershipHandler;
-import net.jaju.subservermod.network.ModNetworking;
-import net.jaju.subservermod.network.ServerSideEventHandler;
+import net.jaju.subservermod.landsystem.network.ServerSideEventHandler;
+import net.jaju.subservermod.shopsystem.entity.ModEntities;
+import net.jaju.subservermod.shopsystem.screen.ShopContainer;
+import net.jaju.subservermod.shopsystem.screen.ShopScreen;
+import net.jaju.subservermod.util.KeyBindings;
 import net.jaju.subservermod.util.KeyInputHandler;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.MenuScreens;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
@@ -31,6 +37,8 @@ public class Subservermod {
 
         ModCreativeModTabs.register(modEventBus);
         ModItem.register(modEventBus);
+        ModEntities.ENTITIES.register(modEventBus);
+        ModContainers.CONTAINERS.register(modEventBus);
 
         MinecraftForge.EVENT_BUS.register(KeyInputHandler.class);
         MinecraftForge.EVENT_BUS.register(new ChunkOwnershipHandler());
@@ -47,7 +55,13 @@ public class Subservermod {
     }
 
 
-    private void clientSetup(final FMLClientSetupEvent event) {}
+    private void clientSetup(final FMLClientSetupEvent event) {
+        MenuScreens.<ShopContainer, ShopScreen>register(ModContainers.SHOP_CONTAINER.get(), (screenContainer, inv, title) -> {
+            Player player = Minecraft.getInstance().player;
+            return new ShopScreen(screenContainer, inv, title, player);
+        });
+
+    }
 
     private void addCreative(BuildCreativeModeTabContentsEvent event) {
         if(event.getTabKey() == CreativeModeTabs.INGREDIENTS) {

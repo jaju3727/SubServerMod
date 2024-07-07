@@ -1,10 +1,10 @@
-package net.jaju.subservermod.network;
+package net.jaju.subservermod.landsystem.network;
 
+import net.jaju.subservermod.ModNetworking;
 import net.jaju.subservermod.landsystem.LandManager;
-import net.jaju.subservermod.network.packet.ChunkOwnerUpdatePacket;
-import net.jaju.subservermod.network.packet.ChunkOwnersPacket;
-import net.jaju.subservermod.network.packet.ChunkSharersPacket;
-import net.jaju.subservermod.network.packet.PlayerNamePacket;
+import net.jaju.subservermod.landsystem.network.packet.ChunkOwnerUpdatePacket;
+import net.jaju.subservermod.landsystem.network.packet.ChunkOwnersPacket;
+import net.jaju.subservermod.landsystem.network.packet.ChunkSharersPacket;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerPlayer;

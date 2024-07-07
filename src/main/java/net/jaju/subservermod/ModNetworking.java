@@ -1,7 +1,8 @@
-package net.jaju.subservermod.network;
+package net.jaju.subservermod;
 
-import net.jaju.subservermod.Subservermod;
-import net.jaju.subservermod.network.packet.*;
+import net.jaju.subservermod.landsystem.network.packet.*;
+import net.jaju.subservermod.shopsystem.network.ShopEntityDataPacket;
+import net.jaju.subservermod.shopsystem.network.UpdateInventoryPacket;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.network.NetworkRegistry;
 import net.minecraftforge.network.simple.SimpleChannel;
@@ -23,5 +24,7 @@ public class ModNetworking {
         INSTANCE.registerMessage(id++, LandManagerMethodPacket.class, LandManagerMethodPacket::toBytes, LandManagerMethodPacket::new, LandManagerMethodPacket::handle);
         INSTANCE.registerMessage(id++, PlayerNamePacket.class, PlayerNamePacket::toBytes, PlayerNamePacket::new, PlayerNamePacket::handle);
         INSTANCE.registerMessage(id++, PlayerNameResponsePacket.class, PlayerNameResponsePacket::toBytes, PlayerNameResponsePacket::new, PlayerNameResponsePacket::handle);
+        INSTANCE.registerMessage(id++, ShopEntityDataPacket.class, ShopEntityDataPacket::toBytes, ShopEntityDataPacket::new, ShopEntityDataPacket::handle);
+        INSTANCE.registerMessage(id++, UpdateInventoryPacket.class, UpdateInventoryPacket::toBytes, UpdateInventoryPacket::new, UpdateInventoryPacket::handle);
     }
 }

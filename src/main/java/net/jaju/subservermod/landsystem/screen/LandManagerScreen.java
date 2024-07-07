@@ -1,7 +1,7 @@
 package net.jaju.subservermod.landsystem.screen;
 
 import net.jaju.subservermod.Subservermod;
-import net.jaju.subservermod.network.ClientPacketHandler;
+import net.jaju.subservermod.landsystem.network.ClientPacketHandler;
 import net.jaju.subservermod.util.CustomPlainTextButton;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;

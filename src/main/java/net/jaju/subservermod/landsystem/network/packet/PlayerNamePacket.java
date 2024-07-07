@@ -1,15 +1,12 @@
-package net.jaju.subservermod.network.packet;
+package net.jaju.subservermod.landsystem.network.packet;
 
-import net.jaju.subservermod.network.ClientPacketHandler;
-import net.jaju.subservermod.network.ModNetworking;
+import net.jaju.subservermod.ModNetworking;
 import net.jaju.subservermod.util.PlayerUtils;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.network.NetworkDirection;
 import net.minecraftforge.network.NetworkEvent;
 import net.minecraftforge.network.PacketDistributor;
 

@@ -1,4 +1,4 @@
-package net.jaju.subservermod.network.packet;
+package net.jaju.subservermod.landsystem.network.packet;
 
 import net.jaju.subservermod.landsystem.LandManager;
 import net.minecraft.network.FriendlyByteBuf;

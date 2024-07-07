@@ -1,4 +1,4 @@
-package net.jaju.subservermod.network;
+package net.jaju.subservermod.landsystem.network;
 
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.Event;
