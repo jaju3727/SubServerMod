@@ -20,6 +20,7 @@ import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
 import net.minecraftforge.event.server.ServerStartingEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
@@ -31,14 +32,13 @@ public class Subservermod {
     public static final String MOD_ID = "subservermod";
     private static final Logger LOGGER = LogUtils.getLogger();
 
-    public Subservermod()
-    {
+    public Subservermod() {
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
 
         ModCreativeModTabs.register(modEventBus);
         ModItem.register(modEventBus);
+        ModContainers.register(modEventBus);
         ModEntities.ENTITIES.register(modEventBus);
-        ModContainers.CONTAINERS.register(modEventBus);
 
         MinecraftForge.EVENT_BUS.register(KeyInputHandler.class);
         MinecraftForge.EVENT_BUS.register(new ChunkOwnershipHandler());
@@ -46,7 +46,7 @@ public class Subservermod {
         MinecraftForge.EVENT_BUS.register(this);
 
         modEventBus.addListener(this::commonSetup);
-        modEventBus.addListener(this::clientSetup);
+        DistExecutor.runWhenOn(Dist.CLIENT, () -> () -> modEventBus.addListener(this::clientSetup));
         modEventBus.addListener(this::addCreative);
     }
 
@@ -54,32 +54,26 @@ public class Subservermod {
         ModNetworking.registerMessages();
     }
 
-
     private void clientSetup(final FMLClientSetupEvent event) {
-        MenuScreens.<ShopContainer, ShopScreen>register(ModContainers.SHOP_CONTAINER.get(), (screenContainer, inv, title) -> {
-            Player player = Minecraft.getInstance().player;
-            return new ShopScreen(screenContainer, inv, title, player);
-        });
-
+        ModScreens.register();
     }
 
     private void addCreative(BuildCreativeModeTabContentsEvent event) {
-        if(event.getTabKey() == CreativeModeTabs.INGREDIENTS) {
+        if (event.getTabKey() == CreativeModeTabs.INGREDIENTS) {
             event.accept(ModItem.CONSTRUNTING_ALLOW);
         }
     }
 
     @SubscribeEvent
     public void onServerStarting(ServerStartingEvent event) {
-
+        // 서버 시작 시 로직
     }
 
     @Mod.EventBusSubscriber(modid = MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
     public static class ClientModEvents {
-
         @SubscribeEvent
         public static void onClientSetup(FMLClientSetupEvent event) {
-
+            // 클라이언트 전용 설정
         }
     }
 }
