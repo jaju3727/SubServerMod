@@ -1,5 +1,20 @@
 {
   "item.subservermod.constructingallow": "건설 허용권",
+  "item.subservermod.cream_bread": "크림빵",
+  "item.subservermod.whipped_cream": "생크림",
+  "item.subservermod.butter": "버터",
+  "item.subservermod.croissant": "크로아상",
+  "item.subservermod.redstone_marble": "레드스톤 구슬",
+  "item.subservermod.diamond_cubic": "다이아몬드 큐빅",
+  "item.subservermod.emerald_cubic": "에메랄드 큐빅",
+  "item.subservermod.gold_ring": "금 반지",
+  "item.subservermod.lapis_lazuli_marble": "청금석 구슬",
+  "item.subservermod.crafting_tool": "세공 도구",
+
+  "block.subservermod.scarecrow_block": "허수아비",
+  "block.subservermod.oven_block": "오븐",
+  "block.subservermod.crafting_block": "세공 작업대",
+  "block.subservermod.brewing_block": "자동 양조기",
 
   "creativetab.tutorial_tab": "섭이의 방학"
 }

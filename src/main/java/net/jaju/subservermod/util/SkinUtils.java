@@ -71,7 +71,9 @@ public class SkinUtils {
         connection.connect();
 
         try (InputStreamReader reader = new InputStreamReader(connection.getInputStream())) {
-            JsonObject json = JsonParser.parseReader(reader).getAsJsonObject();
+            JsonReader jsonReader = new JsonReader(reader);
+            jsonReader.setLenient(true);
+            JsonObject json = JsonParser.parseReader(jsonReader).getAsJsonObject();
             JsonObject properties = json.getAsJsonArray("properties").get(0).getAsJsonObject();
             String value = properties.get("value").getAsString();
             String decoded = new String(Base64.getDecoder().decode(value));

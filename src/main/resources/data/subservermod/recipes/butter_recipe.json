@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "   ",
+    "CCC",
+    "   "
+  ],
+  "key": {
+    "C": {
+      "item": "minecraft:milk_bucket"
+    }
+  },
+  "result": {
+    "item": "subservermod:butter",
+    "count": 3
+  },
+  "show_notification": true
+}

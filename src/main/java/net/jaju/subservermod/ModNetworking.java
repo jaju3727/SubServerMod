@@ -1,9 +1,11 @@
 package net.jaju.subservermod;
 
+import net.jaju.subservermod.coinsystem.network.CoinDataSyncPacket;
 import net.jaju.subservermod.landsystem.network.packet.*;
 import net.jaju.subservermod.shopsystem.network.ShopEntityDataPacket;
 import net.jaju.subservermod.shopsystem.network.UpdateInventoryPacket;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraftforge.network.NetworkDirection;
 import net.minecraftforge.network.NetworkRegistry;
 import net.minecraftforge.network.simple.SimpleChannel;
 
@@ -26,5 +28,10 @@ public class ModNetworking {
         INSTANCE.registerMessage(id++, PlayerNameResponsePacket.class, PlayerNameResponsePacket::toBytes, PlayerNameResponsePacket::new, PlayerNameResponsePacket::handle);
         INSTANCE.registerMessage(id++, ShopEntityDataPacket.class, ShopEntityDataPacket::toBytes, ShopEntityDataPacket::new, ShopEntityDataPacket::handle);
         INSTANCE.registerMessage(id++, UpdateInventoryPacket.class, UpdateInventoryPacket::toBytes, UpdateInventoryPacket::new, UpdateInventoryPacket::handle);
+        INSTANCE.messageBuilder(CoinDataSyncPacket.class, id++, NetworkDirection.PLAY_TO_CLIENT)
+                .decoder(CoinDataSyncPacket::new)
+                .encoder(CoinDataSyncPacket::toBytes)
+                .consumerMainThread(CoinDataSyncPacket::handle)
+                .add();
     }
 }

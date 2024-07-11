@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "rewards": {
+    "recipes": [
+      "subservermod:cream_bread_recipe"
+    ]
+  },
+  "criteria": {
+    "has_whipped_cream": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "subservermod:whipped_cream"
+          }
+        ]
+      }
+    },
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "subservermod:cream_bread_recipe"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_whipped_cream",
+      "has_the_recipe"
+    ]
+  ]
+}

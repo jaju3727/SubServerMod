@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " I ",
+    " C ",
+    "   "
+  ],
+  "key": {
+    "C": {
+      "item": "subservermod:whipped_cream"
+    },
+    "I": {
+      "item": "minecraft:bread"
+    }
+  },
+  "result": {
+    "item": "subservermod:cream_bread",
+    "count": 1
+  },
+  "show_notification": true
+}

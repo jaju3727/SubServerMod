@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "subservermod:block/crafting_block"
+    }
+  }
+}

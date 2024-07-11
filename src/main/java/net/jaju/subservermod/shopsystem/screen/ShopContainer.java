@@ -7,8 +7,6 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.SlotItemHandler;
 
 public class ShopContainer extends AbstractContainerMenu {
     private final ShopEntity shopEntity;
@@ -19,8 +17,8 @@ public class ShopContainer extends AbstractContainerMenu {
 
 
         // 플레이어 인벤토리 슬롯 추가 (오른쪽)
-        int startX = 100;
-        int startY = 40;
+        int startX = 120;
+        int startY = -2;
         for (int i = 0; i < 3; ++i) {
             for (int j = 0; j < 9; ++j) {
                 this.addSlot(new Slot(playerInventory, j + i * 9 + 9, startX + j * 18, startY + i * 18));

@@ -1,10 +1,12 @@
 package net.jaju.subservermod;
 
 import com.mojang.brigadier.CommandDispatcher;
+import net.jaju.subservermod.coinsystem.CoinCommands;
 import net.jaju.subservermod.shopsystem.entity.ModEntities;
 import net.jaju.subservermod.shopsystem.ShopCommands;
 import net.jaju.subservermod.shopsystem.entity.model.ShopEntityModel;
 import net.jaju.subservermod.shopsystem.entity.rederer.ShopEntityRenderer;
+import net.jaju.subservermod.subclass.ClassCommand;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraftforge.client.event.EntityRenderersEvent;
@@ -20,6 +22,8 @@ public class ModEventSubscriber {
         CommandDispatcher<CommandSourceStack> dispatcher = event.getDispatcher();
         CommandBuildContext buildContext = event.getBuildContext();
         ShopCommands.register(dispatcher, buildContext);
+        CoinCommands.onRegisterCommands(event);
+        ClassCommand.register(dispatcher);
     }
 
     @SubscribeEvent

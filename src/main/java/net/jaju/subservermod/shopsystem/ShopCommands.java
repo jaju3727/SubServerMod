@@ -30,56 +30,55 @@ public class ShopCommands {
         dispatcher.register(Commands.literal("shop")
                 .then(Commands.literal("add")
                         .then(Commands.argument("name", StringArgumentType.string())
-                                .then(Commands.argument("item", ItemArgument.item(buildContext))
-                                        .then(Commands.argument("buyPrice", IntegerArgumentType.integer())
-                                                .then(Commands.argument("sellPrice", IntegerArgumentType.integer())
-                                                        .then(Commands.argument("isBuyable", BoolArgumentType.bool())
-                                                                .then(Commands.argument("isSellable", BoolArgumentType.bool())
-                                                                        .executes(context -> {
-                                                                            String name = StringArgumentType.getString(context, "name");
-                                                                            ItemStack itemStack = ItemArgument.getItem(context, "item").createItemStack(1, false);
-                                                                            int buyPrice = IntegerArgumentType.getInteger(context, "buyPrice");
-                                                                            int sellPrice = IntegerArgumentType.getInteger(context, "sellPrice");
-                                                                            boolean isBuyable = BoolArgumentType.getBool(context, "isBuyable");
-                                                                            boolean isSellable = BoolArgumentType.getBool(context, "isSellable");
+                                .then(Commands.argument("buyPrice", IntegerArgumentType.integer())
+                                        .then(Commands.argument("sellPrice", IntegerArgumentType.integer())
+                                                .then(Commands.argument("isBuyable", BoolArgumentType.bool())
+                                                        .then(Commands.argument("isSellable", BoolArgumentType.bool())
+                                                                .executes(context -> {
+                                                                    String name = StringArgumentType.getString(context, "name");
+                                                                    ItemStack itemStack = context.getSource().getPlayerOrException().getMainHandItem();
+                                                                    int buyPrice = IntegerArgumentType.getInteger(context, "buyPrice");
+                                                                    int sellPrice = IntegerArgumentType.getInteger(context, "sellPrice");
+                                                                    boolean isBuyable = BoolArgumentType.getBool(context, "isBuyable");
+                                                                    boolean isSellable = BoolArgumentType.getBool(context, "isSellable");
 
-                                                                            ServerLevel world = context.getSource().getLevel();
-                                                                            int addedEntities = addItemsToShopEntities(world, name, itemStack, buyPrice, sellPrice, isBuyable, isSellable);
+                                                                    ServerLevel world = context.getSource().getLevel();
+                                                                    int addedEntities = addItemsToShopEntities(world, name, itemStack, buyPrice, sellPrice, isBuyable, isSellable);
 
-                                                                            if (addedEntities > 0) {
-                                                                                context.getSource().sendSuccess(() -> Component.literal("Added item to " + addedEntities + " shop entities with name: " + name), true);
-                                                                            } else {
-                                                                                context.getSource().sendFailure(Component.literal("No shop entities found with name: " + name));
-                                                                            }
-                                                                            return 1;
-                                                                        }))))))))
+                                                                    if (addedEntities > 0) {
+                                                                        context.getSource().sendSuccess(() -> Component.literal("Added item to " + addedEntities + " shop entities with name: " + name), true);
+                                                                    } else {
+                                                                        context.getSource().sendFailure(Component.literal("No shop entities found with name: " + name));
+                                                                    }
+                                                                    return 1;
+                                                                })))))))
                 .then(Commands.literal("set")
-                        .then(Commands.argument("id", IntegerArgumentType.integer())
-                            .then(Commands.argument("name", StringArgumentType.string())
-                                    .then(Commands.argument("item", ItemArgument.item(buildContext))
-                                            .then(Commands.argument("buyPrice", IntegerArgumentType.integer())
-                                                    .then(Commands.argument("sellPrice", IntegerArgumentType.integer())
-                                                            .then(Commands.argument("isBuyable", BoolArgumentType.bool())
-                                                                    .then(Commands.argument("isSellable", BoolArgumentType.bool())
-                                                                            .executes(context -> {
-                                                                            String name = StringArgumentType.getString(context, "name");
-                                                                            ItemStack itemStack = ItemArgument.getItem(context, "item").createItemStack(1, false);
-                                                                            int buyPrice = IntegerArgumentType.getInteger(context, "buyPrice");
-                                                                            int sellPrice = IntegerArgumentType.getInteger(context, "sellPrice");
-                                                                            int id = IntegerArgumentType.getInteger(context, "id");
-                                                                            boolean isBuyable = BoolArgumentType.getBool(context, "isBuyable");
-                                                                            boolean isSellable = BoolArgumentType.getBool(context, "isSellable");
+                        .then(Commands.literal("set")
+                                .then(Commands.argument("id", IntegerArgumentType.integer())
+                                        .then(Commands.argument("name", StringArgumentType.string())
+                                                .then(Commands.argument("buyPrice", IntegerArgumentType.integer())
+                                                        .then(Commands.argument("sellPrice", IntegerArgumentType.integer())
+                                                                .then(Commands.argument("isBuyable", BoolArgumentType.bool())
+                                                                        .then(Commands.argument("isSellable", BoolArgumentType.bool())
+                                                                                .executes(context -> {
+                                                                                    String name = StringArgumentType.getString(context, "name");
+                                                                                    ItemStack itemStack = context.getSource().getPlayerOrException().getMainHandItem();
+                                                                                    int buyPrice = IntegerArgumentType.getInteger(context, "buyPrice");
+                                                                                    int sellPrice = IntegerArgumentType.getInteger(context, "sellPrice");
+                                                                                    int id = IntegerArgumentType.getInteger(context, "id");
+                                                                                    boolean isBuyable = BoolArgumentType.getBool(context, "isBuyable");
+                                                                                    boolean isSellable = BoolArgumentType.getBool(context, "isSellable");
 
-                                                                            ServerLevel world = context.getSource().getLevel();
-                                                                            int setEntities = setItemsToShopEntities(world, name, itemStack, buyPrice, sellPrice, id, isBuyable, isSellable);
+                                                                                    ServerLevel world = context.getSource().getLevel();
+                                                                                    int setEntities = setItemsToShopEntities(world, name, itemStack, buyPrice, sellPrice, id, isBuyable, isSellable);
 
-                                                                            if (setEntities > 0) {
-                                                                                context.getSource().sendSuccess(() -> Component.literal("Set item to " + setEntities + " shop entities with name: " + name), true);
-                                                                            } else {
-                                                                                context.getSource().sendFailure(Component.literal("No shop entities found with name: " + name));
-                                                                            }
-                                                                            return 1;
-                                                                        })))))))))
+                                                                                    if (setEntities > 0) {
+                                                                                        context.getSource().sendSuccess(() -> Component.literal("Set item to " + setEntities + " shop entities with name: " + name), true);
+                                                                                    } else {
+                                                                                        context.getSource().sendFailure(Component.literal("No shop entities found with name: " + name));
+                                                                                    }
+                                                                                    return 1;
+                                                                                })))))))))
                 .then(Commands.literal("remove")
                         .then(Commands.argument("name", StringArgumentType.string())
                                 .executes(context -> {
@@ -202,7 +201,7 @@ public class ShopCommands {
         List<ShopEntity> entities = (List<ShopEntity>) world.getEntities(EntityTypeTest.forClass(ShopEntity.class), entity -> entity.hasCustomName() && entity.getCustomName().getString().equals(name));
         for (ShopEntity entity : entities) {
             if (entity.getCustomName() != null && entity.getCustomName().getString().equals(name)) {
-                entity.getShopItems().add(new ShopItem(itemStack.getItem(), buyPrice, sellPrice, isBuyable, isSellable));
+                entity.getShopItems().add(new ShopItem(itemStack, buyPrice, sellPrice, isBuyable, isSellable));
                 addedCount++;
             }
         }
@@ -214,7 +213,7 @@ public class ShopCommands {
         List<ShopEntity> entities = (List<ShopEntity>) world.getEntities(EntityTypeTest.forClass(ShopEntity.class), entity -> entity.hasCustomName() && entity.getCustomName().getString().equals(name));
         for (ShopEntity entity : entities) {
             if (entity.getCustomName() != null && entity.getCustomName().getString().equals(name)) {
-                entity.getShopItems().set(id, new ShopItem(itemStack.getItem(), buyPrice, sellPrice, isBuyable, isSellable));
+                entity.getShopItems().set(id, new ShopItem(itemStack, buyPrice, sellPrice, isBuyable, isSellable));
                 addedCount++;
             }
         }
@@ -231,7 +230,7 @@ public class ShopCommands {
                 } else {
                     source.sendSuccess(() -> Component.literal("Items in shop entity with name: " + name + ":"), false);
                     for (ShopItem item : shopItems) {
-                        source.sendSuccess(() -> Component.literal("- " + new ItemStack(item.getItem()).getHoverName().getString() + ": Buy for " + item.getBuyPrice() + ", Sell for " + item.getSellPrice()), false);
+                        source.sendSuccess(() -> Component.literal("- " + item.getItemStack().getHoverName().getString() + ": Buy for " + item.getBuyPrice() + ", Sell for " + item.getSellPrice()), false);
                     }
                 }
                 return 1;

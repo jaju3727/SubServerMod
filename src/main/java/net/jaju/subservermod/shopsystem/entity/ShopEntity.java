@@ -24,6 +24,7 @@ import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.items.ItemStackHandler;
@@ -40,11 +41,9 @@ public class ShopEntity extends PathfinderMob {
     private static final EntityDataAccessor<String> SKIN_PLAYER_NAME = SynchedEntityData.defineId(ShopEntity.class, EntityDataSerializers.STRING);
     private final List<ShopItem> shopItems = new ArrayList<>();
 
-
     public ShopEntity(EntityType<? extends PathfinderMob> entityType, Level world) {
         super(entityType, world);
     }
-
 
     @Override
     protected void defineSynchedData() {
@@ -73,11 +72,14 @@ public class ShopEntity extends PathfinderMob {
         ListTag shopItemsTag = new ListTag();
         for (ShopItem shopItem : shopItems) {
             CompoundTag itemTag = new CompoundTag();
-            itemTag.putString("Item", Objects.requireNonNull(ForgeRegistries.ITEMS.getKey(shopItem.getItem())).toString());
+            CompoundTag itemStackTag = new CompoundTag();
+            shopItem.getItemStack().save(itemStackTag);
+            itemTag.put("ItemStack", itemStackTag); // ItemStack 전체를 저장
             itemTag.putInt("BuyPrice", shopItem.getBuyPrice());
             itemTag.putInt("SellPrice", shopItem.getSellPrice());
             itemTag.putBoolean("IsBuyable", shopItem.getIsBuyable());
             itemTag.putBoolean("IsSellable", shopItem.getIsSellable());
+
             shopItemsTag.add(itemTag);
         }
         compound.put("ShopItems", shopItemsTag);
@@ -96,12 +98,12 @@ public class ShopEntity extends PathfinderMob {
         ListTag shopItemsTag = compound.getList("ShopItems", Tag.TAG_COMPOUND);
         for (Tag tag : shopItemsTag) {
             CompoundTag itemTag = (CompoundTag) tag;
-            Item item = ForgeRegistries.ITEMS.getValue(new ResourceLocation(itemTag.getString("Item")));
+            ItemStack itemStack = ItemStack.of(itemTag.getCompound("ItemStack")); // ItemStack 전체를 불러오기
             int buyPrice = itemTag.getInt("BuyPrice");
             int sellPrice = itemTag.getInt("SellPrice");
             boolean isBuyable = itemTag.getBoolean("IsBuyable");
             boolean isSellable = itemTag.getBoolean("IsSellable");
-            shopItems.add(new ShopItem(item, buyPrice, sellPrice, isBuyable, isSellable));
+            shopItems.add(new ShopItem(itemStack, buyPrice, sellPrice, isBuyable, isSellable));
         }
 
         if (compound.contains("CustomName", 8)) {
