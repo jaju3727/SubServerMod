@@ -1,0 +1,8 @@
+{
+  "variants": {
+    "facing=north": { "model": "subservermod:block/fishing_rod_block" },
+    "facing=south": { "model": "subservermod:block/fishing_rod_block", "y": 180 },
+    "facing=west": { "model": "subservermod:block/fishing_rod_block", "y": 270 },
+    "facing=east": { "model": "subservermod:block/fishing_rod_block", "y": 90 }
+  }
+}

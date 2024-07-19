@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/cube_all",
+  "textures": {
+    "all": "subservermod:block/woodcutting_union_block"
+  }
+}

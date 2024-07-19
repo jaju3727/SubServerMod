@@ -5,6 +5,7 @@ import net.jaju.subservermod.shopsystem.screen.ShopContainer;
 import net.jaju.subservermod.subclass.skill.alchemist.brewing.BrewingContainer;
 import net.jaju.subservermod.subclass.skill.miner.crafting.CraftingContainer;
 import net.jaju.subservermod.subclass.skill.farmer.oven.OvenContainer;
+import net.jaju.subservermod.subclass.skill.woodcutter.woodcuttingunion.WoodcuttingUnionContainer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.level.Level;
@@ -40,6 +41,11 @@ public class ModContainers {
             IForgeMenuType.create((windowId, inv, data) -> {
                 BlockPos pos = data.readBlockPos();
                 return new BrewingContainer(windowId, inv, (inv.player.level().getBlockEntity(pos)).getBlockPos());
+            }));
+    public static final RegistryObject<MenuType<WoodcuttingUnionContainer>> WOODCUTTINGUNION_MENU = CONTAINERS.register("woodcutting_union_menu", () ->
+            IForgeMenuType.create((windowId, inv, data) -> {
+                BlockPos pos = data.readBlockPos();
+                return new WoodcuttingUnionContainer(windowId, inv, (inv.player.level().getBlockEntity(pos)).getBlockPos());
             }));
 
     public static void register(IEventBus eventBus) {

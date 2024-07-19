@@ -4,7 +4,7 @@ import net.jaju.subservermod.subclass.skill.alchemist.AlchemistSkill;
 import net.minecraft.server.level.ServerPlayer;
 
 public class Alchemist extends BaseClass {
-    private AlchemistSkill alchemistSkill;
+    private transient AlchemistSkill alchemistSkill;
 
     public Alchemist(int level, String playerName) {
         super("Alchemist", level, playerName);

@@ -31,11 +31,12 @@ public class BrewingContainer extends AbstractContainerMenu {
         this.addSlot(new SlotItemHandler(itemHandler, 0, 30, 26)); //블레이즈 가루
         this.addSlot(new LimitedSlot(itemHandler, 1, 30, 50, 1)); //물 양동이
         this.addSlot(new SlotItemHandler(itemHandler, 2, 70, 30)); //네더와트
-        this.addSlot(new SlotItemHandler(itemHandler, 3, 70, 48)); //재료
-        this.addSlot(new SlotItemHandler(itemHandler, 4, 70, 66)); //발광석 or 레드스톤
-        this.addSlot(new SlotItemHandler(itemHandler, 5, 50, 30)); //유리병
-        this.addSlot(new LimitedSlot(itemHandler, 6, 50, 48, 0)); //변화병
-        this.addSlot(new LimitedSlot(itemHandler, 7, 50, 66, 0)); //최종 병
+        this.addSlot(new SlotItemHandler(itemHandler, 3, 70, 48)); //재료1
+        this.addSlot(new SlotItemHandler(itemHandler, 4, 70, 66)); //재료2
+        this.addSlot(new SlotItemHandler(itemHandler, 5, 70, 84)); //재료3
+        this.addSlot(new SlotItemHandler(itemHandler, 6, 50, 30)); //유리병
+        this.addSlot(new LimitedSlot(itemHandler, 7, 50, 48, 0)); //변화병
+        this.addSlot(new LimitedSlot(itemHandler, 8, 50, 66, 0)); //최종 병
     }
 
     private void addPlayerSlots(Inventory playerInventory) {
@@ -170,7 +171,7 @@ public class BrewingContainer extends AbstractContainerMenu {
     }
     @Override
     public boolean canTakeItemForPickAll(ItemStack stack, Slot slot) {
-        if (slot instanceof net.jaju.subservermod.subclass.skill.alchemist.brewing.LimitedSlot) {
+        if (slot instanceof LimitedSlot) {
             return stack.getCount() <= (slot).getMaxStackSize();
         }
         return super.canTakeItemForPickAll(stack, slot);

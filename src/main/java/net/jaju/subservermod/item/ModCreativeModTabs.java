@@ -30,11 +30,31 @@ public class ModCreativeModTabs {
                         pOutput.accept(ModItem.GOLD_RING.get());
                         pOutput.accept(ModItem.LAPIS_LAZULI_MARBLE.get());
                         pOutput.accept(ModItem.REDSTONE_MARBLE.get());
+                        pOutput.accept(ModItem.WOODEN_CHAIR.get());
+                        pOutput.accept(ModItem.WOODEN_DRAWER.get());
+                        pOutput.accept(ModItem.WOODEN_CUTTING_BOARD.get());
+                        pOutput.accept(ModItem.WOODEN_SHELF.get());
+                        pOutput.accept(ModItem.WOODEN_TABLE.get());
+                        pOutput.accept(ModItem.APPLE_DIFFUSER.get());
+                        pOutput.accept(ModItem.COOKING_OIL.get());
+                        pOutput.accept(ModItem.BEEF_STEAK.get());
+                        pOutput.accept(ModItem.LAMB_STEAK.get());
+                        pOutput.accept(ModItem.ROAST_CHICKEN.get());
+                        pOutput.accept(ModItem.PORK_BELLY.get());
+                        pOutput.accept(ModItem.FRIED_EGG.get());
+                        pOutput.accept(ModItem.COD_RAW_FISH.get());
+                        pOutput.accept(ModItem.SALMON_RAW_FISH.get());
+                        pOutput.accept(ModItem.SASHIMI_KNIFE.get());
 
                         pOutput.accept(ModBlocks.SCARECROW_BLOCK.get());
                         pOutput.accept(ModBlocks.OVEN_BLOCK.get());
                         pOutput.accept(ModBlocks.CRAFTING_BLOCK.get());
                         pOutput.accept(ModBlocks.BREWING_BLOCK.get());
+                        pOutput.accept(ModBlocks.TELEPORT_BLOCK.get());
+                        pOutput.accept(ModBlocks.WOODCUTTINGUNION_BLOCK.get());
+                        pOutput.accept(ModBlocks.CHEF_BLOCK.get());
+                        pOutput.accept(ModBlocks.CUTTING_BOARD_BLOCK.get());
+                        pOutput.accept(ModBlocks.FISHING_ROD_BLOCK.get());
                     })
                     .build());
 

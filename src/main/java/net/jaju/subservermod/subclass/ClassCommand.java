@@ -13,7 +13,7 @@ import net.minecraftforge.server.ServerLifecycleHooks;
 
 public class ClassCommand {
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
-        dispatcher.register(Commands.literal("class")
+        dispatcher.register(Commands.literal("subclass")
                 .requires(source -> source.hasPermission(2)) // OP 권한 체크
                 .then(Commands.literal("add")
                         .then(Commands.argument("playerName", StringArgumentType.string())
@@ -38,6 +38,18 @@ public class ClassCommand {
                                                             break;
                                                         case "alchemist":
                                                             playerClass = new Alchemist(level, playerName);
+                                                            playerClass.performSkill("give", player);
+                                                            break;
+                                                        case "woodcutter":
+                                                            playerClass = new Woodcutter(level, playerName);
+                                                            playerClass.performSkill("give", player);
+                                                            break;
+                                                        case "chef":
+                                                            playerClass = new Chef(level, playerName);
+                                                            playerClass.performSkill("give", player);
+                                                            break;
+                                                        case "fisherman":
+                                                            playerClass = new Fisherman(level, playerName);
                                                             playerClass.performSkill("give", player);
                                                             break;
                                                         default:
@@ -74,7 +86,18 @@ public class ClassCommand {
                                                             playerClass = new Alchemist(level, playerName);
                                                             playerClass.performSkill("give", player);
                                                             break;
-
+                                                        case "woodcutter":
+                                                            playerClass = new Woodcutter(level, playerName);
+                                                            playerClass.performSkill("give", player);
+                                                            break;
+                                                        case "chef":
+                                                            playerClass = new Chef(level, playerName);
+                                                            playerClass.performSkill("give", player);
+                                                            break;
+                                                        case "fisherman":
+                                                            playerClass = new Fisherman(level, playerName);
+                                                            playerClass.performSkill("give", player);
+                                                            break;
                                                         default:
                                                             context.getSource().sendFailure(Component.literal("Unknown class: " + className));
                                                             return 0;

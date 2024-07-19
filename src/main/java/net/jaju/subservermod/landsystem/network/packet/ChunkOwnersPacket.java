@@ -11,7 +11,7 @@ import java.util.UUID;
 import java.util.function.Supplier;
 
 @Mod.EventBusSubscriber(Dist.DEDICATED_SERVER)
-public class ChunkOwnersPacket {
+public class  ChunkOwnersPacket {
     private final LinkedHashMap<String, UUID> chunkOwners;
 
     public ChunkOwnersPacket(LinkedHashMap<String, UUID> chunkOwners) {

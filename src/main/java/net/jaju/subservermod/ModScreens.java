@@ -8,6 +8,8 @@ import net.jaju.subservermod.subclass.skill.miner.crafting.CraftingContainer;
 import net.jaju.subservermod.subclass.skill.miner.crafting.CraftingScreen;
 import net.jaju.subservermod.subclass.skill.farmer.oven.OvenContainer;
 import net.jaju.subservermod.subclass.skill.farmer.oven.OvenScreen;
+import net.jaju.subservermod.subclass.skill.woodcutter.woodcuttingunion.WoodcuttingUnionContainer;
+import net.jaju.subservermod.subclass.skill.woodcutter.woodcuttingunion.WoodcuttingUnionScreen;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.world.entity.player.Player;
@@ -21,14 +23,9 @@ public class ModScreens {
             Player player = Minecraft.getInstance().player;
             return new ShopScreen(screenContainer, inv, title, player);
         });
-        MenuScreens.<OvenContainer, OvenScreen>register(ModContainers.OVEN_MENU.get(), (screenContainer, inv, title) -> {
-            return new OvenScreen(screenContainer, inv, title);
-        });
-        MenuScreens.<CraftingContainer, CraftingScreen>register(ModContainers.CRAFTING_MENU.get(), (screenContainer, inv, title) -> {
-            return new CraftingScreen(screenContainer, inv, title);
-        });
-        MenuScreens.<BrewingContainer, BrewingScreen>register(ModContainers.BREWING_MENU.get(), (screenContainer, inv, title) -> {
-            return new BrewingScreen(screenContainer, inv, title);
-        });
+        MenuScreens.<OvenContainer, OvenScreen>register(ModContainers.OVEN_MENU.get(), OvenScreen::new);
+        MenuScreens.<CraftingContainer, CraftingScreen>register(ModContainers.CRAFTING_MENU.get(), CraftingScreen::new);
+        MenuScreens.<BrewingContainer, BrewingScreen>register(ModContainers.BREWING_MENU.get(), BrewingScreen::new);
+        MenuScreens.<WoodcuttingUnionContainer, WoodcuttingUnionScreen>register(ModContainers.WOODCUTTINGUNION_MENU.get(), WoodcuttingUnionScreen::new);
     }
 }

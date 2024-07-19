@@ -18,7 +18,6 @@ public class ClassManagement {
 
     static {
         loadClassData();
-
     }
 
     public static void addClass(String playerName, BaseClass playerClass) {
@@ -61,9 +60,5 @@ public class ClassManagement {
 
     public static Map<String, Map<String, BaseClass>> getClassMap() {
         return classMap;
-    }
-
-    public static void handleClassDataPacket(net.jaju.subservermod.network.ClassDataPacket packet) {
-
     }
 }

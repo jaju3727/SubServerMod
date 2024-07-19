@@ -3,8 +3,13 @@ package net.jaju.subservermod.block;
 import net.jaju.subservermod.Subservermod;
 import net.jaju.subservermod.item.ModItem;
 import net.jaju.subservermod.subclass.skill.alchemist.brewing.BrewingBlock;
+import net.jaju.subservermod.subclass.skill.alchemist.teleport.TeleportBlock;
+import net.jaju.subservermod.subclass.skill.chef.chefblock.ChefBlock;
+import net.jaju.subservermod.subclass.skill.fisherman.fishing_rod.FishingRodBlock;
+import net.jaju.subservermod.subclass.skill.fisherman.raw_fished.CuttingBoardBlock;
 import net.jaju.subservermod.subclass.skill.miner.crafting.CraftingBlock;
 import net.jaju.subservermod.subclass.skill.farmer.oven.OvenBlock;
+import net.jaju.subservermod.subclass.skill.woodcutter.woodcuttingunion.WoodcuttingUnionBlock;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
@@ -23,13 +28,23 @@ public class ModBlocks {
             DeferredRegister.create(ForgeRegistries.BLOCKS, Subservermod.MOD_ID);
 
     public static final RegistryObject<Block> SCARECROW_BLOCK = registerBlock("scarecrow_block",
-            () -> new Block(BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK).sound(SoundType.AMETHYST)));
+            () -> new Block(BlockBehaviour.Properties.copy(Blocks.BREWING_STAND).sound(SoundType.AMETHYST)));
     public static final RegistryObject<Block> OVEN_BLOCK = registerBlock("oven_block",
-            () -> new OvenBlock(BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK).sound(SoundType.METAL)));
+            () -> new OvenBlock(BlockBehaviour.Properties.copy(Blocks.BREWING_STAND).sound(SoundType.METAL)));
     public static final RegistryObject<Block> CRAFTING_BLOCK = registerBlock("crafting_block",
-            () -> new CraftingBlock(BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK).sound(SoundType.METAL)));
+            () -> new CraftingBlock(BlockBehaviour.Properties.copy(Blocks.BREWING_STAND).sound(SoundType.METAL)));
     public static final RegistryObject<Block> BREWING_BLOCK = registerBlock("brewing_block",
-            () -> new BrewingBlock(BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK).sound(SoundType.METAL)));
+            () -> new BrewingBlock(BlockBehaviour.Properties.copy(Blocks.BREWING_STAND).sound(SoundType.METAL)));
+    public static final RegistryObject<Block> TELEPORT_BLOCK = registerBlock("teleport_block",
+            () -> new TeleportBlock(BlockBehaviour.Properties.copy(Blocks.BREWING_STAND).sound(SoundType.METAL)));
+    public static final RegistryObject<Block> WOODCUTTINGUNION_BLOCK = registerBlock("woodcutting_union_block",
+            () -> new WoodcuttingUnionBlock(BlockBehaviour.Properties.copy(Blocks.BREWING_STAND).sound(SoundType.METAL)));
+    public static final RegistryObject<Block> CHEF_BLOCK = registerBlock("chef_block",
+            () -> new ChefBlock(BlockBehaviour.Properties.copy(Blocks.BREWING_STAND).sound(SoundType.METAL)));
+    public static final RegistryObject<Block> CUTTING_BOARD_BLOCK = registerBlock("cutting_board_block",
+            () -> new CuttingBoardBlock(BlockBehaviour.Properties.copy(Blocks.BREWING_STAND).sound(SoundType.METAL)));
+    public static final RegistryObject<Block> FISHING_ROD_BLOCK = registerBlock("fishing_rod_block",
+            () -> new FishingRodBlock(BlockBehaviour.Properties.copy(Blocks.BREWING_STAND).sound(SoundType.METAL)));
 
     private static <T extends Block> RegistryObject<T> registerBlock(String name, Supplier<T> block) {
         RegistryObject<T> toReturn = BLOCKS.register(name, block);

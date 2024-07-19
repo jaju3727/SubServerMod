@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "subservermod:block/woodcutting_union_block"
+    }
+  }
+}

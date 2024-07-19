@@ -9,7 +9,7 @@ import net.minecraft.world.item.crafting.RecipeManager;
 import java.util.Collections;
 
 public class Farmer extends BaseClass {
-    private FarmerSkill farmerSkill;
+    private transient FarmerSkill farmerSkill;
 
     public Farmer(int level, String playerName) {
         super("Farmer", level, playerName);

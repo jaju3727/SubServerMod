@@ -26,7 +26,7 @@ public class CraftingBlockEntity extends BlockEntity implements MenuProvider {
             setChanged();
         }
     };
-    public static boolean flag = false;
+    public boolean flag = false;
     public static Random random = new Random();
     private int updateTimer = 0;
     private static final int UPDATE_INTERVAL = 20 * 10;
@@ -48,12 +48,16 @@ public class CraftingBlockEntity extends BlockEntity implements MenuProvider {
 
     public static void tick(Level level, BlockPos pos, BlockState state, CraftingBlockEntity entity) {
         if (!level.isClientSide) {
-            if (flag) entity.updateResultSlot();
+            if (entity.flag) entity.updateResultSlot();
         }
     }
 
-    public static void flagToTrue() {
-        flag = true;
+    public void setFlag(boolean flag) {
+        this.flag = flag;
+        setChanged();
+        if (level != null) {
+            level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), 3);
+        }
     }
 
     private void updateResultSlot() {
@@ -88,12 +92,12 @@ public class CraftingBlockEntity extends BlockEntity implements MenuProvider {
             else if (randomNumber < rangeOfSuccess) returnItemStack = new ItemStack(ModItem.EMERALD_CUBIC.get(), itemstack.getCount());
             else returnItemStack = new ItemStack(ModItem.EMERALD_CUBIC.get(), itemstack.getCount() * 2);
 
-        } else if (itemstack.getItem() == Items.LAPIS_LAZULI){
+        } else if (itemstack.getItem() == Items.LAPIS_BLOCK){
             if (randomNumber < rangeOfFailure) returnItemStack = ItemStack.EMPTY;
             else if (randomNumber < rangeOfSuccess) returnItemStack = new ItemStack(ModItem.LAPIS_LAZULI_MARBLE.get(), itemstack.getCount());
             else returnItemStack = new ItemStack(ModItem.LAPIS_LAZULI_MARBLE.get(), itemstack.getCount() * 2);
 
-        } else if (itemstack.getItem() == Items.REDSTONE){
+        } else if (itemstack.getItem() == Items.REDSTONE_BLOCK){
             if (randomNumber < rangeOfFailure) returnItemStack = ItemStack.EMPTY;
             else if (randomNumber < rangeOfSuccess) returnItemStack = new ItemStack(ModItem.REDSTONE_MARBLE.get(), itemstack.getCount());
             else returnItemStack = new ItemStack(ModItem.REDSTONE_MARBLE.get(), itemstack.getCount() * 2);
@@ -118,12 +122,16 @@ public class CraftingBlockEntity extends BlockEntity implements MenuProvider {
     public void load(CompoundTag tag) {
         super.load(tag);
         itemHandler.deserializeNBT(tag.getCompound("Inventory"));
+        this.flag = tag.getBoolean("Flag"); // flag 로드
+        this.updateTimer = tag.getInt("UpdateTimer");
     }
 
     @Override
     protected void saveAdditional(CompoundTag tag) {
         super.saveAdditional(tag);
         tag.put("Inventory", itemHandler.serializeNBT());
+        tag.putBoolean("Flag", this.flag); // flag 저장
+        tag.putInt("UpdateTimer", this.updateTimer);
     }
 
     public ItemStackHandler getItemHandler() {

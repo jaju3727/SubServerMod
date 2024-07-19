@@ -66,7 +66,7 @@ public class CraftingBlock extends Block implements EntityBlock {
     }
 
     @Nullable
-    protected static <E extends BlockEntity, A extends BlockEntity> BlockEntityTicker<A> createTickerHelper(BlockEntityType<A> givenType, BlockEntityType<E> expectedType, BlockEntityTicker<? super E> ticker) {
+    protected <E extends BlockEntity, A extends BlockEntity> BlockEntityTicker<A> createTickerHelper(BlockEntityType<A> givenType, BlockEntityType<E> expectedType, BlockEntityTicker<? super E> ticker) {
         return expectedType == givenType ? (BlockEntityTicker<A>) ticker : null;
     }
 

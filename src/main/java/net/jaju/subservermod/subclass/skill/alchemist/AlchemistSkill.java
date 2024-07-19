@@ -7,9 +7,9 @@ import net.minecraftforge.fml.common.Mod;
 
 @Mod.EventBusSubscriber
 public class AlchemistSkill {
-    private static Alchemist alchemist;
+    private Alchemist alchemist;
 
     public AlchemistSkill(Alchemist alchemist) {
-        AlchemistSkill.alchemist = alchemist;
+        this.alchemist = alchemist;
     }
 }

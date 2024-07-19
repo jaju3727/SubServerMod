@@ -11,6 +11,8 @@ import net.jaju.subservermod.landsystem.network.ServerSideEventHandler;
 import net.jaju.subservermod.shopsystem.entity.ModEntities;
 import net.jaju.subservermod.subclass.ClassManagement;
 import net.jaju.subservermod.util.KeyInputHandler;
+import net.minecraft.client.renderer.ItemBlockRenderTypes;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
@@ -48,7 +50,10 @@ public class Subservermod {
         MinecraftForge.EVENT_BUS.register(CoinHud.class);
 
         modEventBus.addListener(this::commonSetup);
-        DistExecutor.runWhenOn(Dist.CLIENT, () -> () -> modEventBus.addListener(this::clientSetup));
+        DistExecutor.runWhenOn(Dist.CLIENT, () -> () -> {
+            modEventBus.addListener(this::clientSetup);
+            MinecraftForge.EVENT_BUS.register(ClientModEventSubscriber.class);
+        });
         modEventBus.addListener(this::addCreative);
     }
 
@@ -59,23 +64,26 @@ public class Subservermod {
 
     private void clientSetup(final FMLClientSetupEvent event) {
         ModScreens.register();
+        event.enqueueWork(() -> {
+            ItemBlockRenderTypes.setRenderLayer(ModBlocks.BREWING_BLOCK.get(), RenderType.cutout());
+            ItemBlockRenderTypes.setRenderLayer(ModBlocks.OVEN_BLOCK.get(), RenderType.cutout());
+        });
+
     }
 
     private void addCreative(BuildCreativeModeTabContentsEvent event) {
-        if (event.getTabKey() == CreativeModeTabs.INGREDIENTS) {
-            event.accept(ModItem.CONSTRUNTING_ALLOW);
-        }
+//        if (event.getTabKey() == CreativeModeTabs.INGREDIENTS) {
+//            event.accept(ModItem.CONSTRUNTING_ALLOW);
+//        }
     }
 
     @SubscribeEvent
     public static void onServerStarting(ServerStartingEvent event) {
-        // 서버 시작 시 데이터 로드
         ClassManagement.loadClassData();
     }
 
     @SubscribeEvent
     public static void onServerStopping(ServerStoppingEvent event) {
-        // 서버 종료 시 데이터 저장
         ClassManagement.saveClassData();
     }
 

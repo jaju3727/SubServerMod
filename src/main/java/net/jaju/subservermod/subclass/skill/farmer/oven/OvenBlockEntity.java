@@ -136,12 +136,13 @@ public class OvenBlockEntity extends BlockEntity implements MenuProvider {
     public void load(CompoundTag tag) {
         super.load(tag);
         itemHandler.deserializeNBT(tag.getCompound("Inventory"));
+        this.updateTimer = tag.getInt("UpdateTimer");
     }
 
-    @Override
     protected void saveAdditional(CompoundTag tag) {
         super.saveAdditional(tag);
         tag.put("Inventory", itemHandler.serializeNBT());
+        tag.putInt("UpdateTimer", this.updateTimer);
     }
 
     public ItemStackHandler getItemHandler() {

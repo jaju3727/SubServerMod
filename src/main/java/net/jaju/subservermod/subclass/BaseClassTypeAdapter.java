@@ -1,9 +1,6 @@
 package net.jaju.subservermod.subclass;
 
 import com.google.gson.*;
-import net.minecraft.client.Minecraft;
-import net.minecraft.network.chat.Component;
-
 import java.lang.reflect.Type;
 
 public class BaseClassTypeAdapter implements JsonSerializer<BaseClass>, JsonDeserializer<BaseClass> {
@@ -30,6 +27,12 @@ public class BaseClassTypeAdapter implements JsonSerializer<BaseClass>, JsonDese
                 return new Miner(level, playerName);
             case "Alchemist":
                 return new Alchemist(level, playerName);
+            case "Woodcutter":
+                return new Woodcutter(level, playerName);
+            case "Chef":
+                return new Chef(level, playerName);
+            case "Fisherman":
+                return new Fisherman(level, playerName);
             default:
                 throw new JsonParseException("Unknown class type: " + name);
         }

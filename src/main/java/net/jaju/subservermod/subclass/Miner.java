@@ -9,7 +9,7 @@ import net.minecraft.world.item.crafting.RecipeManager;
 import java.util.Collections;
 
 public class Miner extends BaseClass {
-    private MinerSkill minerSkill;
+    private transient MinerSkill minerSkill;
 
     public Miner(int level, String playerName) {
         super("Miner", level, playerName);

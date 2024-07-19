@@ -7,9 +7,9 @@ import net.minecraftforge.fml.common.Mod;
 @Mod.EventBusSubscriber
 public class MinerSkill {
 
-    private static Miner miner;
+    private Miner miner;
 
     public MinerSkill(Miner miner) {
-        MinerSkill.miner = miner;
+        this.miner = miner;
     }
 }

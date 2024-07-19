@@ -14,6 +14,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.CropBlock;
 import net.minecraft.world.level.block.StemBlock;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.level.BlockEvent;
@@ -25,17 +26,18 @@ import java.util.Random;
 
 @Mod.EventBusSubscriber
 public class FarmerSkill {
-    private static Farmer farmer;
+    private final Farmer farmer;
     private static final int EFFECT_RADIUS = 5;
     private static final Random random = new Random();
     private static final RandomSource randomSource = RandomSource.create();
 
     public FarmerSkill(Farmer farmer) {
-        FarmerSkill.farmer = farmer;
+        this.farmer = farmer;
+        MinecraftForge.EVENT_BUS.register(this);
     }
 
     @SubscribeEvent
-    public static void onSeedPlant(PlayerInteractEvent.RightClickBlock event) {
+    public void onSeedPlant(PlayerInteractEvent.RightClickBlock event) {
         if (farmer == null || farmer.getLevel() < 2) {
             return;
         }
@@ -73,24 +75,24 @@ public class FarmerSkill {
         }
     }
 
-    private static boolean canPlantNetherWart(ServerLevel world, BlockPos pos) {
+    private boolean canPlantNetherWart(ServerLevel world, BlockPos pos) {
         BlockState blockState = world.getBlockState(pos);
         return blockState.getBlock() == Blocks.SOUL_SAND;
     }
 
-    private static boolean canPlantSeed(ServerLevel world, BlockPos pos) {
+    private boolean canPlantSeed(ServerLevel world, BlockPos pos) {
         BlockState blockState = world.getBlockState(pos);
         return blockState.getBlock() == Blocks.FARMLAND && world.isEmptyBlock(pos.above());
     }
 
-    private static boolean isSeedPlanted(ServerLevel world, BlockPos pos) {
+    private boolean isSeedPlanted(ServerLevel world, BlockPos pos) {
         Block block = world.getBlockState(pos).getBlock();
         return block instanceof CropBlock || block == Blocks.NETHER_WART ||
                 block == Blocks.PUMPKIN_STEM || block == Blocks.MELON_STEM ||
                 block == Blocks.SUGAR_CANE;
     }
 
-    private static BlockState getSeedBlockState(Item item) {
+    private BlockState getSeedBlockState(Item item) {
         if (item == Items.WHEAT_SEEDS) {
             return Blocks.WHEAT.defaultBlockState();
         } else if (item == Items.POTATO) {
@@ -111,7 +113,7 @@ public class FarmerSkill {
     }
 
     @SubscribeEvent
-    public static void onHarvestCrop(BlockEvent.BreakEvent event) {
+    public void onHarvestCrop(BlockEvent.BreakEvent event) {
         if (farmer == null || farmer.getLevel() < 2) {
             return;
         }
@@ -149,7 +151,7 @@ public class FarmerSkill {
     }
 
     @SubscribeEvent
-    public static void onServerTick(TickEvent.ServerTickEvent event) {
+    public void onServerTick(TickEvent.ServerTickEvent event) {
         if (event.phase == TickEvent.Phase.END) {
             event.getServer().getAllLevels().forEach(world -> {
                 world.players().forEach(player -> {

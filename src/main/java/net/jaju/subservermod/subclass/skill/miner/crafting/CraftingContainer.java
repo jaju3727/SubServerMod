@@ -2,6 +2,7 @@ package net.jaju.subservermod.subclass.skill.miner.crafting;
 
 import net.jaju.subservermod.ModContainers;
 import net.jaju.subservermod.block.ModBlocks;
+import net.jaju.subservermod.subclass.skill.farmer.oven.LimitedSlot;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -23,14 +24,13 @@ public class CraftingContainer extends AbstractContainerMenu {
 
         addCraftingSlots();
         addPlayerSlots(playerInventory);
-
     }
 
     private void addCraftingSlots() {
         ItemStackHandler itemHandler = blockEntity.getItemHandler();
         for (int row = 0; row < 3; row++) {
             for (int col = 0; col < 3; col++) {
-                this.addSlot(new SlotItemHandler(itemHandler, col + row * 3, 38 + col * 18, 19 + row * 18));
+                this.addSlot(new LimitedSlot(itemHandler, col + row * 3, 38 + col * 18, 19 + row * 18, 1));
             }
         }
         this.addSlot(new SlotItemHandler(itemHandler, 9, 123, 36));
@@ -165,5 +165,9 @@ public class CraftingContainer extends AbstractContainerMenu {
         }
 
         return flag;
+    }
+
+    public CraftingBlockEntity getBlockEntity() {
+        return blockEntity;
     }
 }
