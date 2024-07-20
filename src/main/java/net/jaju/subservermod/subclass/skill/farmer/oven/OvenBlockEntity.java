@@ -28,7 +28,7 @@ public class OvenBlockEntity extends BlockEntity implements MenuProvider {
         }
     };
     private int updateTimer = 0;
-    private static final int UPDATE_INTERVAL = 20 * 10;
+    private static final int UPDATE_INTERVAL = 20 * 8;
 
     public OvenBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.OVEN_BLOCK_ENTITY.get(), pos, state);
@@ -51,35 +51,7 @@ public class OvenBlockEntity extends BlockEntity implements MenuProvider {
                     ItemStack.EMPTY, new ItemStack(Items.WHEAT, 1), ItemStack.EMPTY,
                     ItemStack.EMPTY, new ItemStack(ModItem.BUTTER.get(), 1), ItemStack.EMPTY,
                     ItemStack.EMPTY, new ItemStack(Items.WHEAT, 1), ItemStack.EMPTY,
-                    new ItemStack(ModItem.CROISSANT.get(), 3)
-            );
-
-            entity.updateResultSlot(
-                    ItemStack.EMPTY, ItemStack.EMPTY, ItemStack.EMPTY,
-                    new ItemStack(Items.WHEAT, 1), new ItemStack(Items.WHEAT, 1), new ItemStack(Items.WHEAT, 1),
-                    ItemStack.EMPTY, ItemStack.EMPTY, ItemStack.EMPTY,
-                    new ItemStack(Items.BREAD, 9)
-            );
-
-            entity.updateResultSlot(
-                    ItemStack.EMPTY, ItemStack.EMPTY, ItemStack.EMPTY,
-                    new ItemStack(Items.WHEAT, 1), new ItemStack(Items.COCOA_BEANS, 1), new ItemStack(Items.WHEAT, 1),
-                    ItemStack.EMPTY, ItemStack.EMPTY, ItemStack.EMPTY,
-                    new ItemStack(Items.COOKIE, 24)
-            );
-
-            entity.updateResultSlot(
-                    ItemStack.EMPTY, ItemStack.EMPTY, ItemStack.EMPTY,
-                    new ItemStack(Items.PUMPKIN, 1), new ItemStack(Items.SUGAR, 1), ItemStack.EMPTY,
-                    ItemStack.EMPTY, new ItemStack(Items.EGG, 1), ItemStack.EMPTY,
-                    new ItemStack(Items.PUMPKIN_PIE, 3)
-            );
-
-            entity.updateResultSlot(
-                    new ItemStack(Items.MILK_BUCKET, 1), new ItemStack(Items.MILK_BUCKET, 1), new ItemStack(Items.MILK_BUCKET, 1),
-                    new ItemStack(Items.SUGAR, 1), new ItemStack(Items.EGG, 1), new ItemStack(Items.SUGAR, 1),
-                    new ItemStack(Items.WHEAT, 1), new ItemStack(Items.WHEAT, 1), new ItemStack(Items.WHEAT, 1),
-                    new ItemStack(Items.CAKE, 3)
+                    new ItemStack(ModItem.CROISSANT.get(), 1)
             );
 
         }
@@ -87,9 +59,15 @@ public class OvenBlockEntity extends BlockEntity implements MenuProvider {
 
     private void updateResultSlot(ItemStack... ingredients) {
         List<ItemStack> ingredientList = Arrays.asList(ingredients);
+        int minItemNum = Integer.MAX_VALUE;
+        int temp;
         for (int i = 0; i < 9; i++) {
             if (itemHandler.getStackInSlot(i).getItem() != ingredientList.get(i).getItem()) {
                 return;
+            }
+            temp = itemHandler.getStackInSlot(i).getCount();
+            if (minItemNum > temp) {
+                minItemNum = temp;
             }
 
         }
@@ -120,13 +98,11 @@ public class OvenBlockEntity extends BlockEntity implements MenuProvider {
             if (!slotStack.isEmpty()) {
                 if (slotStack.getItem() == Items.MILK_BUCKET) {
                     ItemStack itemStack;
-                    if (itemHandler.getStackInSlot(10).isEmpty()) itemStack = new ItemStack(Items.BUCKET, 1);
-                    else if(itemHandler.getStackInSlot(10).getItem() == Items.BUCKET) itemStack = new ItemStack(Items.BUCKET, itemHandler.getStackInSlot(10).getCount() + 1);
-                    else itemStack = itemHandler.getStackInSlot(10);
-
-                    itemHandler.setStackInSlot(10, itemStack);
+                    itemStack = new ItemStack(Items.BUCKET, minItemNum);
+                    itemHandler.setStackInSlot(i, itemStack);
+                    continue;
                 }
-                slotStack.shrink(1);
+                slotStack.shrink(minItemNum);
                 itemHandler.setStackInSlot(i, slotStack);
             }
         }

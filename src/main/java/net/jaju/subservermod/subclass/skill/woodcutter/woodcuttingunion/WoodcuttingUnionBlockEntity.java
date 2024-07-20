@@ -117,6 +117,7 @@ public class WoodcuttingUnionBlockEntity extends BlockEntity implements MenuProv
         updateTimer++;
         List<Item> itemStacks = new ArrayList<>();
         int itemNum;
+        minItemNum = Integer.MAX_VALUE;
         for (int i = 0; i < 16; i++) {
             itemStacks.add(itemHandler.getStackInSlot(i).getItem());
             if (!itemHandler.getStackInSlot(i).isEmpty()) itemNum = itemHandler.getStackInSlot(i).getCount();
@@ -124,7 +125,6 @@ public class WoodcuttingUnionBlockEntity extends BlockEntity implements MenuProv
             if (minItemNum > itemNum) {
                 minItemNum = itemNum;
                 gaugeX = 100 + (minItemNum/4) * 10;
-                System.out.println(gaugeX);
             }
         }
         flag = recipes.containsKey(itemStacks);
@@ -137,7 +137,6 @@ public class WoodcuttingUnionBlockEntity extends BlockEntity implements MenuProv
                 for (int i = 0; i < 16; i++) {
                     itemHandler.setStackInSlot(i, new ItemStack(itemHandler.getStackInSlot(i).getItem(), itemHandler.getStackInSlot(i).getCount() - minItemNum));
                 }
-                minItemNum = Integer.MAX_VALUE;
                 flag = false;
             } else {
                 if (updateTimer%5 == 0 && gaugeX < 100 + (minItemNum/4) * 10) {

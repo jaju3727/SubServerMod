@@ -32,20 +32,22 @@ public class CraftingScreen extends AbstractContainerScreen<CraftingContainer> {
     @Override
     public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
         this.renderBackground(guiGraphics);
-        this.addRenderableWidget(new ImageButton(0, 0,
+        int textureWidth = 190;
+        int textureHeight = 190;
+        int posX = (this.width - textureWidth) / 2;
+        guiGraphics.blit(new ResourceLocation(Subservermod.MOD_ID, "textures/gui/miner/crafting_background.png"),
+                posX, 0, 0, 0, textureWidth, textureHeight, textureWidth, textureHeight);
+
+        this.addRenderableWidget(new ImageButton(280, 119,
                 30, 15, 0, 0, 1,
-                new ResourceLocation(Subservermod.MOD_ID, "textures/gui/remove.png"),
+                new ResourceLocation(Subservermod.MOD_ID, "textures/gui/miner/crafting_button.png"),
                 30, 15, button -> {
             SetFlagPacket packet = new SetFlagPacket(blockEntity.getBlockPos(), true);
             ModNetworking.INSTANCE.sendToServer(packet);
         }));
-        int textureWidth = 160;
-        int textureHeight = 160;
-        int posX = (this.width - textureWidth) / 2;
-//        guiGraphics.blit(new ResourceLocation(Subservermod.MOD_ID, "textures/gui/crafting.png"),
-//                posX, 10, 0, 0, textureWidth, textureHeight, textureWidth, textureHeight);
+
         guiGraphics.blit(new ResourceLocation(Subservermod.MOD_ID, "textures/gui/inventory.png"),
-                158, 170, 0, 0, 164, 78, 164, 78);
+                158, 190, 0, 0, 164, 78, 164, 78);
 
         super.render(guiGraphics, mouseX, mouseY, partialTicks);
         this.renderTooltip(guiGraphics, mouseX, mouseY);

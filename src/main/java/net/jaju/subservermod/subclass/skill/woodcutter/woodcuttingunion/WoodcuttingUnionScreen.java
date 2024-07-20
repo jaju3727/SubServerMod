@@ -40,9 +40,14 @@ public class WoodcuttingUnionScreen extends AbstractContainerScreen<WoodcuttingU
     @Override
     public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
         this.renderBackground(guiGraphics);
-        this.addRenderableWidget(new ImageButton(0, 0,
+        int textureWidth = 185;
+        int textureHeight = 185;
+        int posX = (this.width - textureWidth) / 2;
+        guiGraphics.blit(new ResourceLocation(Subservermod.MOD_ID, "textures/gui/woodcutter/woodcuttingunion_background.png"),
+                posX, 5, 0, 0, textureWidth, textureHeight, textureWidth, textureHeight);
+        this.addRenderableWidget(new ImageButton(160, 105,
                 30, 15, 0, 0, 1,
-                new ResourceLocation(Subservermod.MOD_ID, "textures/gui/remove.png"),
+                new ResourceLocation(Subservermod.MOD_ID, "textures/gui/woodcutter/woodcuttingunion_button.png"),
                 30, 15, button -> {
 
             if (flag) {
@@ -50,13 +55,8 @@ public class WoodcuttingUnionScreen extends AbstractContainerScreen<WoodcuttingU
                 ModNetworking.INSTANCE.sendToServer(new GaugeSendToEntityPacket(blockEntity.getBlockPos(), gaugeX));
             }
         }));
-        int textureWidth = 160;
-        int textureHeight = 160;
-        int posX = (this.width - textureWidth) / 2;
-//        guiGraphics.blit(new ResourceLocation(Subservermod.MOD_ID, "textures/gui/crafting.png"),
-//                posX, 10, 0, 0, textureWidth, textureHeight, textureWidth, textureHeight);
         guiGraphics.blit(new ResourceLocation(Subservermod.MOD_ID, "textures/gui/inventory.png"),
-                158, 170, 0, 0, 164, 78, 164, 78);
+                158, 190, 0, 0, 164, 78, 164, 78);
         if (flag) {
             int X = (int) (100 * ( (float) gaugeX / (float) (100 + (minItemNum/4) * 10)));
             guiGraphics.blit(new ResourceLocation(Subservermod.MOD_ID, "textures/gui/woodcutter/gauge.png"),

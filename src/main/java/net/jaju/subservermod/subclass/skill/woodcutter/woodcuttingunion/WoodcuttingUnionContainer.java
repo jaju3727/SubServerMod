@@ -30,20 +30,20 @@ public class WoodcuttingUnionContainer extends AbstractContainerMenu {
         ItemStackHandler itemHandler = blockEntity.getItemHandler();
         for (int row = 0; row < 4; row++) {
             for (int col = 0; col < 4; col++) {
-                this.addSlot(new SlotItemHandler(itemHandler, col + row * 4, 38 + col * 18, 19 + row * 18));
+                this.addSlot(new SlotItemHandler(itemHandler, col + row * 4, 54 + col * 17, 27 + row * 17));
             }
         }
-        this.addSlot(new SlotItemHandler(itemHandler, 16, 123, 36));
+        this.addSlot(new SlotItemHandler(itemHandler, 16, 143, 53));
     }
 
     private void addPlayerSlots(Inventory playerInventory) {
         for (int y = 0; y < 3; y++) {
             for (int x = 0; x < 9; x++) {
-                this.addSlot(new Slot(playerInventory, x + y * 9 + 9, 8 + x * 18, 120 + y * 18));
+                this.addSlot(new Slot(playerInventory, x + y * 9 + 9, 8 + x * 18, 140 + y * 18));
             }
         }
         for (int x = 0; x < 9; x++) {
-            this.addSlot(new Slot(playerInventory, x, 8 + x * 18, 178));
+            this.addSlot(new Slot(playerInventory, x, 8 + x * 18, 198));
         }
     }
 

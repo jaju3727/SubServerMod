@@ -28,11 +28,10 @@ public class OvenContainer extends AbstractContainerMenu {
         // Add oven slots
         for (int row = 0; row < 3; row++) {
             for (int col = 0; col < 3; col++) {
-                this.addSlot(new LimitedSlot(itemHandler, col + row * 3, 38 + col * 18, 19 + row * 18, 6));
+                this.addSlot(new LimitedSlot(itemHandler, col + row * 3, 64 + col * 20,  3 + row * 20, 6));
             }
         }
-        this.addSlot(new LimitedSlot(itemHandler, 9, 123, 36, 0));
-        this.addSlot(new LimitedSlot(itemHandler, 10, 123, 10, 0));
+        this.addSlot(new LimitedSlot(itemHandler, 9, 84, 75, 0));
     }
 
     private void addPlayerSlots(Inventory playerInventory) {

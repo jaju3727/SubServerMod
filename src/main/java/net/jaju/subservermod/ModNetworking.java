@@ -38,6 +38,7 @@ public class ModNetworking {
         INSTANCE.registerMessage(id++, UpdateInventoryPacket.class, UpdateInventoryPacket::toBytes, UpdateInventoryPacket::new, UpdateInventoryPacket::handle);
         INSTANCE.registerMessage(id++, GaugeSendToEntityPacket.class, GaugeSendToEntityPacket::encode, GaugeSendToEntityPacket::decode, GaugeSendToEntityPacket::handle);
         INSTANCE.registerMessage(id++, GaugeSendToClientPacket.class, GaugeSendToClientPacket::encode, GaugeSendToClientPacket::decode, GaugeSendToClientPacket::handle);
+        INSTANCE.registerMessage(id++, BrewingVarSendToClientPacket.class, BrewingVarSendToClientPacket::encode, BrewingVarSendToClientPacket::decode, BrewingVarSendToClientPacket::handle);
 
         INSTANCE.registerMessage(id++, ItemDiscoveryPacket.class, ItemDiscoveryPacket::encode, ItemDiscoveryPacket::decode, ItemDiscoveryPacket::handle, Optional.of(NetworkDirection.PLAY_TO_SERVER));
         INSTANCE.registerMessage(id++, EncyclopediaPacket.class, EncyclopediaPacket::encode, EncyclopediaPacket::decode, EncyclopediaPacket::handle);

@@ -13,7 +13,7 @@ import net.minecraftforge.items.ItemStackHandler;
 import net.minecraftforge.items.SlotItemHandler;
 
 public class BrewingContainer extends AbstractContainerMenu {
-    private final BrewingBlockEntity blockEntity;
+    public final BrewingBlockEntity blockEntity;
     private final ContainerLevelAccess access;
 
     public BrewingContainer(int id, Inventory playerInventory, BlockPos pos) {
@@ -28,15 +28,20 @@ public class BrewingContainer extends AbstractContainerMenu {
 
     private void addBrewingSlots() {
         ItemStackHandler itemHandler = blockEntity.getItemHandler();
-        this.addSlot(new SlotItemHandler(itemHandler, 0, 30, 26)); //블레이즈 가루
-        this.addSlot(new LimitedSlot(itemHandler, 1, 30, 50, 1)); //물 양동이
-        this.addSlot(new SlotItemHandler(itemHandler, 2, 70, 30)); //네더와트
-        this.addSlot(new SlotItemHandler(itemHandler, 3, 70, 48)); //재료1
-        this.addSlot(new SlotItemHandler(itemHandler, 4, 70, 66)); //재료2
-        this.addSlot(new SlotItemHandler(itemHandler, 5, 70, 84)); //재료3
-        this.addSlot(new SlotItemHandler(itemHandler, 6, 50, 30)); //유리병
-        this.addSlot(new LimitedSlot(itemHandler, 7, 50, 48, 0)); //변화병
-        this.addSlot(new LimitedSlot(itemHandler, 8, 50, 66, 0)); //최종 병
+        this.addSlot(new SlotItemHandler(itemHandler, 0, 18, 13)); //블레이즈 가루
+        this.addSlot(new LimitedSlot(itemHandler, 1, 18, 35, 1)); //물 양동이
+        this.addSlot(new SlotItemHandler(itemHandler, 2, 136, 13)); //네더와트
+        this.addSlot(new SlotItemHandler(itemHandler, 3, 136, 33)); //재료1
+        this.addSlot(new SlotItemHandler(itemHandler, 4, 136, 52)); //재료2
+        this.addSlot(new SlotItemHandler(itemHandler, 5, 136, 71)); //재료3
+        this.addSlot(new SlotItemHandler(itemHandler, 6, 79, 13)); //유리병
+        this.addSlot(new LimitedSlot(itemHandler, 7, 56, 46, 0)); //변화병
+        this.addSlot(new LimitedSlot(itemHandler, 8, 56, 75, 0)); //최종병
+        this.addSlot(new LimitedSlot(itemHandler, 9, 79, 53, 0)); //변화병
+        this.addSlot(new LimitedSlot(itemHandler, 10, 79, 82, 0)); //최종병
+        this.addSlot(new LimitedSlot(itemHandler, 11, 101, 46, 0)); //변화병
+        this.addSlot(new LimitedSlot(itemHandler, 12, 101, 75, 0)); //최종병
+
     }
 
     private void addPlayerSlots(Inventory playerInventory) {
@@ -63,7 +68,7 @@ public class BrewingContainer extends AbstractContainerMenu {
             ItemStack stackInSlot = slot.getItem();
             stack = stackInSlot.copy();
 
-            if (index < 10) {
+            if (index < 13) {
                 if (!this.moveItemStackTo(stackInSlot, 10, this.slots.size(), true)) {
                     return ItemStack.EMPTY;
                 }
