@@ -27,5 +27,6 @@ public class ModScreens {
         MenuScreens.<CraftingContainer, CraftingScreen>register(ModContainers.CRAFTING_MENU.get(), CraftingScreen::new);
         MenuScreens.<BrewingContainer, BrewingScreen>register(ModContainers.BREWING_MENU.get(), BrewingScreen::new);
         MenuScreens.<WoodcuttingUnionContainer, WoodcuttingUnionScreen>register(ModContainers.WOODCUTTINGUNION_MENU.get(), WoodcuttingUnionScreen::new);
+
     }
 }

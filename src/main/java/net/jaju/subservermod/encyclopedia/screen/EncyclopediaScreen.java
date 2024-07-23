@@ -5,7 +5,9 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.jaju.subservermod.ModNetworking;
 import net.jaju.subservermod.Subservermod;
 import net.jaju.subservermod.encyclopedia.network.ClientPacketHandler;
+import net.jaju.subservermod.encyclopedia.network.EncyclopediaPacket;
 import net.jaju.subservermod.encyclopedia.network.ItemDiscoveryPacket;
+import net.jaju.subservermod.encyclopedia.network.giftGetPacket;
 import net.jaju.subservermod.util.CustomPlainTextButton;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphics;
@@ -27,12 +29,18 @@ public class EncyclopediaScreen extends Screen {
     private static final int numPerPage = 105;
     private LinkedHashMap<String, Integer> encyclopedia;
     private HashMap<String, Boolean> discoveries;
+    private LinkedHashMap<Integer, List<ItemStack>> giftList;
+    private LinkedHashMap<Integer, Boolean> giftGet;
+    private int gauge;
 
     public EncyclopediaScreen(Player player) {
         super(Component.literal("EncyclopediaScreen"));
         this.player = player;
         this.encyclopedia = ClientPacketHandler.getEncyclopedia();
         this.discoveries = ClientPacketHandler.getDiscoveries();
+        this.giftList = ClientPacketHandler.getGiftList();
+        this.giftGet = ClientPacketHandler.getGiftGet();
+        for (Boolean bool : discoveries.values()) if (bool) gauge++;
         this.maxPage = (encyclopedia.size() - 1) / numPerPage + 1;
     }
 
@@ -43,10 +51,10 @@ public class EncyclopediaScreen extends Screen {
 
     private void initializeWidgets() {
         this.clearWidgets();
-        int standardX = 70;
-        int standardY = 30;
-        int intervalX = 20;
-        int intervalY = 20;
+        int standardX = 78;
+        int standardY = 103 - 15 - 70;
+        int intervalX = 22;
+        int intervalY = 21;
         int end = page == maxPage ? (encyclopedia.size() - 1) % numPerPage + 1 : numPerPage;
         int start = numPerPage * (page - 1);
         end += start;
@@ -64,19 +72,19 @@ public class EncyclopediaScreen extends Screen {
             this.addRenderableWidget(new ImageButton(standardX + (restI % 15) * intervalX,
                     standardY + (restI / 15) * intervalY,
                     18, 18, 0, 0, 1,
-                    new ResourceLocation(Subservermod.MOD_ID, "textures/gui/landsystem/landreclaim.png"),
+                    new ResourceLocation(Subservermod.MOD_ID, "textures/gui/encyclopedia/encyclopedia_slot.png"),
                     0, 0, button -> {
                         if (!flag) {
                             System.out.println(entry.getKey()+"  "+entry.getValue());
                             onClickWidget(entry.getKey(), entry.getValue());
                         }
             }));
-
             i++;
         }
 
+
         this.addRenderableWidget(new CustomPlainTextButton(
-                standardX + 280, standardY + 140,
+                standardX + 153, standardY + 155,
                 0, 0,
                 Component.literal(page+"/"+maxPage),
                 button -> {},
@@ -84,17 +92,61 @@ public class EncyclopediaScreen extends Screen {
                 1.0f
         ));
 
+        this.addRenderableWidget(new CustomPlainTextButton(
+                standardX + 275, standardY + 186,
+                0, 0,
+                Component.literal( String.format("%.2f", (float)gauge/(float)encyclopedia.size() * 100) + "% (" + gauge + "/" + encyclopedia.size() + ")"),
+                button -> {},
+                minecraft.font,
+                0.8f
+        ));
+
         if (page != minPage) {
-            this.addRenderableWidget(new ImageButton(standardX - 30, standardY + 70,
+            this.addRenderableWidget(new ImageButton(standardX - 24, standardY + 70,
                     20, 10, 0, 0, 0,
                     new ResourceLocation(Subservermod.MOD_ID, "textures/gui/leftarrow.png"),
                     20, 10, button -> leftPage()));
         }
         if (page != maxPage) {
-            this.addRenderableWidget(new ImageButton(standardX + 300, standardY + 70,
+            this.addRenderableWidget(new ImageButton(standardX + 328, standardY + 70,
                     20, 10, 0, 0, 0,
                     new ResourceLocation(Subservermod.MOD_ID, "textures/gui/rightarrow.png"),
                     20, 10, button -> rightPage()));
+        }
+
+        int previousVar = -100;
+        for (var entry : giftList.entrySet()) {
+            int width = 350;
+            int height = 170;
+            int centerX = (this.width - width) / 2;
+            int centerY = (this.height - height) / 2 + 10 + 165;
+            if (entry.getKey() - previousVar <= 10) {
+                centerY -= 35;
+            }
+            width = (int) (346*(((float) entry.getKey()/ (float) encyclopedia.size()))) - 10;
+            centerX += width;
+            if (!giftGet.get(entry.getKey())) {
+                this.addRenderableWidget(new ImageButton(centerX, centerY,
+                        20, 20, 0, 0, 0,
+                        new ResourceLocation(Subservermod.MOD_ID, "textures/gui/encyclopedia/gift_box.png"),
+                        20, 20, button -> {
+                    onClickGiftWidget(entry.getKey());
+                }));
+            } else {
+                this.addRenderableWidget(new ImageButton(centerX, centerY,
+                        20, 20, 0, 0, 0,
+                        new ResourceLocation(Subservermod.MOD_ID, "textures/gui/encyclopedia/gift_check.png"),
+                        20, 20, button -> {}));
+            }
+            previousVar = entry.getKey();
+        }
+    }
+
+    private void onClickGiftWidget(int giftNum) {
+        if (giftNum <= gauge) {
+            giftGet.replace(giftNum, true);
+            ModNetworking.INSTANCE.sendToServer(new giftGetPacket(giftNum));
+            initializeWidgets();
         }
     }
 
@@ -102,9 +154,9 @@ public class EncyclopediaScreen extends Screen {
         ResourceLocation itemResourceLocation = new ResourceLocation(itemName);
         ItemStack itemStack = new ItemStack(Objects.requireNonNull(ForgeRegistries.ITEMS.getValue(itemResourceLocation)), itemCount);
         int playerItemCount = player.getInventory().countItem(itemStack.getItem());
-        System.out.println(playerItemCount);
         if (playerItemCount >= itemCount) {
             discoveries.replace(itemName, true);
+            gauge++;
             ModNetworking.INSTANCE.sendToServer(new ItemDiscoveryPacket(itemName, itemCount));
             initializeWidgets();
         }
@@ -128,10 +180,10 @@ public class EncyclopediaScreen extends Screen {
         int i = 0;
         float scale = 1.125f;
 
-        int standardX = 70;
-        int standardY = 30;
-        int intervalX = 20;
-        int intervalY = 20;
+        int standardX = 78;
+        int standardY = 103 - 15 - 70;
+        int intervalX = 22;
+        int intervalY = 21;
 
         int end = page == maxPage ? (encyclopedia.size() - 1) % numPerPage + 1 : numPerPage;
         int start = numPerPage * (page - 1);
@@ -150,6 +202,10 @@ public class EncyclopediaScreen extends Screen {
             int xPosition = standardX + (restI % 15) * intervalX;
             int yPosition = standardY + (restI / 15) * intervalY;
 
+            if (mouseX >= xPosition && mouseX <= xPosition + 16 * scale && mouseY >= yPosition && mouseY <= yPosition + 16 * scale) {
+                renderTooltip(guiGraphics, itemStack, entry.getValue(), xPosition, yPosition);
+            }
+
             PoseStack poseStack = guiGraphics.pose();
             poseStack.pushPose();
 
@@ -164,7 +220,7 @@ public class EncyclopediaScreen extends Screen {
                 poseStack.popPose();
                 RenderSystem.enableBlend();
                 RenderSystem.defaultBlendFunc();
-                RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 0.5f); // 투명도를 50%로 설정
+                RenderSystem.setShaderColor(0.2f, 0.2f, 0.2f, 0.5f);
 
                 guiGraphics.renderItem(itemStack, 0, 0);
 
@@ -176,11 +232,25 @@ public class EncyclopediaScreen extends Screen {
 
             poseStack.popPose();
 
-            if (mouseX >= xPosition && mouseX <= xPosition + 16 * scale && mouseY >= yPosition && mouseY <= yPosition + 16 * scale) {
-                renderTooltip(guiGraphics, itemStack, entry.getValue(), xPosition, yPosition);
+            i++;
+        }
+        int previousVar = -100;
+        for (var entry : giftList.entrySet()) {
+            int width = 350;
+            int height = 170;
+            int centerX = (this.width - width) / 2;
+            int centerY = (this.height - height) / 2 + 10 + 165;
+            if (entry.getKey() - previousVar <= 10) {
+                centerY -= 35;
+            }
+            width = (int) (346*(((float) entry.getKey()/ (float) encyclopedia.size()))) - 10;
+            centerX += width;
+
+            if (mouseX >= centerX && mouseX <= centerX + 20 && mouseY >= centerY && mouseY <= centerY + 20) {
+                renderGiftTooltip(guiGraphics, entry.getValue(), centerX, centerY, entry.getKey());
             }
 
-            i++;
+            previousVar = entry.getKey();
         }
     }
 
@@ -200,15 +270,36 @@ public class EncyclopediaScreen extends Screen {
         guiGraphics.renderComponentTooltip(this.font, tooltip, x, y);
     }
 
+    private void renderGiftTooltip(GuiGraphics guiGraphics, List<ItemStack> itemStacks, int x, int y, int itemNum) {
+        List<Component> tooltip = new ArrayList<>();
+        tooltip.add(Component.literal("보상 ").withStyle(ChatFormatting.LIGHT_PURPLE)
+                .append(Component.literal("(" + itemNum + "개)").withStyle(ChatFormatting.WHITE)));
+        for (ItemStack itemStack : itemStacks) {
+            Component itemName = itemStack.getHoverName();
+            tooltip.add(Component.literal("| ").withStyle(ChatFormatting.BLUE)
+                    .append(itemName.copy().withStyle(ChatFormatting.WHITE))
+                    .append(Component.literal(" "+itemStack.getCount()+"개").withStyle(ChatFormatting.BLUE)));
+        }
+        guiGraphics.renderComponentTooltip(this.font, tooltip, x, y + 10);
+    }
+
     @Override
     public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
         if (encyclopedia == null || discoveries == null) {
             return;
         }
         this.renderBackground(guiGraphics);
-        int centerX = (this.width - 256) / 2;
-        int centerY = (this.height - 256) / 2;
-//        guiGraphics.blit(new ResourceLocation(Subservermod.MOD_ID, "textures/gui/landsystem/example.png"), centerX, centerY, 0, 0, 256, 256);
+        int width = 350;
+        int height = 170;
+        int centerX = (this.width - width) / 2;
+        int centerY = (this.height - height) / 2;
+        guiGraphics.blit(new ResourceLocation(Subservermod.MOD_ID, "textures/gui/encyclopedia/encyclopedia_background.png"),
+                centerX, centerY + 25  - 70, 0, 0, width, height, width, height);
+        guiGraphics.blit(new ResourceLocation(Subservermod.MOD_ID, "textures/gui/encyclopedia/progress.png"),
+                centerX, centerY - 10 + 170, 0, 0, width, 16, width, 16);
+        width = (int) (346*(((float) gauge/ (float) encyclopedia.size())));
+        guiGraphics.blit(new ResourceLocation(Subservermod.MOD_ID, "textures/gui/encyclopedia/progress_gauge.png"),
+                centerX + 2, centerY - 3 - 6 + 170, 0, 0, width, 14, 346, 14);
         super.render(guiGraphics, mouseX, mouseY, partialTicks);
         renderShopItems(guiGraphics, mouseX, mouseY);
     }

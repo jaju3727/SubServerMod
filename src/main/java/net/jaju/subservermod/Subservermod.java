@@ -10,6 +10,7 @@ import net.jaju.subservermod.landsystem.ChunkOwnershipHandler;
 import net.jaju.subservermod.landsystem.network.ServerSideEventHandler;
 import net.jaju.subservermod.shopsystem.entity.ModEntities;
 import net.jaju.subservermod.subclass.ClassManagement;
+import net.jaju.subservermod.util.KeyBindings;
 import net.jaju.subservermod.util.KeyInputHandler;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
@@ -48,6 +49,7 @@ public class Subservermod {
         MinecraftForge.EVENT_BUS.register(new ServerSideEventHandler());
         MinecraftForge.EVENT_BUS.register(this);
         MinecraftForge.EVENT_BUS.register(CoinHud.class);
+        modEventBus.addListener(KeyBindings::registerKeyMappings);
 
         modEventBus.addListener(this::commonSetup);
         DistExecutor.runWhenOn(Dist.CLIENT, () -> () -> {

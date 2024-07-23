@@ -2,9 +2,11 @@ package net.jaju.subservermod.encyclopedia;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import net.jaju.subservermod.item.ModItem;
 import net.jaju.subservermod.landsystem.LandManager;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraftforge.registries.ForgeRegistries;
 
@@ -18,11 +20,15 @@ public class EncyclopediaManager {
     private static EncyclopediaManager INSTANCE;
     private static final HashMap<UUID, HashMap<String, Boolean>> categoryDiscoveries = new HashMap<>();
     private static final LinkedHashMap<String, Integer> encyclopedia = new LinkedHashMap<>();
+    private static final HashMap<UUID, LinkedHashMap<Integer, Boolean>> giftGet = new HashMap<>();
+    private static final LinkedHashMap<Integer, List<ItemStack>> giftList = new LinkedHashMap<>();
     private static final String FILE_PATH = "config/encyclopedia.json";
+    private static final String FILE_PATH_2 = "config/gift.json";
+    private static Boolean flag = false;
     private final Gson gson = new Gson();
 
     public EncyclopediaManager() {
-        addItems();
+
         loadEncyclopedia();
     }
 
@@ -31,6 +37,13 @@ public class EncyclopediaManager {
             INSTANCE = new EncyclopediaManager();
         }
         return INSTANCE;
+    }
+
+    private static void addGifts() {
+        addGift(10, List.of(new ItemStack((ModItem.BUTTER.get()), 2), new ItemStack((ModItem.BUTTER.get()), 2), new ItemStack((ModItem.BUTTER.get()), 2)));
+        addGift(30, List.of(new ItemStack((ModItem.BUTTER.get()), 2)));
+        addGift(40, List.of(new ItemStack((ModItem.BUTTER.get()), 2)));
+        addGift(165, List.of(new ItemStack((ModItem.BUTTER.get()), 2)));
     }
 
     private static void addItems() {
@@ -201,19 +214,36 @@ public class EncyclopediaManager {
         addItem(ForgeRegistries.ITEMS.getKey(Items.SPRUCE_BUTTON).toString(), 10);
     }
 
-    public static void addItem(String itemLocation, int itemCount) {
+    private static void addItem(String itemLocation, int itemCount) {
         if (!encyclopedia.containsKey(itemLocation)) {
             encyclopedia.put(itemLocation, itemCount);
         }
     }
 
+    private static void addGift(Integer giftNum, List<ItemStack> itemStacks) {
+        if (!giftList.containsKey(giftNum)) giftList.put(giftNum, itemStacks);
+    }
+
     public void initializePlayerDiscoveries(UUID playerUUID) {
+        if (!flag) {
+            addItems();
+            addGifts();
+            flag = true;
+        }
         if (!categoryDiscoveries.containsKey(playerUUID)) {
             HashMap<String, Boolean> discoveries = new HashMap<>();
             for (String itemLocation : encyclopedia.keySet()) {
                 discoveries.put(itemLocation, false);
             }
             categoryDiscoveries.put(playerUUID, discoveries);
+            saveEncyclopedia();
+        }
+        if (!giftGet.containsKey(playerUUID)) {
+            LinkedHashMap<Integer, Boolean> get = new LinkedHashMap<>();
+            for (Integer num : giftList.keySet()) {
+                get.put(num, false);
+            }
+            giftGet.put(playerUUID, get);
             saveEncyclopedia();
         }
     }
@@ -229,36 +259,40 @@ public class EncyclopediaManager {
         }
     }
 
-    public boolean hasDiscoveredItem(UUID playerUUID, Item item) {
-        String itemLocation = ForgeRegistries.ITEMS.getKey(item).toString();
-        HashMap<String, Boolean> discoveries = categoryDiscoveries.get(playerUUID);
-        return discoveries != null && discoveries.getOrDefault(itemLocation, false);
-    }
-
-    public boolean isEncyclopediaCompleted(UUID playerUUID) {
-        HashMap<String, Boolean> discoveries = categoryDiscoveries.get(playerUUID);
-        if (discoveries != null) {
-            for (String itemLocation : encyclopedia.keySet()) {
-                if (!discoveries.getOrDefault(itemLocation, false)) {
-                    return false;
-                }
+    public void getGift(UUID playerUUID, Integer num) {
+        if (giftList.containsKey(num)) {
+            HashMap<Integer, Boolean> discoveries = giftGet.get(playerUUID);
+            if (discoveries != null) {
+                discoveries.put(num, true);
+                saveEncyclopedia();
             }
-            return true;
         }
-        return false;
     }
 
     public static LinkedHashMap<String, Integer> getEncyclopedia() {
         return encyclopedia;
     }
 
+    public static LinkedHashMap<Integer, List<ItemStack>> getGiftList() {
+        return giftList;
+    }
+
     public static HashMap<String, Boolean> getDiscoveries(UUID playerUUID) {
         return categoryDiscoveries.getOrDefault(playerUUID, new HashMap<>());
+    }
+
+    public static LinkedHashMap<Integer, Boolean> getGiftGet(UUID playerUUID) {
+        return giftGet.getOrDefault(playerUUID, new LinkedHashMap<>());
     }
 
     private void saveEncyclopedia() {
         try (FileWriter writer = new FileWriter(FILE_PATH)) {
             gson.toJson(categoryDiscoveries, writer);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        try (FileWriter writer = new FileWriter(FILE_PATH_2)) {
+            gson.toJson(giftGet, writer);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -270,6 +304,15 @@ public class EncyclopediaManager {
             HashMap<UUID, HashMap<String, Boolean>> loadedDiscoveries = gson.fromJson(reader, discoveriesType);
             if (loadedDiscoveries != null) {
                 categoryDiscoveries.putAll(loadedDiscoveries);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        try (FileReader reader = new FileReader(FILE_PATH_2)) {
+            Type discoveriesType = new TypeToken<HashMap<UUID, LinkedHashMap<Integer, Boolean>>>() {}.getType();
+            HashMap<UUID, LinkedHashMap<Integer, Boolean>> loadedGiftGet = gson.fromJson(reader, discoveriesType);
+            if (loadedGiftGet != null) {
+                giftGet.putAll(loadedGiftGet);
             }
         } catch (IOException e) {
             e.printStackTrace();

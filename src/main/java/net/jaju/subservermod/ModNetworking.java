@@ -4,6 +4,7 @@ import net.jaju.subservermod.coinsystem.network.CoinDataSyncPacket;
 //import net.jaju.subservermod.encyclopedia.network.EncyclopediaDataPacket;
 import net.jaju.subservermod.encyclopedia.network.EncyclopediaPacket;
 import net.jaju.subservermod.encyclopedia.network.ItemDiscoveryPacket;
+import net.jaju.subservermod.encyclopedia.network.giftGetPacket;
 import net.jaju.subservermod.landsystem.network.packet.*;
 import net.jaju.subservermod.shopsystem.network.ShopEntityDataPacket;
 import net.jaju.subservermod.shopsystem.network.UpdateInventoryPacket;
@@ -41,6 +42,7 @@ public class ModNetworking {
         INSTANCE.registerMessage(id++, BrewingVarSendToClientPacket.class, BrewingVarSendToClientPacket::encode, BrewingVarSendToClientPacket::decode, BrewingVarSendToClientPacket::handle);
 
         INSTANCE.registerMessage(id++, ItemDiscoveryPacket.class, ItemDiscoveryPacket::encode, ItemDiscoveryPacket::decode, ItemDiscoveryPacket::handle, Optional.of(NetworkDirection.PLAY_TO_SERVER));
+        INSTANCE.registerMessage(id++, giftGetPacket.class, giftGetPacket::encode, giftGetPacket::decode, giftGetPacket::handle, Optional.of(NetworkDirection.PLAY_TO_SERVER));
         INSTANCE.registerMessage(id++, EncyclopediaPacket.class, EncyclopediaPacket::encode, EncyclopediaPacket::decode, EncyclopediaPacket::handle);
 
         INSTANCE.messageBuilder(CoinDataSyncPacket.class, id++, NetworkDirection.PLAY_TO_CLIENT)

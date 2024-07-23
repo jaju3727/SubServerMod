@@ -7,11 +7,10 @@ import org.lwjgl.glfw.GLFW;
 
 public class KeyBindings {
     public static final KeyMapping openCustomScreenKey = new KeyMapping(
-            "key.subservermod.opencustomscreen",
+            "SubServerMod_Key",
             GLFW.GLFW_KEY_I,
-            "key.categories.subservermod"
+            "Test"
     );
-
     @SubscribeEvent
     public static void registerKeyMappings(RegisterKeyMappingsEvent event) {
         event.register(openCustomScreenKey);
