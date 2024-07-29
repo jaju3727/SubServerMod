@@ -3,6 +3,8 @@ package net.jaju.subservermod.subclass.skill.miner.crafting;
 import net.jaju.subservermod.ModNetworking;
 import net.jaju.subservermod.Subservermod;
 import net.jaju.subservermod.subclass.network.SetFlagPacket;
+import net.jaju.subservermod.sound.SoundPlayer;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -42,6 +44,8 @@ public class CraftingScreen extends AbstractContainerScreen<CraftingContainer> {
                 30, 15, 0, 0, 1,
                 new ResourceLocation(Subservermod.MOD_ID, "textures/gui/miner/crafting_button.png"),
                 30, 15, button -> {
+            //$
+            SoundPlayer.playCustomSound(Minecraft.getInstance().player, new ResourceLocation(Subservermod.MOD_ID, "miner_sound"), 1.0f, 1.0f);
             SetFlagPacket packet = new SetFlagPacket(blockEntity.getBlockPos(), true);
             ModNetworking.INSTANCE.sendToServer(packet);
         }));

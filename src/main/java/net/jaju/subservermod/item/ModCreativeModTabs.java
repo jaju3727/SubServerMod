@@ -6,7 +6,6 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.RegistryObject;
@@ -17,13 +16,18 @@ public class ModCreativeModTabs {
 
     public static final RegistryObject<CreativeModeTab> TUTORIAL_TAB = CREATIVE_MODE_TABS.register("tutorial_tab",
             () -> CreativeModeTab.builder().icon(() -> new ItemStack(ModItem.CONSTRUNTING_ALLOW.get()))
-                    .title(Component.translatable("creativetab.tutorial_tab"))
+                    .title(Component.translatable("섭 아이템"))
                     .displayItems((pParameters, pOutput) -> {
                         pOutput.accept(ModItem.CONSTRUNTING_ALLOW.get());
+                        pOutput.accept(ModItem.INVENTORY_SAVE_ITEM.get());
+                        pOutput.accept(ModItem.RANDOMBOX.get());
                         pOutput.accept(ModItem.BUTTER.get());
                         pOutput.accept(ModItem.CREAM_BREAD.get());
                         pOutput.accept(ModItem.WHIPPED_CREAM.get());
                         pOutput.accept(ModItem.CROISSANT.get());
+                        pOutput.accept(ModItem.BAGUETTE.get());
+                        pOutput.accept(ModItem.CHOCOLATE.get());
+                        pOutput.accept(ModItem.BROWNIE.get());
                         pOutput.accept(ModItem.CRAFTING_TOOL.get());
                         pOutput.accept(ModItem.DIAMOND_CUBIC.get());
                         pOutput.accept(ModItem.EMERALD_CUBIC.get());
@@ -45,9 +49,21 @@ public class ModCreativeModTabs {
                         pOutput.accept(ModItem.COD_RAW_FISH.get());
                         pOutput.accept(ModItem.SALMON_RAW_FISH.get());
                         pOutput.accept(ModItem.SASHIMI_KNIFE.get());
+                        pOutput.accept(ModItem.SUB_COIN.get());
+                        pOutput.accept(ModItem.CHEF_COIN.get());
+                        pOutput.accept(ModItem.FISHERMAN_COIN.get());
+                        pOutput.accept(ModItem.FARMER_COIN.get());
+                        pOutput.accept(ModItem.ALCHEMIST_COIN.get());
+                        pOutput.accept(ModItem.MINER_COIN.get());
+                        pOutput.accept(ModItem.WOODCUTTER_COIN.get());
+                        pOutput.accept(ModItem.LOW_CLASS_HEALING_POTION.get());
+                        pOutput.accept(ModItem.MIDDLE_CLASS_HEALING_POTION.get());
+                        pOutput.accept(ModItem.HIGH_CLASS_HEALING_POTION.get());
+                        pOutput.accept(ModItem.MIJUNG.get());
 
                         pOutput.accept(ModBlocks.SCARECROW_BLOCK.get());
                         pOutput.accept(ModBlocks.OVEN_BLOCK.get());
+                        pOutput.accept(ModBlocks.MIDDLE_OVEN_BLOCK.get());
                         pOutput.accept(ModBlocks.CRAFTING_BLOCK.get());
                         pOutput.accept(ModBlocks.BREWING_BLOCK.get());
                         pOutput.accept(ModBlocks.TELEPORT_BLOCK.get());

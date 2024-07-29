@@ -3,6 +3,7 @@ package net.jaju.subservermod;
 import net.jaju.subservermod.shopsystem.entity.ShopEntity;
 import net.jaju.subservermod.shopsystem.screen.ShopContainer;
 import net.jaju.subservermod.subclass.skill.alchemist.brewing.BrewingContainer;
+import net.jaju.subservermod.subclass.skill.farmer.middle_oven.MiddleOvenContainer;
 import net.jaju.subservermod.subclass.skill.miner.crafting.CraftingContainer;
 import net.jaju.subservermod.subclass.skill.farmer.oven.OvenContainer;
 import net.jaju.subservermod.subclass.skill.woodcutter.woodcuttingunion.WoodcuttingUnionContainer;
@@ -32,6 +33,11 @@ public class ModContainers {
             IForgeMenuType.create((windowId, inv, data) -> {
                 BlockPos pos = data.readBlockPos();
                 return new OvenContainer(windowId, inv, (inv.player.level().getBlockEntity(pos)).getBlockPos());
+            }));
+    public static final RegistryObject<MenuType<MiddleOvenContainer>> MIDDLE_OVEN_MENU = CONTAINERS.register("middle_oven_menu", () ->
+            IForgeMenuType.create((windowId, inv, data) -> {
+                BlockPos pos = data.readBlockPos();
+                return new MiddleOvenContainer(windowId, inv, (inv.player.level().getBlockEntity(pos)).getBlockPos());
             }));
     public static final RegistryObject<MenuType<CraftingContainer>> CRAFTING_MENU = CONTAINERS.register("crafting_menu", () ->
             IForgeMenuType.create((windowId, inv, data) -> {

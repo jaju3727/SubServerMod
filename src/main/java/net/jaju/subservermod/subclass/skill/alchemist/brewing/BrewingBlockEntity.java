@@ -61,15 +61,16 @@ public class BrewingBlockEntity extends BlockEntity implements MenuProvider {
     }
 
     private void updateResultSlot() {
-        if (itemHandler.getStackInSlot(0).getItem() == Items.BLAZE_POWDER && blazeCount == 0) {
-            blazeCount = 20;
-            itemHandler.setStackInSlot(0, new ItemStack(itemHandler.getStackInSlot(0).getItem(), itemHandler.getStackInSlot(0).getCount() - 1));
-        }
-        if (itemHandler.getStackInSlot(1).getItem() == Items.WATER_BUCKET && waterCount == 0) {
-            waterCount = 16;
-            itemHandler.setStackInSlot(1, new ItemStack(Items.BUCKET, 1));
-        }
         for (int i = 0; i <= 2; i++) {
+            if (itemHandler.getStackInSlot(0).getItem() == Items.BLAZE_POWDER && blazeCount == 0) {
+                blazeCount = 60;
+                itemHandler.setStackInSlot(0, new ItemStack(itemHandler.getStackInSlot(0).getItem(), itemHandler.getStackInSlot(0).getCount() - 1));
+            }
+            if (itemHandler.getStackInSlot(1).getItem() == Items.WATER_BUCKET && waterCount == 0) {
+                waterCount = 16;
+                //$물소리
+                itemHandler.setStackInSlot(1, new ItemStack(Items.BUCKET, 1));
+            }
             if (waterCount != 0 && itemHandler.getStackInSlot(6).getItem() == Items.GLASS_BOTTLE && itemHandler.getStackInSlot(7+ i*2).isEmpty()) {
                 waterCount--;
                 itemHandler.setStackInSlot(6, new ItemStack(itemHandler.getStackInSlot(6).getItem(), itemHandler.getStackInSlot(6).getCount() - 1));
@@ -78,7 +79,7 @@ public class BrewingBlockEntity extends BlockEntity implements MenuProvider {
                 UPDATE_INTERVAL.set(i, 7 * 20);
                 updateTimer.set(i, 0);
             }
-            if (!itemHandler.getStackInSlot(7+ i*2).isEmpty() && !itemHandler.getStackInSlot(stage.get(i)).isEmpty()) {
+            if (!itemHandler.getStackInSlot(7+ i*2).isEmpty() && !itemHandler.getStackInSlot(stage.get(i)).isEmpty() && blazeCount > 0) {
                 if (UPDATE_INTERVAL.get(i) < updateTimer.get(i)) {
                     ItemStack result = BrewingHelper.getPotionResult(itemHandler.getStackInSlot(7+ i*2), new ItemStack(itemHandler.getStackInSlot(stage.get(i)).getItem()));
                     if (!result.isEmpty()) {

@@ -17,19 +17,19 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import org.joml.Matrix4f;
 
 import java.util.List;
-import java.util.Objects;
 
 @OnlyIn(Dist.CLIENT)
 public class ChefBlockRenderer implements BlockEntityRenderer<ChefBlockEntity> {
-    private static final ResourceLocation COOKGAUGE = new ResourceLocation(Subservermod.MOD_ID, "textures/block/gauge.png");
-    private static final ResourceLocation OVERCOOKGAUGE = new ResourceLocation(Subservermod.MOD_ID, "textures/block/gauge.png");
+    private static final ResourceLocation COOKGAUGE = new ResourceLocation(Subservermod.MOD_ID, "textures/gui/chef/chef_cook_gauge.png");
+    private static final ResourceLocation OVERCOOKGAUGE = new ResourceLocation(Subservermod.MOD_ID, "textures/gui/chef/chef_overcook_gauge.png");
+    private static final ResourceLocation OVERCOOKGAUGEBACKGROUND = new ResourceLocation(Subservermod.MOD_ID, "textures/gui/chef/chef_overcook_gauge_background.png");
+    private static final ResourceLocation COOKGAUGEBACKGROUND = new ResourceLocation(Subservermod.MOD_ID, "textures/gui/chef/chef_cook_gauge_background.png");
 
     public ChefBlockRenderer(BlockEntityRendererProvider.Context context) {}
 
@@ -62,7 +62,8 @@ public class ChefBlockRenderer implements BlockEntityRenderer<ChefBlockEntity> {
                         BakedModel model = Minecraft.getInstance().getItemRenderer().getModel(itemStack, chefBlockEntity.getLevel(), null, 0);
                         Minecraft.getInstance().getItemRenderer().render(itemStack, ItemDisplayContext.GROUND, false, poseStack, bufferSource, combinedLightLevel, combinedOverlay, model);
                         poseStack.popPose();
-                        renderCustomImage(poseStack, bufferSource, COOKGAUGE, chefBlockEntity, ((float) 4000 - cookTick) / 4000);
+                        renderGauge(poseStack, bufferSource, COOKGAUGE, chefBlockEntity, ((float) 4000 - cookTick) / 4000, direction);
+                        renderGaugeBackground(poseStack, bufferSource, COOKGAUGEBACKGROUND, chefBlockEntity, ((float) cookTick) / 8000, direction);
                     }
                     if (chefBlockEntity.getoverCookFlag()) {
                         long overCookTick = System.currentTimeMillis() - chefBlockEntity.getOverCookTick();
@@ -78,7 +79,8 @@ public class ChefBlockRenderer implements BlockEntityRenderer<ChefBlockEntity> {
                         Minecraft.getInstance().getItemRenderer().render(itemStack, ItemDisplayContext.GROUND, false, poseStack, bufferSource, combinedLightLevel, combinedOverlay, model);
                         poseStack.popPose();
 
-                        renderCustomImage(poseStack, bufferSource, OVERCOOKGAUGE, chefBlockEntity, ((float) 4000 - overCookTick) / 4000);
+                        renderGauge(poseStack, bufferSource, OVERCOOKGAUGE, chefBlockEntity, ((float) 4000 - overCookTick) / 4000, direction);
+                        renderGaugeBackground(poseStack, bufferSource, OVERCOOKGAUGEBACKGROUND, chefBlockEntity, ((float) overCookTick) / 8000, direction);
                     }
                 }
             }
@@ -119,21 +121,28 @@ public class ChefBlockRenderer implements BlockEntityRenderer<ChefBlockEntity> {
         }
     }
 
-    private void renderCustomImage(PoseStack poseStack, MultiBufferSource bufferSource, ResourceLocation TEXTURE, ChefBlockEntity chefBlockEntity, float gaugeX) {
+    private void renderGauge(PoseStack poseStack, MultiBufferSource bufferSource, ResourceLocation TEXTURE, ChefBlockEntity chefBlockEntity, float gaugeX, Direction direction) {
         poseStack.pushPose();
-        poseStack.translate(0.5, 2.0, 0.5);
 
-        Player player = Minecraft.getInstance().player;
-        if (player != null) {
-            double dx = player.getX() - (chefBlockEntity.getBlockPos().getX() + 0.5);
-            double dz = player.getZ() - (chefBlockEntity.getBlockPos().getZ() + 0.5);
-            float angle = (float) (Math.atan2(dz, dx) * (180 / Math.PI)) + 90.0F;
+        applyDirectionTranslation(poseStack, direction, 0.5, 2.0, 0.5);
+        applyDirectionRotation(poseStack, direction);
 
-            poseStack.mulPose(Axis.YP.rotationDegrees(-angle));
-        }
+        poseStack.scale(gaugeX, 0.5f, 0.0f);
 
-        poseStack.scale(gaugeX, 0.1f, 0.0f);
+        renderTexture(poseStack, bufferSource, TEXTURE, 0xF000F0);
 
+        poseStack.popPose();
+    }
+
+    private void renderGaugeBackground(PoseStack poseStack, MultiBufferSource bufferSource, ResourceLocation TEXTURE, ChefBlockEntity chefBlockEntity, float gaugeX, Direction direction) {
+        poseStack.pushPose();
+
+        applyDirectionTranslation(poseStack, direction, gaugeX, 2.05, 0.499);
+        applyDirectionRotation(poseStack, direction);
+
+        poseStack.scale(0.3f, 0.3f, 0.0f);
+
+        // 텍스처 렌더링
         renderTexture(poseStack, bufferSource, TEXTURE, 0xF000F0);
 
         poseStack.popPose();
@@ -182,9 +191,5 @@ public class ChefBlockRenderer implements BlockEntityRenderer<ChefBlockEntity> {
         BakedModel model = Minecraft.getInstance().getItemRenderer().getModel(itemStack, chefBlockEntity.getLevel(), null, 0);
         Minecraft.getInstance().getItemRenderer().render(itemStack, ItemDisplayContext.GROUND, false, poseStack, bufferSource, combinedLightLevel, combinedOverlay, model);
         poseStack.popPose();
-    }
-
-    private void renderSteak() {
-
     }
 }

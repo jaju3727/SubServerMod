@@ -25,7 +25,6 @@ public class BaseClassTypeAdapter implements JsonSerializer<BaseClass>, JsonDese
         String name = jsonObject.get("name").getAsString();
         int level = jsonObject.get("level").getAsInt();
         String playerName = jsonObject.get("playerName").getAsString();
-        ServerPlayer player = getPlayerByName(playerName);
         switch (name) {
             case "Farmer":
                 return new Farmer(level, playerName);
@@ -34,9 +33,7 @@ public class BaseClassTypeAdapter implements JsonSerializer<BaseClass>, JsonDese
             case "Alchemist":
                 return new Alchemist(level, playerName);
             case "Woodcutter":
-                Woodcutter woodcutter = new Woodcutter(level, playerName);
-                woodcutter.performSkill("", player);
-                return woodcutter;
+                return new Woodcutter(level, playerName);
             case "Chef":
                 return new Chef(level, playerName);
             case "Fisherman":

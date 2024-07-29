@@ -31,6 +31,9 @@ public class Farmer extends BaseClass {
             recipeManager.byKey(new ResourceLocation(Subservermod.MOD_ID, "cream_bread_recipe")).ifPresent(recipe -> {
                 player.awardRecipes(Collections.singleton(recipe));
             });
+            recipeManager.byKey(new ResourceLocation(Subservermod.MOD_ID, "apple_diffuser_recipe")).ifPresent(recipe -> {
+                player.awardRecipes(Collections.singleton(recipe));
+            });
         }
     }
 }

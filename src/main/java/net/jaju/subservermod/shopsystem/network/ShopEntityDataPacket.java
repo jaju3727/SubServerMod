@@ -6,7 +6,6 @@ import net.jaju.subservermod.shopsystem.screen.ShopScreen;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.network.NetworkEvent;
 
@@ -33,9 +32,16 @@ public class ShopEntityDataPacket {
             ItemStack itemStack = buf.readItem();
             int buyPrice = buf.readInt();
             int sellPrice = buf.readInt();
+            int dailyBuyLimitNum = buf.readInt();
+            int dailyBuyLimitPlayerNum = buf.readInt();
+            int dailySellLimitNum = buf.readInt();
+            int dailySellLimitPlayerNum = buf.readInt();
             boolean isBuyable = buf.readBoolean();
             boolean isSellable = buf.readBoolean();
-            this.shopItems.add(new ShopItem(itemStack, buyPrice, sellPrice, isBuyable, isSellable));
+            boolean isBuylDailyLimit = buf.readBoolean();
+            boolean isSellDailyLimit = buf.readBoolean();
+            String coinType = buf.readUtf();
+            this.shopItems.add(new ShopItem(itemStack, buyPrice, sellPrice, dailyBuyLimitNum, dailyBuyLimitPlayerNum, dailySellLimitNum, dailySellLimitPlayerNum, isBuyable, isSellable, isBuylDailyLimit, isSellDailyLimit, coinType));
         }
         this.entityName = buf.readUtf();
     }
@@ -47,8 +53,15 @@ public class ShopEntityDataPacket {
             buf.writeItem(shopItem.getItemStack());
             buf.writeInt(shopItem.getBuyPrice());
             buf.writeInt(shopItem.getSellPrice());
+            buf.writeInt(shopItem.getDailyBuyLimitNum());
+            buf.writeInt(shopItem.getDailyBuyLimitPlayerNum());
+            buf.writeInt(shopItem.getDailySellLimitNum());
+            buf.writeInt(shopItem.getDailySellLimitPlayerNum());
             buf.writeBoolean(shopItem.getIsBuyable());
             buf.writeBoolean(shopItem.getIsSellable());
+            buf.writeBoolean(shopItem.getIsDailyBuyLimit());
+            buf.writeBoolean(shopItem.getIsDailySellLimit());
+            buf.writeUtf(shopItem.getCoinType());
         }
         buf.writeUtf(entityName);
     }

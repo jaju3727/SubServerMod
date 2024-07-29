@@ -3,6 +3,7 @@ package net.jaju.subservermod.shopsystem.entity;
 import net.jaju.subservermod.ModNetworking;
 import net.jaju.subservermod.shopsystem.ShopItem;
 import net.jaju.subservermod.shopsystem.network.ShopEntityDataPacket;
+import net.jaju.subservermod.shopsystem.screen.ShopEntityContainerProvider;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
@@ -12,7 +13,6 @@ import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -23,19 +23,14 @@ import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.items.ItemStackHandler;
 import net.minecraftforge.network.NetworkHooks;
 import net.minecraftforge.network.PacketDistributor;
-import net.minecraftforge.registries.ForgeRegistries;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 public class ShopEntity extends PathfinderMob {
     private static final EntityDataAccessor<String> SKIN_PLAYER_NAME = SynchedEntityData.defineId(ShopEntity.class, EntityDataSerializers.STRING);
@@ -53,7 +48,7 @@ public class ShopEntity extends PathfinderMob {
 
     public void setSkinPlayerName(String skinName, String name) {
         this.entityData.set(SKIN_PLAYER_NAME, skinName);
-        this.setCustomName(Component.literal(name));  // 엔티티의 커스텀 네임 설정
+        this.setCustomName(Component.literal(name));
     }
 
     public String getSkinPlayerName() {
@@ -68,31 +63,37 @@ public class ShopEntity extends PathfinderMob {
     public void addAdditionalSaveData(CompoundTag compound) {
         super.addAdditionalSaveData(compound);
         compound.putString("SkinPlayerName", this.getSkinPlayerName());
+        if (this.hasCustomName()) {
+            compound.putString("CustomName", Component.Serializer.toJson(this.getCustomName()));
+        }
 
         ListTag shopItemsTag = new ListTag();
         for (ShopItem shopItem : shopItems) {
             CompoundTag itemTag = new CompoundTag();
             CompoundTag itemStackTag = new CompoundTag();
             shopItem.getItemStack().save(itemStackTag);
-            itemTag.put("ItemStack", itemStackTag); // ItemStack 전체를 저장
+            itemTag.put("ItemStack", itemStackTag);
             itemTag.putInt("BuyPrice", shopItem.getBuyPrice());
             itemTag.putInt("SellPrice", shopItem.getSellPrice());
+            itemTag.putInt("DailyBuyLimitNum", shopItem.getDailyBuyLimitNum());
+            itemTag.putInt("DailyBuyLimitPlayerNum", shopItem.getDailyBuyLimitPlayerNum());
+            itemTag.putInt("DailySellLimitNum", shopItem.getDailySellLimitNum());
+            itemTag.putInt("DailySellLimitPlayerNum", shopItem.getDailySellLimitPlayerNum());
             itemTag.putBoolean("IsBuyable", shopItem.getIsBuyable());
             itemTag.putBoolean("IsSellable", shopItem.getIsSellable());
+            itemTag.putBoolean("IsDailyBuyLimit", shopItem.getIsDailyBuyLimit());
+            itemTag.putBoolean("IsDailySellLimit", shopItem.getIsDailySellLimit());
+            itemTag.putString("CoinType", shopItem.getCoinType());
 
             shopItemsTag.add(itemTag);
         }
         compound.put("ShopItems", shopItemsTag);
-
-        if (this.hasCustomName()) {
-            compound.putString("CustomName", this.getCustomName().getString()); // 이름을 JSON이 아닌 문자열로 저장
-        }
     }
 
     @Override
     public void readAdditionalSaveData(CompoundTag compound) {
         super.readAdditionalSaveData(compound);
-        this.setSkinPlayerName(compound.getString("SkinPlayerName"), compound.getString("CustomName"));
+        this.setSkinPlayerName(compound.getString("SkinPlayerName"), compound.contains("CustomName") ? Component.Serializer.fromJson(compound.getString("CustomName")).getString() : null);
 
         shopItems.clear();
         ListTag shopItemsTag = compound.getList("ShopItems", Tag.TAG_COMPOUND);
@@ -101,13 +102,16 @@ public class ShopEntity extends PathfinderMob {
             ItemStack itemStack = ItemStack.of(itemTag.getCompound("ItemStack")); // ItemStack 전체를 불러오기
             int buyPrice = itemTag.getInt("BuyPrice");
             int sellPrice = itemTag.getInt("SellPrice");
+            int dailyBuyLimitNum = itemTag.getInt("DailyBuyLimitNum");
+            int dailyBuyLimitPlayerNum = itemTag.getInt("DailyBuyLimitPlayerNum");
+            int dailySellLimitNum = itemTag.getInt("DailySellLimitNum");
+            int dailySellLimitPlayerNum = itemTag.getInt("DailySellLimitPlayerNum");
             boolean isBuyable = itemTag.getBoolean("IsBuyable");
             boolean isSellable = itemTag.getBoolean("IsSellable");
-            shopItems.add(new ShopItem(itemStack, buyPrice, sellPrice, isBuyable, isSellable));
-        }
-
-        if (compound.contains("CustomName", 8)) {
-            this.setCustomName(Component.literal(compound.getString("CustomName"))); // JSON이 아닌 문자열로부터 이름을 설정
+            boolean isDailyBuyLimit = itemTag.getBoolean("IsDailyBuyLimit");
+            boolean isDailySellLimit = itemTag.getBoolean("IsDailySellLimit");
+            String cointype = itemTag.getString("CoinType");
+            shopItems.add(new ShopItem(itemStack, buyPrice, sellPrice, dailyBuyLimitNum, dailyBuyLimitPlayerNum, dailySellLimitNum, dailySellLimitPlayerNum, isBuyable, isSellable, isDailyBuyLimit, isDailySellLimit, cointype));
         }
     }
 

@@ -60,12 +60,16 @@ public class WoodcuttingUnionContainer extends AbstractContainerMenu {
             ItemStack stackInSlot = slot.getItem();
             stack = stackInSlot.copy();
 
-            if (index < 17) {
-                if (!this.moveItemStackTo(stackInSlot, 10, this.slots.size(), true)) {
+            int containerSlotCount = 17; // 16 for woodcutting union slots + 1 output slot
+            int playerInventoryStart = containerSlotCount;
+            int playerInventoryEnd = playerInventoryStart + 36; // 27 for main inventory + 9 for hotbar
+
+            if (index < containerSlotCount) {
+                if (!this.moveItemStackTo(stackInSlot, playerInventoryStart, playerInventoryEnd, true)) {
                     return ItemStack.EMPTY;
                 }
             } else {
-                if (!this.moveItemStackTo(stackInSlot, 0, 10, false)) {
+                if (!this.moveItemStackTo(stackInSlot, 0, containerSlotCount, false)) {
                     return ItemStack.EMPTY;
                 }
             }

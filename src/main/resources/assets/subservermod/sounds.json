@@ -1,0 +1,66 @@
+{
+  "miner_sound": {
+    "sounds": [
+      {
+        "name": "subservermod:miner_sound",
+        "stream": false
+      }
+    ]
+  },
+  "woodcutter_sound": {
+    "sounds": [
+      {
+        "name": "subservermod:woodcutter_sound",
+        "stream": false
+      }
+    ]
+  },
+  "frypan_sound": {
+    "sounds": [
+      {
+        "name": "subservermod:miner_sound",
+        "stream": false
+      }
+    ]
+  },
+  "ovenbake_sound": {
+    "sounds": [
+      {
+        "name": "subservermod:miner_sound",
+        "stream": false
+      }
+    ]
+  },
+  "ovenfinish_sound": {
+    "sounds": [
+      {
+        "name": "subservermod:miner_sound",
+        "stream": false
+      }
+    ]
+  },
+  "fishing_sound": {
+    "sounds": [
+      {
+        "name": "subservermod:miner_sound",
+        "stream": false
+      }
+    ]
+  },
+  "buying_sound": {
+    "sounds": [
+      {
+        "name": "subservermod:miner_sound",
+        "stream": false
+      }
+    ]
+  },
+  "rawfish_sound": {
+    "sounds": [
+      {
+        "name": "subservermod:miner_sound",
+        "stream": false
+      }
+    ]
+  }
+}

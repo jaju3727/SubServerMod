@@ -2,19 +2,21 @@ package net.jaju.subservermod.coinsystem.network;
 
 import net.jaju.subservermod.coinsystem.CoinData;
 import net.jaju.subservermod.coinsystem.CoinHud;
+import net.jaju.subservermod.shopsystem.screen.ShopScreen;
+import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
-public class CoinDataSyncPacket {
+public class CoinDataShopSyncPacket {
     private final CoinData coinData;
 
-    public CoinDataSyncPacket(CoinData coinData) {
+    public CoinDataShopSyncPacket(CoinData coinData) {
         this.coinData = coinData;
     }
 
-    public CoinDataSyncPacket(FriendlyByteBuf buf) {
+    public CoinDataShopSyncPacket(FriendlyByteBuf buf) {
         this.coinData = new CoinData();
         this.coinData.setSubcoin(buf.readInt());
         this.coinData.setChefcoin(buf.readInt());
@@ -35,10 +37,16 @@ public class CoinDataSyncPacket {
         buf.writeInt(coinData.getWoodcuttercoin());
     }
 
-    public void handle(Supplier<NetworkEvent.Context> ctx) {
+    public boolean handle(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
-            CoinHud.updateCoinMap(coinData);
+            Minecraft mc = Minecraft.getInstance();
+            if (mc.player != null) {
+                if (mc.screen instanceof ShopScreen shopScreen) {
+                    shopScreen.updateCoinData(coinData);
+                }
+            }
         });
         ctx.get().setPacketHandled(true);
+        return true;
     }
 }

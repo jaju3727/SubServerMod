@@ -1,10 +1,15 @@
 package net.jaju.subservermod.encyclopedia.network;
 
 import net.jaju.subservermod.encyclopedia.EncyclopediaManager;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.alchemy.Potion;
+import net.minecraft.world.item.alchemy.PotionUtils;
 import net.minecraftforge.network.NetworkEvent;
 import net.minecraftforge.registries.ForgeRegistries;
 
@@ -36,13 +41,40 @@ public class ItemDiscoveryPacket {
             ServerPlayer player = context.get().getSender();
             if (player != null) {
                 ResourceLocation itemResourceLocation = new ResourceLocation(itemName);
-                ItemStack itemStack = new ItemStack(Objects.requireNonNull(ForgeRegistries.ITEMS.getValue(itemResourceLocation)), itemCount);
-                int playerItemCount = player.getInventory().countItem(itemStack.getItem());
-                if (playerItemCount >= itemCount) {
-                    player.getInventory().clearOrCountMatchingItems(p -> p.getItem() == itemStack.getItem(), itemCount, player.inventoryMenu.getCraftSlots());
-                    player.inventoryMenu.broadcastChanges();
-                    EncyclopediaManager.getInstance().discoverItem(player.getUUID(), itemStack.getItem());
+                Item item = ForgeRegistries.ITEMS.getValue(itemResourceLocation);
+                ItemStack itemStack = new ItemStack(Objects.requireNonNull(item));
+                if (itemResourceLocation.toString().contains("goat_horn")) {
+                    itemStack = new ItemStack(Items.GOAT_HORN);
+                    CompoundTag tag = itemStack.getOrCreateTag();
+                    tag.putString("instrument", itemResourceLocation.toString());
+                    itemStack.setTag(tag);
+                } else if (itemResourceLocation.toString().contains("potion")) {
+                    String key = itemResourceLocation.toString();
+                    String potionName = key.substring(key.indexOf(':') + 1).replace("_potion", "");
+                    Potion potionType = Potion.byName(potionName);
+                    if (potionType != null) {
+                        itemStack = PotionUtils.setPotion(new ItemStack(Items.POTION), potionType);
+                    }
                 }
+
+                int itemCountToRemove = itemCount;
+                for (int i = 0; i < player.getInventory().getContainerSize(); i++) {
+                    ItemStack inventoryStack = player.getInventory().getItem(i);
+                    if (ItemStack.isSameItemSameTags(inventoryStack, itemStack)) {
+                        if (inventoryStack.getCount() <= itemCountToRemove) {
+                            itemCountToRemove -= inventoryStack.getCount();
+                            player.getInventory().removeItem(inventoryStack);
+                        } else {
+                            ItemStack copyStack = inventoryStack.copy();
+                            copyStack.setCount(itemCountToRemove);
+                            player.getInventory().removeItem(copyStack);
+                            itemCountToRemove = 0;
+                        }
+                        if (itemCountToRemove <= 0) break;
+                    }
+                }
+                player.inventoryMenu.broadcastChanges();
+                EncyclopediaManager.getInstance().discoverItem(player.getUUID(), itemName);
             }
         });
         context.get().setPacketHandled(true);

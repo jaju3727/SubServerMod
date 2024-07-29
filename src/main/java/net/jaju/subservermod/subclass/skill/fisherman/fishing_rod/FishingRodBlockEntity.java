@@ -66,7 +66,7 @@ public class FishingRodBlockEntity extends BlockEntity {
                 if (tick > 0) {
                     entity.setCatchFish(true);
                 }
-                if (tick > 5000) {
+                if (tick > 3000) {
                     entity.setCatchFish(false);
                     entity.setFishingTick(System.currentTimeMillis());
                 }

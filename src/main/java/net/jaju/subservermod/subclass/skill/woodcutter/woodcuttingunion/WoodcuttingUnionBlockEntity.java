@@ -31,7 +31,7 @@ public class WoodcuttingUnionBlockEntity extends BlockEntity implements MenuProv
         }
     };
     public boolean flag = false;
-    int minItemNum = Integer.MAX_VALUE;
+    private int minItemNum = Integer.MAX_VALUE;
     private int updateTimer = 0;
     private static final int UPDATE_INTERVAL = 20 * 10;
     private static final List<Item> ALL_PLANKS = List.of(
@@ -87,6 +87,71 @@ public class WoodcuttingUnionBlockEntity extends BlockEntity implements MenuProv
         }
     }
 
+
+    public void updateRecipeName(ItemStack resultItemStack, Player player) {
+        if (player != null) {
+            Inventory playerInventory = player.getInventory();
+            HashMap<Item, Integer> playerItems = new HashMap<>();
+
+            for (int i = 0; i < 16; i++) {
+                ItemStack playerStack = itemHandler.getStackInSlot(i);
+                playerInventory.add(playerStack);
+                itemHandler.setStackInSlot(i, new ItemStack(Items.AIR));
+            }
+
+            for (int i = 0; i < playerInventory.getContainerSize(); i++) {
+                ItemStack playerStack = playerInventory.getItem(i);
+                Item playerItem = playerStack.getItem();
+                playerItems.put(playerItem, playerItems.getOrDefault(playerItem, 0) + playerStack.getCount());
+            }
+
+            for (var entry: recipes.entrySet()) {
+                if (resultItemStack.getItem().equals(entry.getValue().getItem())) {
+                    HashMap<Item, Integer> ingredientItems = new HashMap<>();
+                    List<Item> ingredientList = entry.getKey();
+                    boolean flag = true;
+                    for (Item item : ingredientList) {
+                        if (item.equals(Items.AIR)) continue;
+                        ingredientItems.put(item, ingredientItems.getOrDefault(item, 0) + 1);
+                    }
+                    for (var ingredientEntry: ingredientItems.entrySet()) {
+                        if (playerItems.getOrDefault(ingredientEntry.getKey(), 0) < ingredientEntry.getValue()) {
+                            flag = false;
+                            break;
+                        }
+                    }
+                    if (flag) {
+                        int craftableAmount = Integer.MAX_VALUE;
+                        for (var entry1 : ingredientItems.entrySet()) {
+                            craftableAmount = Math.min(craftableAmount, playerItems.getOrDefault(entry1.getKey(), 0) / entry1.getValue());
+                        }
+
+                        craftableAmount = Math.min(craftableAmount, 64);
+                        for (int i = 0; i < ingredientList.size(); i++) {
+                            if (!ingredientList.get(i).equals(Items.AIR)) {
+                                itemHandler.setStackInSlot(i, new ItemStack(ingredientList.get(i), craftableAmount));
+                            }
+                        }
+
+                        for (var entry1 : ingredientItems.entrySet()) {
+                            int amountToRemove = craftableAmount * entry1.getValue();
+                            for (int i = 0; i < playerInventory.getContainerSize() && amountToRemove > 0; i++) {
+                                ItemStack playerStack = playerInventory.getItem(i);
+                                if (playerStack.getItem() == entry1.getKey()) {
+                                    int removeCount = Math.min(playerStack.getCount(), amountToRemove);
+                                    playerStack.shrink(removeCount);
+                                    amountToRemove -= removeCount;
+                                }
+                            }
+                        }
+                        return;
+                    }
+                }
+            }
+
+        }
+    }
+
     public WoodcuttingUnionBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.WOODCUTTINGUNION_BLOCK_ENTITY.get(), pos, state);
     }
@@ -117,15 +182,18 @@ public class WoodcuttingUnionBlockEntity extends BlockEntity implements MenuProv
         updateTimer++;
         List<Item> itemStacks = new ArrayList<>();
         int itemNum;
-        minItemNum = Integer.MAX_VALUE;
+        int tempMinNum = Integer.MAX_VALUE;
         for (int i = 0; i < 16; i++) {
             itemStacks.add(itemHandler.getStackInSlot(i).getItem());
             if (!itemHandler.getStackInSlot(i).isEmpty()) itemNum = itemHandler.getStackInSlot(i).getCount();
             else itemNum = Integer.MAX_VALUE;
-            if (minItemNum > itemNum) {
-                minItemNum = itemNum;
-                gaugeX = 100 + (minItemNum/4) * 10;
+            if (tempMinNum > itemNum) {
+                tempMinNum = itemNum;
             }
+        }
+        if (tempMinNum != minItemNum) {
+            minItemNum = tempMinNum;
+            gaugeX = 100 + (minItemNum/4) * 10;
         }
         flag = recipes.containsKey(itemStacks);
         sendGaugeUpdateToClient();

@@ -76,9 +76,9 @@ public class ShareScreen extends Screen {
                 );
                 this.addRenderableWidget(new ImageButton(standardX + 50 + (i % 2) * intervalX,
                         standardY + 100 + (i / 2) * intervalY,
-                        30, 15, 0, 0, 1,
-                        new ResourceLocation(Subservermod.MOD_ID, "textures/gui/remove.png"),
-                        30, 15, button -> {
+                        60, 18, 0, 0, 1,
+                        new ResourceLocation(Subservermod.MOD_ID, "textures/gui/landsystem/delete.png"),
+                        60, 18, button -> {
                     ModNetworking.INSTANCE.sendToServer(new LandManagerMethodPacket(chunkKey, sharerList.get(getI), "removeChunkSharer"));
                 }));
 
@@ -96,9 +96,9 @@ public class ShareScreen extends Screen {
         this.addRenderableWidget(inputField);
 
         this.addRenderableWidget(new ImageButton(standardX + 210, standardY + 17,
-                30, 15, 0, 0, 0,
-                new ResourceLocation(Subservermod.MOD_ID, "textures/gui/allow.png"),
-                30, 15, button -> {
+                30, 30, 0, 0, 0,
+                new ResourceLocation(Subservermod.MOD_ID, "textures/gui/landsystem/allow.png"),
+                30, 30, button -> {
             String playerName = inputField.getValue();
             ModNetworking.INSTANCE.sendToServer(new PlayerNamePacket(playerName));
             inputField.setValue("");
@@ -139,10 +139,12 @@ public class ShareScreen extends Screen {
     @Override
     public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
         this.renderBackground(guiGraphics);
-
-        int centerX = (this.width - 256) / 2;
-        int centerY = (this.height - 256) / 2;
-        guiGraphics.blit(new ResourceLocation(Subservermod.MOD_ID, "textures/gui/landsystem/example.png"), centerX, centerY, 0, 0, 256, 256);
+        int width = 300;
+        int height = (int) (300*0.833);
+        int centerX = (this.width - width) / 2;
+        int centerY = (this.height - height) / 2;
+        guiGraphics.blit(new ResourceLocation(Subservermod.MOD_ID, "textures/gui/landsystem/landsystem_management_background.png"),
+                centerX, centerY, 0, 0, width, height, width, height);
 
         super.render(guiGraphics, mouseX, mouseY, partialTicks);
         inputField.render(guiGraphics, mouseX, mouseY, partialTicks);

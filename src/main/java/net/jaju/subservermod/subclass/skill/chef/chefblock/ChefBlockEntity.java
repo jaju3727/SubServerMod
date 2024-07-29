@@ -148,6 +148,7 @@ public class ChefBlockEntity extends BlockEntity {
     public static void tick(Level level, BlockPos pos, BlockState state, ChefBlockEntity entity) {
         if (!level.isClientSide) {
             if (entity.getcookFlag()){
+                //$반경 5m 프라이팬에서 굽는소리
                 long cookTick = System.currentTimeMillis() - entity.getCookTick();
                 if (cookTick > entity.getcookGauge() * 1000L) {
                     entity.setcookFlag(false);

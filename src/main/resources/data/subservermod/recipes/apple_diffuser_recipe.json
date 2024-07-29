@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " C ",
+    " I ",
+    " O "
+  ],
+  "key": {
+    "C": {
+      "item": "minecraft:stick"
+    },
+    "I": {
+      "item": "minecraft:apple"
+    },
+    "O": {
+      "item": "minecraft:glass_bottle"
+    }
+  },
+  "result": {
+    "item": "subservermod:apple_diffuser",
+    "count": 1
+  },
+  "show_notification": true
+}

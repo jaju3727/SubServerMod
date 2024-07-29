@@ -28,8 +28,6 @@ import java.util.List;
 
 @OnlyIn(Dist.CLIENT)
 public class CuttingBoardBlockRenderer implements BlockEntityRenderer<CuttingBoardBlockEntity> {
-    private static final ResourceLocation COOKGAUGE = new ResourceLocation(Subservermod.MOD_ID, "textures/block/gauge.png");
-    private static final ResourceLocation OVERCOOKGAUGE = new ResourceLocation(Subservermod.MOD_ID, "textures/block/gauge.png");
 
     public CuttingBoardBlockRenderer(BlockEntityRendererProvider.Context context) {}
 
@@ -40,7 +38,7 @@ public class CuttingBoardBlockRenderer implements BlockEntityRenderer<CuttingBoa
             ItemStack itemStack = new ItemStack(item);
             Direction direction = cuttingBoardBlockEntity.getBlockState().getValue(BlockStateProperties.HORIZONTAL_FACING);
             poseStack.pushPose();
-            applyDirectionTranslation(poseStack, direction, 0.40, 1.1, 0.5);
+            applyDirectionTranslation(poseStack, direction, 0.40, 0.09, 0.5);
             poseStack.scale(1.0f, 1.0f, 1.0f);
             applyDirectionRotation(poseStack, direction);
             poseStack.mulPose(Axis.ZP.rotationDegrees(90.0f));
@@ -86,38 +84,5 @@ public class CuttingBoardBlockRenderer implements BlockEntityRenderer<CuttingBoa
                 poseStack.mulPose(Axis.YP.rotationDegrees(270.0F));
                 break;
         }
-    }
-
-    private void renderCustomImage(PoseStack poseStack, MultiBufferSource bufferSource, ResourceLocation TEXTURE, CuttingBoardBlockEntity cuttingBoardBlockEntity, float gaugeX) {
-        poseStack.pushPose();
-        poseStack.translate(0.5, 2.0, 0.5);
-
-        Player player = Minecraft.getInstance().player;
-        if (player != null) {
-            double dx = player.getX() - (cuttingBoardBlockEntity.getBlockPos().getX() + 0.5);
-            double dz = player.getZ() - (cuttingBoardBlockEntity.getBlockPos().getZ() + 0.5);
-            float angle = (float) (Math.atan2(dz, dx) * (180 / Math.PI)) + 90.0F;
-
-            poseStack.mulPose(Axis.YP.rotationDegrees(-angle));
-        }
-
-        poseStack.scale(gaugeX, 0.1f, 0.0f);
-
-        renderTexture(poseStack, bufferSource, TEXTURE, 0xF000F0);
-
-        poseStack.popPose();
-    }
-
-    private void renderTexture(PoseStack poseStack, MultiBufferSource bufferSource, ResourceLocation texture, int combinedLight) {
-        Minecraft mc = Minecraft.getInstance();
-        mc.getTextureManager().bindForSetup(texture);
-        VertexConsumer vertexConsumer = bufferSource.getBuffer(RenderType.text(texture));
-
-        Matrix4f matrix = poseStack.last().pose();
-
-        vertexConsumer.vertex(matrix, -0.5f, 0.5f, 0.0f).color(1.0f, 1.0f, 1.0f, 1.0f).uv(0.0f, 0.0f).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(combinedLight).normal(0.0f, 1.0f, 0.0f).endVertex();
-        vertexConsumer.vertex(matrix, 0.5f, 0.5f, 0.0f).color(1.0f, 1.0f, 1.0f, 1.0f).uv(1.0f, 0.0f).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(combinedLight).normal(0.0f, 1.0f, 0.0f).endVertex();
-        vertexConsumer.vertex(matrix, 0.5f, -0.5f, 0.0f).color(1.0f, 1.0f, 1.0f, 1.0f).uv(1.0f, 1.0f).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(combinedLight).normal(0.0f, 1.0f, 0.0f).endVertex();
-        vertexConsumer.vertex(matrix, -0.5f, -0.5f, 0.0f).color(1.0f, 1.0f, 1.0f, 1.0f).uv(0.0f, 1.0f).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(combinedLight).normal(0.0f, 1.0f, 0.0f).endVertex();
     }
 }

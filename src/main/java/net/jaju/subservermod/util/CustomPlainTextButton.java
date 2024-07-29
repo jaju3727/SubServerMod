@@ -32,7 +32,7 @@ public class CustomPlainTextButton extends Button {
         guiGraphics.pose().pushPose();
         guiGraphics.pose().scale(this.scale, this.scale, this.scale);
 
-        guiGraphics.drawString(this.font, this.message, (int) (x / this.scale), (int) (y / this.scale), 0xFFFFFF);
+        guiGraphics.drawString(this.font, this.message, (int) (x / this.scale), (int) (y / this.scale), 0x000000);
 
         guiGraphics.pose().popPose();
     }

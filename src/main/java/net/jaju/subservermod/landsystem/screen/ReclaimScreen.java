@@ -35,7 +35,7 @@ public class ReclaimScreen extends Screen {
                 standardX+50, standardY+46,
                 0,
                 0,
-                Component.literal("정말 회수하시겠습니까?"), // 버튼 텍스트
+                Component.literal("정말 회수하시겠습니까?"),
                 button -> {
 
                 },
@@ -44,18 +44,18 @@ public class ReclaimScreen extends Screen {
         ));
 
         this.addRenderableWidget(new ImageButton(standardX+50, standardY+70,
-                30, 15, 0, 0, 0,
-                new ResourceLocation(Subservermod.MOD_ID, "textures/gui/allow.png"),
-                30, 15, button -> {
+                30, 30, 0, 0, 0,
+                new ResourceLocation(Subservermod.MOD_ID, "textures/gui/landsystem/allow.png"),
+                30, 30, button -> {
             ModNetworking.INSTANCE.sendToServer(new LandManagerMethodPacket(chunkKey,"removeChunkOwner"));
             player.sendSystemMessage(Component.literal("청크 소유권이 성공적으로 회수되었습니다."));
             player.sendSystemMessage(Component.literal("돈이 절반 입금되었습니다."));
             this.onClose();
         }));
         this.addRenderableWidget(new ImageButton(standardX+80, standardY+70,
-                30, 15, 0, 0, 0,
-                new ResourceLocation(Subservermod.MOD_ID, "textures/gui/cancel.png"),
-                30, 15, button -> {
+                30, 30, 0, 0, 0,
+                new ResourceLocation(Subservermod.MOD_ID, "textures/gui/landsystem/cancel.png"),
+                30, 30, button -> {
             player.sendSystemMessage(Component.literal("청크 소유권 회수가 취소되었습니다."));
             this.onClose();
         }));

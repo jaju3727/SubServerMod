@@ -4,6 +4,7 @@ import net.jaju.subservermod.Subservermod;
 import net.jaju.subservermod.subclass.skill.alchemist.brewing.BrewingBlockEntity;
 import net.jaju.subservermod.subclass.skill.alchemist.teleport.TeleportBlockEntity;
 import net.jaju.subservermod.subclass.skill.chef.chefblock.ChefBlockEntity;
+import net.jaju.subservermod.subclass.skill.farmer.middle_oven.MiddleOvenBlockEntity;
 import net.jaju.subservermod.subclass.skill.fisherman.fishing_rod.FishingRodBlockEntity;
 import net.jaju.subservermod.subclass.skill.fisherman.raw_fished.CuttingBoardBlockEntity;
 import net.jaju.subservermod.subclass.skill.miner.crafting.CraftingBlockEntity;
@@ -20,6 +21,8 @@ public class ModBlockEntities {
 
     public static final RegistryObject<BlockEntityType<OvenBlockEntity>> OVEN_BLOCK_ENTITY = BLOCK_ENTITIES.register("oven_block_entity", () ->
             BlockEntityType.Builder.of(OvenBlockEntity::new, ModBlocks.OVEN_BLOCK.get()).build(null));
+    public static final RegistryObject<BlockEntityType<MiddleOvenBlockEntity>> MIDDLE_OVEN_BLOCK_ENTITY = BLOCK_ENTITIES.register("middle_oven_block_entity", () ->
+            BlockEntityType.Builder.of(MiddleOvenBlockEntity::new, ModBlocks.MIDDLE_OVEN_BLOCK.get()).build(null));
     public static final RegistryObject<BlockEntityType<CraftingBlockEntity>> CRAFTING_BLOCK_ENTITY = BLOCK_ENTITIES.register("crafting_block_entity", () ->
             BlockEntityType.Builder.of(CraftingBlockEntity::new, ModBlocks.CRAFTING_BLOCK.get()).build(null));
     public static final RegistryObject<BlockEntityType<BrewingBlockEntity>> BREWING_BLOCK_ENTITY = BLOCK_ENTITIES.register("brewing_block_entity", () ->

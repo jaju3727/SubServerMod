@@ -66,6 +66,7 @@ public class TeleportBlock extends Block implements EntityBlock {
                     return InteractionResult.FAIL;
                 }
 
+                //$텔레포트 소리
                 teleportPlayer(level, player, teleportBlockEntity);
                 TeleportBlockEntity.setLastTeleportTime(playerUUID, currentTime);
             }

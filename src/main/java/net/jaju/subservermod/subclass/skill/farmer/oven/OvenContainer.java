@@ -173,4 +173,8 @@ public class OvenContainer extends AbstractContainerMenu {
         }
         return super.canTakeItemForPickAll(stack, slot);
     }
+
+    public OvenBlockEntity getBlockEntity() {
+        return blockEntity;
+    }
 }

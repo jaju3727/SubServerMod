@@ -13,10 +13,15 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.alchemy.Potion;
+import net.minecraft.world.item.alchemy.PotionUtils;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.*;
@@ -152,7 +157,21 @@ public class EncyclopediaScreen extends Screen {
 
     private void onClickWidget(String itemName, int itemCount) {
         ResourceLocation itemResourceLocation = new ResourceLocation(itemName);
-        ItemStack itemStack = new ItemStack(Objects.requireNonNull(ForgeRegistries.ITEMS.getValue(itemResourceLocation)), itemCount);
+        Item item = ForgeRegistries.ITEMS.getValue(itemResourceLocation);
+        ItemStack itemStack = new ItemStack(Objects.requireNonNull(item));
+        if (itemResourceLocation.toString().contains("goat_horn")) {
+            itemStack = new ItemStack(Items.GOAT_HORN);
+            CompoundTag tag = itemStack.getOrCreateTag();
+            tag.putString("instrument", itemResourceLocation.toString());
+            itemStack.setTag(tag);
+        } else if (itemResourceLocation.toString().contains("potion")) {
+            String key = itemResourceLocation.toString();
+            String potionName = key.substring(key.indexOf(':') + 1).replace("_potion", "");
+            Potion potionType = Potion.byName(potionName);
+            if (potionType != null) {
+                itemStack = PotionUtils.setPotion(new ItemStack(Items.POTION), potionType);
+            }
+        }
         int playerItemCount = player.getInventory().countItem(itemStack.getItem());
         if (playerItemCount >= itemCount) {
             discoveries.replace(itemName, true);
@@ -198,7 +217,22 @@ public class EncyclopediaScreen extends Screen {
 
             int restI = i % numPerPage;
             ResourceLocation itemResourceLocation = new ResourceLocation(entry.getKey());
-            ItemStack itemStack = new ItemStack(Objects.requireNonNull(ForgeRegistries.ITEMS.getValue(itemResourceLocation)));
+
+            Item item = ForgeRegistries.ITEMS.getValue(itemResourceLocation);
+            ItemStack itemStack = new ItemStack(Objects.requireNonNull(item));
+            if (itemResourceLocation.toString().contains("goat_horn")) {
+                itemStack = new ItemStack(Items.GOAT_HORN);
+                CompoundTag tag = itemStack.getOrCreateTag();
+                tag.putString("instrument", itemResourceLocation.toString());
+                itemStack.setTag(tag);
+            } else if (itemResourceLocation.toString().contains("potion")) {
+                String key = itemResourceLocation.toString();
+                String potionName = key.substring(key.indexOf(':') + 1).replace("_potion", "");
+                Potion potionType = Potion.byName(potionName);
+                if (potionType != null) {
+                    itemStack = PotionUtils.setPotion(new ItemStack(Items.POTION), potionType);
+                }
+            }
             int xPosition = standardX + (restI % 15) * intervalX;
             int yPosition = standardY + (restI / 15) * intervalY;
 
@@ -234,6 +268,7 @@ public class EncyclopediaScreen extends Screen {
 
             i++;
         }
+
         int previousVar = -100;
         for (var entry : giftList.entrySet()) {
             int width = 350;
@@ -256,7 +291,28 @@ public class EncyclopediaScreen extends Screen {
 
     private void renderTooltip(GuiGraphics guiGraphics, ItemStack itemStack, int itemCount, int x, int y) {
         String itemName = itemStack.getHoverName().getString();
-        int playerItemCount = player.getInventory().countItem(itemStack.getItem());
+        CompoundTag tag = itemStack.getTag();
+        if (tag != null && tag.contains("instrument")) {
+            itemName = switch (tag.getString("instrument")) {
+                case "minecraft:ponder_goat_horn" -> "염소 뿔 (고민)";
+                case "minecraft:sing_goat_horn" -> "염소 뿔 (노래)";
+                case "minecraft:seek_goat_horn" -> "염소 뿔 (수색)";
+                case "minecraft:feel_goat_horn" -> "염소 뿔 (감각)";
+                case "minecraft:admire_goat_horn" -> "염소 뿔 (동경)";
+                case "minecraft:call_goat_horn" -> "염소 뿔 (소집)";
+                case "minecraft:yearn_goat_horn" -> "염소 뿔 (갈망)";
+                case "minecraft:dream_goat_horn" -> "염소 뿔 (꿈결)";
+                default -> itemStack.getHoverName().getString();
+            };
+        }
+
+        int playerItemCount = 0;
+        for (int i = 0; i < player.getInventory().getContainerSize(); i++) {
+            ItemStack inventoryStack = player.getInventory().getItem(i);
+            if (ItemStack.isSameItemSameTags(inventoryStack, itemStack)) {
+                playerItemCount += inventoryStack.getCount();
+            }
+        }
         List<Component> tooltip = new ArrayList<>();
         tooltip.add(Component.literal(itemName));
         tooltip.add(Component.literal(""));

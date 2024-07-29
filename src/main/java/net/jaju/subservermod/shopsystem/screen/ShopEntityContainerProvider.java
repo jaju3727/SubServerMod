@@ -1,11 +1,10 @@
-package net.jaju.subservermod.shopsystem.entity;
+package net.jaju.subservermod.shopsystem.screen;
 
-import net.jaju.subservermod.shopsystem.screen.ShopContainer;
+import net.jaju.subservermod.shopsystem.entity.ShopEntity;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.entity.player.Player;
-import net.minecraftforge.network.NetworkHooks;
 
 public class ShopEntityContainerProvider implements MenuProvider {
     private final ShopEntity shopEntity;

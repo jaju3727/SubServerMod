@@ -1,6 +1,7 @@
 package net.jaju.subservermod.subclass;
 
 import net.jaju.subservermod.subclass.skill.alchemist.AlchemistSkill;
+import net.jaju.subservermod.util.CommandExecutor;
 import net.minecraft.server.level.ServerPlayer;
 
 public class Alchemist extends BaseClass {

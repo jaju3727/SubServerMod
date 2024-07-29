@@ -54,38 +54,49 @@ public class ChefBlock extends Block implements EntityBlock {
 
                 if (chefBlockEntity.getoverCooked()) {
                     chefBlockEntity.setoverCooked(false);
+                    chefBlockEntity.setoverCookFlag(false);
                     return InteractionResult.PASS;
                 }
+                if (chefBlockEntity.getoverCookFlag()) {
+                    for (ItemStack itemStack : itemStacks) {
+                        if (itemStack.getItem() == ModItem.BEEF_STEAK.get()) {
+                            ItemHandlerHelper.giveItemToPlayer(player, itemStack);
+                            itemStacks.remove(itemStack);
+                            chefBlockEntity.setItemStacks(itemStacks);
+                            chefBlockEntity.setoverCooked(false);
+                            chefBlockEntity.setoverCookFlag(false);
+                            return InteractionResult.PASS;
+                        } else if (itemStack.getItem() == ModItem.PORK_BELLY.get()) {
+                            ItemHandlerHelper.giveItemToPlayer(player, itemStack);
+                            itemStacks.remove(itemStack);
+                            chefBlockEntity.setItemStacks(itemStacks);
+                            chefBlockEntity.setoverCooked(false);
+                            chefBlockEntity.setoverCookFlag(false);
+                            return InteractionResult.PASS;
+                        } else if (itemStack.getItem() == ModItem.ROAST_CHICKEN.get()) {
+                            ItemHandlerHelper.giveItemToPlayer(player, itemStack);
+                            itemStacks.remove(itemStack);
+                            chefBlockEntity.setItemStacks(itemStacks);
+                            chefBlockEntity.setoverCooked(false);
+                            chefBlockEntity.setoverCookFlag(false);
+                            return InteractionResult.PASS;
+                        } else if (itemStack.getItem() == ModItem.LAMB_STEAK.get()) {
+                            ItemHandlerHelper.giveItemToPlayer(player, itemStack);
+                            itemStacks.remove(itemStack);
+                            chefBlockEntity.setItemStacks(itemStacks);
+                            chefBlockEntity.setoverCooked(false);
+                            chefBlockEntity.setoverCookFlag(false);
+                            return InteractionResult.PASS;
+                        } else if (itemStack.getItem() == ModItem.FRIED_EGG.get()) {
+                            ItemHandlerHelper.giveItemToPlayer(player, itemStack);
+                            itemStacks.remove(itemStack);
+                            chefBlockEntity.setItemStacks(itemStacks);
+                            chefBlockEntity.setoverCooked(false);
+                            chefBlockEntity.setoverCookFlag(false);
+                            return InteractionResult.PASS;
+                        }
 
-                System.out.println(itemStacks);
-                for (ItemStack itemStack: itemStacks) {
-                    if (itemStack.getItem() == ModItem.BEEF_STEAK.get()) {
-                        ItemHandlerHelper.giveItemToPlayer(player, itemStack);
-                        itemStacks.remove(itemStack);
-                        chefBlockEntity.setItemStacks(itemStacks);
-                        return InteractionResult.PASS;
-                    } else if (itemStack.getItem() == ModItem.PORK_BELLY.get()) {
-                        ItemHandlerHelper.giveItemToPlayer(player, itemStack);
-                        itemStacks.remove(itemStack);
-                        chefBlockEntity.setItemStacks(itemStacks);
-                        return InteractionResult.PASS;
-                    } else if (itemStack.getItem() == ModItem.ROAST_CHICKEN.get()) {
-                        ItemHandlerHelper.giveItemToPlayer(player, itemStack);
-                        itemStacks.remove(itemStack);
-                        chefBlockEntity.setItemStacks(itemStacks);
-                        return InteractionResult.PASS;
-                    } else if (itemStack.getItem() == ModItem.LAMB_STEAK.get()) {
-                        ItemHandlerHelper.giveItemToPlayer(player, itemStack);
-                        itemStacks.remove(itemStack);
-                        chefBlockEntity.setItemStacks(itemStacks);
-                        return InteractionResult.PASS;
-                    } else if (itemStack.getItem() == ModItem.FRIED_EGG.get()) {
-                        ItemHandlerHelper.giveItemToPlayer(player, itemStack);
-                        itemStacks.remove(itemStack);
-                        chefBlockEntity.setItemStacks(itemStacks);
-                        return InteractionResult.PASS;
                     }
-
                 }
 
                 if (heldItem.getItem() == ModItem.COOKING_OIL.get()){

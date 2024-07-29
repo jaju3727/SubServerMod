@@ -12,6 +12,7 @@ import net.minecraft.network.chat.TextColor;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
@@ -51,11 +52,14 @@ public class ChunkOwnershipHandler {
         ResourceKey<Level> worldKey = world.dimension();
         String chunkKey = LandManager.getChunkKey(worldKey, chunkPos);
 
-        if (player.getItemInHand(InteractionHand.MAIN_HAND).getItem() == CONSTRUNTING_ALLOW.get()) {
+        ItemStack heldItem = player.getItemInHand(InteractionHand.MAIN_HAND);
+        if (heldItem.getItem() == CONSTRUNTING_ALLOW.get()) {
             UUID owner = landManager.getOwner(chunkKey);
+
             if (owner == null) {
                 landManager.setOwner(chunkKey, player.getUUID());
                 player.sendSystemMessage(Component.literal("Chunk claimed successfully!"));
+                heldItem.shrink(1);  // 손에 들고 있는 아이템 1줄이기
             } else if (owner.equals(player.getUUID())) {
                 player.sendSystemMessage(Component.literal("You already own this chunk."));
             } else {
@@ -72,8 +76,9 @@ public class ChunkOwnershipHandler {
         ChunkPos chunkPos = new ChunkPos(pos);
         ResourceKey<Level> worldKey = world.dimension();
         String chunkKey = LandManager.getChunkKey(worldKey, chunkPos);
+        UUID owner = landManager.getOwner(chunkKey);
 
-        if (!isOwner(chunkKey, player)) {
+        if (!isOwner(chunkKey, player) && owner != null) {
             player.sendSystemMessage(Component.literal("You don't have permission to break blocks in this chunk."));
             event.setCanceled(true);
         }
@@ -87,8 +92,9 @@ public class ChunkOwnershipHandler {
             ChunkPos chunkPos = new ChunkPos(pos);
             ResourceKey<Level> worldKey = world.dimension();
             String chunkKey = LandManager.getChunkKey(worldKey, chunkPos);
+            UUID owner = landManager.getOwner(chunkKey);
 
-            if (!isOwner(chunkKey, player)) {
+            if (!isOwner(chunkKey, player) && owner != null) {
                 player.sendSystemMessage(Component.literal("You don't have permission to place blocks in this chunk."));
                 event.setCanceled(true);
             }
@@ -114,17 +120,14 @@ public class ChunkOwnershipHandler {
     private static void renderOwnerFace(Minecraft mc, UUID owner, GuiGraphics guiGraphics) {
         AbstractClientPlayer ownerPlayer = (AbstractClientPlayer) mc.level.getPlayerByUUID(owner);
         if (ownerPlayer != null) {
-            // 플레이어 얼굴 렌더링
-            int x = 10;
-            int y = 10;
             int size = 32;
+            int x = (guiGraphics.guiWidth() - size)/2;
+            int y = 5;
             guiGraphics.blit(ownerPlayer.getSkinTextureLocation(), x, y, size, size, 8, 8, 8, 8, 64, 64);
             String ownerName = ownerPlayer.getName().getString();
             Component textComponent = Component.literal(ownerName).setStyle(Style.EMPTY.withBold(true).withColor(TextColor.fromRgb(0xFFFFFF)));
-            guiGraphics.drawString(mc.font, textComponent.getString(), x + size + 5, y + (size / 2) - 4, 0xFFFFFF);
+            guiGraphics.drawCenteredString(mc.font, textComponent.getString() + "님의 땅", x + size/2, y + size, 0xFFFFFF);
         }
     }
-
-
 
 }

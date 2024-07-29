@@ -5,6 +5,7 @@ import net.jaju.subservermod.item.ModItem;
 import net.jaju.subservermod.subclass.skill.alchemist.brewing.BrewingBlock;
 import net.jaju.subservermod.subclass.skill.alchemist.teleport.TeleportBlock;
 import net.jaju.subservermod.subclass.skill.chef.chefblock.ChefBlock;
+import net.jaju.subservermod.subclass.skill.farmer.middle_oven.MiddleOvenBlock;
 import net.jaju.subservermod.subclass.skill.fisherman.fishing_rod.FishingRodBlock;
 import net.jaju.subservermod.subclass.skill.fisherman.raw_fished.CuttingBoardBlock;
 import net.jaju.subservermod.subclass.skill.miner.crafting.CraftingBlock;
@@ -31,6 +32,8 @@ public class ModBlocks {
             () -> new Block(BlockBehaviour.Properties.copy(Blocks.BREWING_STAND).sound(SoundType.AMETHYST)));
     public static final RegistryObject<Block> OVEN_BLOCK = registerBlock("oven_block",
             () -> new OvenBlock(BlockBehaviour.Properties.copy(Blocks.BREWING_STAND).sound(SoundType.METAL)));
+    public static final RegistryObject<Block> MIDDLE_OVEN_BLOCK = registerBlock("middle_oven_block",
+            () -> new MiddleOvenBlock(BlockBehaviour.Properties.copy(Blocks.BREWING_STAND).sound(SoundType.METAL)));
     public static final RegistryObject<Block> CRAFTING_BLOCK = registerBlock("crafting_block",
             () -> new CraftingBlock(BlockBehaviour.Properties.copy(Blocks.BREWING_STAND).sound(SoundType.METAL)));
     public static final RegistryObject<Block> BREWING_BLOCK = registerBlock("brewing_block",

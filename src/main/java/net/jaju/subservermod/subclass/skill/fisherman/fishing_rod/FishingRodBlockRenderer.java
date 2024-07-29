@@ -25,8 +25,7 @@ import org.joml.Matrix4f;
 
 @OnlyIn(Dist.CLIENT)
 public class FishingRodBlockRenderer implements BlockEntityRenderer<FishingRodBlockEntity> {
-    private static final ResourceLocation COOKGAUGE = new ResourceLocation(Subservermod.MOD_ID, "textures/block/gauge.png");
-    private static final ResourceLocation OVERCOOKGAUGE = new ResourceLocation(Subservermod.MOD_ID, "textures/block/gauge.png");
+    private static final ResourceLocation EXCLAMATION_MARK = new ResourceLocation(Subservermod.MOD_ID, "textures/gui/fisherman/exclamation_mark.png");
 
     public FishingRodBlockRenderer(BlockEntityRendererProvider.Context context) {}
 
@@ -37,16 +36,17 @@ public class FishingRodBlockRenderer implements BlockEntityRenderer<FishingRodBl
             Direction direction = fishingRodBlockEntity.getBlockState().getValue(BlockStateProperties.HORIZONTAL_FACING);
             poseStack.pushPose();
             applyDirectionTranslation(poseStack, direction, 0.50, 1.25, 0.07);
-            applyDirectionScale(poseStack, direction, 4.0f, 4.0f, 5.5f);
+            applyDirectionScale(poseStack, direction, 3.0f, 3.0f, 4.5f);
             applyDirectionRotation(poseStack, direction);
             poseStack.mulPose(Axis.YP.rotationDegrees(90.0f));
+            poseStack.mulPose(Axis.ZP.rotationDegrees(-25.0f));
             int combinedLightLevel = 0xF000F0;
 
             BakedModel model = Minecraft.getInstance().getItemRenderer().getModel(itemStack, fishingRodBlockEntity.getLevel(), null, 0);
             Minecraft.getInstance().getItemRenderer().render(itemStack, ItemDisplayContext.GROUND, false, poseStack, bufferSource, combinedLightLevel, combinedOverlay, model);
             poseStack.popPose();
             if (fishingRodBlockEntity.isCatchFish()) {
-                renderCustomImage(poseStack, bufferSource, OVERCOOKGAUGE, fishingRodBlockEntity);
+                renderCustomImage(poseStack, bufferSource, EXCLAMATION_MARK, fishingRodBlockEntity);
             }
         }
     }
@@ -101,7 +101,7 @@ public class FishingRodBlockRenderer implements BlockEntityRenderer<FishingRodBl
 
     private void renderCustomImage(PoseStack poseStack, MultiBufferSource bufferSource, ResourceLocation TEXTURE, FishingRodBlockEntity fishingRodBlockEntity) {
         poseStack.pushPose();
-        poseStack.translate(0.5, 2.0, 0.5);
+        poseStack.translate(0.5, 2.3, 0.5);
 
         Player player = Minecraft.getInstance().player;
         if (player != null) {
@@ -112,7 +112,7 @@ public class FishingRodBlockRenderer implements BlockEntityRenderer<FishingRodBl
             poseStack.mulPose(Axis.YP.rotationDegrees(-angle));
         }
 
-        poseStack.scale(3.0f, 0.1f, 3.0f);
+        poseStack.scale(1.0f, 1.0f, 1.0f);
 
         renderTexture(poseStack, bufferSource, TEXTURE, 0xF000F0);
 

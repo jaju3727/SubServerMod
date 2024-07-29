@@ -29,15 +29,6 @@ public class ServerSideEventHandler {
         }
     }
 
-//    @SubscribeEvent
-//    public static void onServerTick(TickEvent.ServerTickEvent event) {
-//        if (event.phase == TickEvent.Phase.END) {
-//            for (ServerPlayer player : event.getServer().getPlayerList().getPlayers()) {
-//                sendEncyclopediaData(player);
-//            }
-//        }
-//    }
-
     @SubscribeEvent
     public static void onPlayerTick(TickEvent.PlayerTickEvent event) {
         if (event.phase == TickEvent.Phase.END) {

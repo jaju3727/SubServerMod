@@ -1,12 +1,15 @@
 package net.jaju.subservermod.shopsystem.screen;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.jaju.subservermod.ModNetworking;
 import net.jaju.subservermod.Subservermod;
+import net.jaju.subservermod.coinsystem.CoinData;
+import net.jaju.subservermod.coinsystem.network.CoinDataRequestFromShopPacket;
+import net.jaju.subservermod.coinsystem.network.CoinDataUpdatePacket;
 import net.jaju.subservermod.shopsystem.ShopItem;
+import net.jaju.subservermod.shopsystem.entity.ShopEntity;
 import net.jaju.subservermod.shopsystem.network.UpdateInventoryPacket;
-import net.jaju.subservermod.util.CustomPlainTextButton;
+import net.jaju.subservermod.shopsystem.network.UpdateShopEntityPacket;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.ImageButton;
@@ -16,15 +19,15 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 
 import java.util.List;
 
 public class ShopScreen extends AbstractContainerScreen<ShopContainer> {
     private final Player player;
+    private final ShopEntity shopEntity;
     private List<ShopItem> shopItems;
+    private CoinData coinData;
     private final int standardX = 79;
     private final int standardY = 70;
     private final int intervalX = 108;
@@ -32,10 +35,21 @@ public class ShopScreen extends AbstractContainerScreen<ShopContainer> {
     private int page = 1;
     private int maxPage;
     private final int minPage = 1;
+    private static final int numPerPage = 8;
 
     public ShopScreen(ShopContainer screenContainer, Inventory inv, Component titleIn, Player player) {
         super(screenContainer, inv, titleIn);
         this.player = player;
+        shopEntity = screenContainer.getShopEntity();
+        requestCoinDataFromServer();
+    }
+
+    private void requestCoinDataFromServer() {
+        ModNetworking.INSTANCE.sendToServer(new CoinDataRequestFromShopPacket());
+    }
+
+    public void updateCoinData(CoinData coinData) {
+        this.coinData = coinData;
     }
 
     public void setShopData(List<ShopItem> shopItems, String entityName) {
@@ -50,33 +64,41 @@ public class ShopScreen extends AbstractContainerScreen<ShopContainer> {
     }
 
     private void initialize() {
+        this.clearWidgets();
 
-
-
+        int end = page == maxPage ? (shopItems.size() - 1) % numPerPage + 1 : numPerPage;
+        int start = numPerPage * (page - 1);
+        end += start;
         int i = 0;
         for (ShopItem shopItem : shopItems) {
+            if (i < start) {
+                i++;
+                continue;
+            }
+            if (i >= end) break;
             int j = i;
+            int restI = i % numPerPage;
 
             if (shopItem.getIsBuyable()) {
-                this.addRenderableWidget(new ImageButton(standardX + 7 + i/4*intervalX,
-                        standardY - 12 + i%4*intervalY,
+                this.addRenderableWidget(new ImageButton(standardX + 7 + restI/4*intervalX,
+                        standardY - 12 + restI%4*intervalY,
                         23, 12, 0, 0, 0,
                         new ResourceLocation(Subservermod.MOD_ID, "textures/gui/buy.png"),
                         23, 12, button -> {
                     boolean isShiftPressed = Screen.hasShiftDown();
-                    buyButtonClick((page-1)*8 + j, isShiftPressed);
+                    buyButtonClick(j, isShiftPressed);
                 }));
             }
 
             if (shopItem.getIsSellable()) {
-                this.addRenderableWidget(new ImageButton(standardX + 7 + i/4*intervalX,
-                        standardY + 2 + i%4*intervalY,
+                this.addRenderableWidget(new ImageButton(standardX + 7 + restI/4*intervalX,
+                        standardY + 2 + restI%4*intervalY,
                         23, 12, 0, 0, 0,
                         new ResourceLocation(Subservermod.MOD_ID, "textures/gui/sell.png"),
                         23, 12, button -> {
                     boolean isShiftPressed = Screen.hasShiftDown();
                     boolean isAltPressed = Screen.hasAltDown();
-                    sellButtonClick((page-1)*8 + j, isShiftPressed, isAltPressed);
+                    sellButtonClick(j, isShiftPressed, isAltPressed);
                 }));
             }
 
@@ -84,30 +106,92 @@ public class ShopScreen extends AbstractContainerScreen<ShopContainer> {
         }
 
         if (page != minPage) {
-            this.addRenderableWidget(new ImageButton(40, 190,
+            this.addRenderableWidget(new ImageButton(137, 210,
                     10, 10, 0, 0, 0,
                     new ResourceLocation(Subservermod.MOD_ID, "textures/gui/leftarrow.png"),
                     10, 10, button -> leftPage()));
         }
         if (page != maxPage) {
-            this.addRenderableWidget(new ImageButton(150, 190,
+            this.addRenderableWidget(new ImageButton(158, 210,
                     10, 10, 0, 0, 0,
                     new ResourceLocation(Subservermod.MOD_ID, "textures/gui/rightarrow.png"),
                     10, 10, button -> rightPage()));
         }
     }
 
+    public boolean hasEnoughCoins(String type, int amount) {
+        return switch (type) {
+            case "sub_coin" -> coinData.getSubcoin() >= amount;
+            case "chef_coin" -> coinData.getChefcoin() >= amount;
+            case "farmer_coin" -> coinData.getFarmercoin() >= amount;
+            case "fisherman_coin" -> coinData.getFishermancoin() >= amount;
+            case "alchemist_coin" -> coinData.getAlchemistcoin() >= amount;
+            case "miner_coin" -> coinData.getMinercoin() >= amount;
+            case "woodcutter_coin" -> coinData.getWoodcuttercoin() >= amount;
+            default -> false;
+        };
+    }
+
+    public void removeCoins(String type, int amount) {
+        switch (type) {
+            case "sub_coin" -> coinData.setSubcoin(Math.max(coinData.getSubcoin() - amount, 0));
+            case "chef_coin" -> coinData.setChefcoin(Math.max(coinData.getChefcoin() - amount, 0));
+            case "farmer_coin" -> coinData.setFarmercoin(Math.max(coinData.getFarmercoin() - amount, 0));
+            case "fisherman_coin" -> coinData.setFishermancoin(Math.max(coinData.getFishermancoin() - amount, 0));
+            case "alchemist_coin" -> coinData.setAlchemistcoin(Math.max(coinData.getAlchemistcoin() - amount, 0));
+            case "miner_coin" -> coinData.setMinercoin(Math.max(coinData.getMinercoin() - amount, 0));
+            case "woodcutter_coin" -> coinData.setWoodcuttercoin(Math.max(coinData.getWoodcuttercoin() - amount, 0));
+        }
+    }
+
+    public void addCoins(String type, int amount) {
+        switch (type) {
+            case "sub_coin" -> coinData.setSubcoin(coinData.getSubcoin() + amount);
+            case "chef_coin" -> coinData.setChefcoin(coinData.getChefcoin() + amount);
+            case "farmer_coin" -> coinData.setFarmercoin(coinData.getFarmercoin() + amount);
+            case "fisherman_coin" -> coinData.setFishermancoin(coinData.getFarmercoin() + amount);
+            case "alchemist_coin" -> coinData.setAlchemistcoin(coinData.getAlchemistcoin() + amount);
+            case "miner_coin" -> coinData.setMinercoin(coinData.getMinercoin() + amount);
+            case "woodcutter_coin" -> coinData.setWoodcuttercoin(coinData.getWoodcuttercoin() + amount);
+        }
+    }
+
+
     private void buyButtonClick(int itemIndex, boolean isShiftPressed) {
-        int buyCount = isShiftPressed ? 64 : 1;
         ShopItem shopItem = shopItems.get(itemIndex);
+        int buyCount = isShiftPressed ? 64 : 1;
+        int dailyBuyLimitPlayerNum = shopItem.getDailyBuyLimitPlayerNum();
+        boolean isDailyBuyLimit = shopItem.getIsDailyBuyLimit();
+        if (isDailyBuyLimit) {
+            if (0 < dailyBuyLimitPlayerNum) buyCount = (buyCount - dailyBuyLimitPlayerNum >= 0) ? dailyBuyLimitPlayerNum : buyCount;
+            else {
+                player.sendSystemMessage(Component.literal("오늘은 더 이상 이 아이템을 구매하실 수 없습니다."));
+                return;
+            }
+        }
         ItemStack itemStack = shopItem.getItemStack().copy();
         itemStack.setCount(buyCount);
 
+        int totalPrice = buyCount * shopItem.getBuyPrice();
+        String coinType = shopItem.getCoinType();
+
+        if (!hasEnoughCoins(coinType, totalPrice)) {
+            player.sendSystemMessage(Component.literal("코인이 충분하지 않습니다."));
+            return;
+        }
+
         int boughtAmount = addItemsToInventory(player, itemStack);
         if (boughtAmount > 0) {
-            int totalPrice = boughtAmount * shopItem.getBuyPrice();
+            if (isDailyBuyLimit) {
+                shopItem.setDailyBuyLimitPlayerNum(dailyBuyLimitPlayerNum - buyCount);
+                shopItems.set(itemIndex, shopItem);
+                ModNetworking.INSTANCE.sendToServer(new UpdateShopEntityPacket(shopEntity.getId(), itemIndex, shopItem.getDailyBuyLimitPlayerNum(), shopItem.getDailySellLimitPlayerNum()));
+            }
             player.sendSystemMessage(Component.literal("Bought " + boughtAmount + " " + shopItem.getItemStack().getHoverName().getString() + " for " + totalPrice + " coins."));
-            // 서버로 인벤토리 업데이트 패킷 전송
+
+            removeCoins(coinType, totalPrice);
+            ModNetworking.INSTANCE.sendToServer(new CoinDataUpdatePacket(coinData, player.getUUID()));
+
             for (int i = 0; i < player.getInventory().getContainerSize(); i++) {
                 ItemStack stack = player.getInventory().getItem(i);
                 ModNetworking.INSTANCE.sendToServer(new UpdateInventoryPacket(i, stack));
@@ -120,16 +204,34 @@ public class ShopScreen extends AbstractContainerScreen<ShopContainer> {
     private void sellButtonClick(int itemIndex, boolean isShiftPressed, boolean isAltPressed) {
         ShopItem shopItem = shopItems.get(itemIndex);
         int sellCount = isShiftPressed ? 64 : isAltPressed ? Integer.MAX_VALUE : 1;
+        int dailySellLimitPlayerNum = shopItem.getDailySellLimitPlayerNum();
+        boolean isDailySellLimit = shopItem.getIsDailySellLimit();
+        if (isDailySellLimit) {
+            if (0 < dailySellLimitPlayerNum) sellCount = (sellCount - dailySellLimitPlayerNum >= 0) ? dailySellLimitPlayerNum : sellCount;
+            else {
+                player.sendSystemMessage(Component.literal("오늘은 더 이상 이 아이템을 판매하실 수 없습니다."));
+                return;
+            }
+        }
         ItemStack itemStack = shopItem.getItemStack().copy();
         itemStack.setCount(sellCount);
 
-        // 플레이어의 인벤토리에서 아이템을 찾고 판매 로직을 수행
+        String coinType = shopItem.getCoinType();
+
         int soldAmount = removeItemsFromInventory(player, itemStack);
 
         if (soldAmount > 0) {
+            if (isDailySellLimit) {
+                shopItem.setDailySellLimitPlayerNum(dailySellLimitPlayerNum - sellCount);
+                shopItems.set(itemIndex, shopItem);
+                ModNetworking.INSTANCE.sendToServer(new UpdateShopEntityPacket(shopEntity.getId(), itemIndex, shopItem.getDailyBuyLimitPlayerNum(), shopItem.getDailySellLimitPlayerNum()));
+            }
             int totalPrice = soldAmount * shopItem.getSellPrice();
-            // 플레이어에게 판매된 아이템 수와 가격을 알림
             player.sendSystemMessage(Component.literal("Sold " + soldAmount + " " + shopItem.getItemStack().getHoverName().getString() + " for " + totalPrice + " coins."));
+
+            addCoins(coinType, totalPrice);
+            ModNetworking.INSTANCE.sendToServer(new CoinDataUpdatePacket(coinData, player.getUUID()));
+
             for (int i = 0; i < player.getInventory().getContainerSize(); i++) {
                 ItemStack stack = player.getInventory().getItem(i);
                 ModNetworking.INSTANCE.sendToServer(new UpdateInventoryPacket(i, stack));
@@ -139,7 +241,6 @@ public class ShopScreen extends AbstractContainerScreen<ShopContainer> {
         }
     }
 
-    // 플레이어의 인벤토리에서 특정 아이템을 제거하는 메서드
     private int removeItemsFromInventory(Player player, ItemStack itemStack) {
         int remainingCount = itemStack.getCount();
         int totalRemoved = 0;
@@ -153,7 +254,6 @@ public class ShopScreen extends AbstractContainerScreen<ShopContainer> {
                 if (stackCount >= remainingCount) {
                     stack.shrink(remainingCount);
                     totalRemoved += remainingCount;
-                    remainingCount = 0;
                     if (stack.getCount() == 0) {
                         inventory.items.set(i, ItemStack.EMPTY);
                     }
@@ -162,7 +262,7 @@ public class ShopScreen extends AbstractContainerScreen<ShopContainer> {
                     stack.shrink(stackCount);
                     totalRemoved += stackCount;
                     remainingCount -= stackCount;
-                    inventory.items.set(i, ItemStack.EMPTY); // 아이템이 0개가 되면 빈 슬롯으로 설정
+                    inventory.items.set(i, ItemStack.EMPTY);
                 }
             }
         }
@@ -175,7 +275,7 @@ public class ShopScreen extends AbstractContainerScreen<ShopContainer> {
         int totalAdded = 0;
         Inventory inventory = player.getInventory();
 
-        for (int i = 0; i < inventory.items.size(); i++) { // 장비 칸을 제외한 인벤토리 슬롯만을 대상으로
+        for (int i = 0; i < inventory.items.size(); i++) {
             ItemStack stack = inventory.items.get(i);
             if (stack.isEmpty()) {
                 int addCount = Math.min(remainingCount, itemStack.getMaxStackSize());
@@ -218,17 +318,24 @@ public class ShopScreen extends AbstractContainerScreen<ShopContainer> {
     @Override
     protected void renderBg(GuiGraphics guiGraphics, float partialTicks, int x, int y) {
 
-        renderShopItems(guiGraphics);
     }
 
     private void renderShopItems(GuiGraphics guiGraphics) {
+        float scale = 1.4f;
+        int end = page == maxPage ? (shopItems.size() - 1) % numPerPage + 1 : numPerPage;
+        int start = numPerPage * (page - 1);
+        end += start;
         int i = 0;
-        float scale = 1.7f;
-
         for (ShopItem shopItem : shopItems) {
+            if (i < start) {
+                i++;
+                continue;
+            }
+            if (i >= end) break;
+            int restI = i % numPerPage;
             ItemStack itemStack = shopItem.getItemStack();
-            int xPosition = standardX + i / 4 * intervalX - 10;
-            int yPosition = standardY + i % 4 * intervalY;
+            int xPosition = standardX + restI / 4 * intervalX - 10 - 2;
+            int yPosition = standardY + restI % 4 * intervalY;
 
             PoseStack poseStack = guiGraphics.pose();
             poseStack.pushPose();
@@ -240,6 +347,20 @@ public class ShopScreen extends AbstractContainerScreen<ShopContainer> {
             guiGraphics.renderItem(itemStack, 0, 0);
 
             poseStack.popPose();
+
+            poseStack.pushPose();
+            poseStack.translate(xPosition, yPosition, 0);
+            poseStack.scale(0.8f, 0.8f, 0.8f);
+            if (shopItem.getIsDailyBuyLimit()) {
+                guiGraphics.drawString(this.font, shopItem.getDailyBuyLimitPlayerNum() + "/" + shopItem.getDailyBuyLimitNum(),
+                        55, -10, 0xFFFFFF);
+
+            }
+            if (shopItem.getIsDailySellLimit()) {
+                guiGraphics.drawString(this.font, shopItem.getDailySellLimitPlayerNum() + "/" + shopItem.getDailySellLimitNum(),
+                        55,6, 0xFFFFFF);
+            }
+            poseStack.popPose();
             i++;
         }
     }
@@ -247,15 +368,16 @@ public class ShopScreen extends AbstractContainerScreen<ShopContainer> {
     @Override
     public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
         this.renderBackground(guiGraphics);
-
-        int textureWidth = 400;
-        int textureHeight = 190;
+        int textureWidth = 460;
+        int textureHeight = (int) (textureWidth * 0.5625);
         int posX = (this.width - textureWidth) / 2;
         int posY = (this.height - textureHeight) / 2;
         guiGraphics.blit(new ResourceLocation(Subservermod.MOD_ID, "textures/gui/shopsystem/shopbackground.png"),
                 posX, posY, 0, 0, textureWidth, textureHeight, textureWidth, textureHeight);
-
+        guiGraphics.blit(new ResourceLocation(Subservermod.MOD_ID, "textures/coin/coin_ui.png"),
+                posX + 203, posY + 77, 0, 0, 160, 180, 160, 190);
         super.render(guiGraphics, mouseX, mouseY, partialTicks);
+        renderShopItems(guiGraphics);
         this.renderTooltip(guiGraphics, mouseX, mouseY);
         renderTooltipsForItems(guiGraphics, mouseX, mouseY);
     }
@@ -264,9 +386,19 @@ public class ShopScreen extends AbstractContainerScreen<ShopContainer> {
         int i = 0;
         float scale = 1.7f;
 
+        int end = page == maxPage ? (shopItems.size() - 1) % numPerPage + 1 : numPerPage;
+        int start = numPerPage * (page - 1);
+        end += start;
         for (ShopItem shopItem : shopItems) {
-            int xPosition = standardX + i / 4 * intervalX - 10;
-            int yPosition = standardY + i % 4 * intervalY;
+            if (i < start) {
+                i++;
+                continue;
+            }
+            if (i >= end) break;
+            int restI = i % numPerPage;
+
+            int xPosition = standardX + restI / 4 * intervalX - 10;
+            int yPosition = standardY + restI % 4 * intervalY;
             int scaledMouseX = (int) ((mouseX - xPosition) / scale);
             int scaledMouseY = (int) ((mouseY - yPosition) / scale);
 

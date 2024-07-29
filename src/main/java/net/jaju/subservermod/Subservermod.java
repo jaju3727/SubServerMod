@@ -8,13 +8,15 @@ import net.jaju.subservermod.item.ModCreativeModTabs;
 import net.jaju.subservermod.item.ModItem;
 import net.jaju.subservermod.landsystem.ChunkOwnershipHandler;
 import net.jaju.subservermod.landsystem.network.ServerSideEventHandler;
+import net.jaju.subservermod.mailbox.MailboxCommand;
+import net.jaju.subservermod.mailbox.MailboxManager;
 import net.jaju.subservermod.shopsystem.entity.ModEntities;
+import net.jaju.subservermod.sound.ModSounds;
 import net.jaju.subservermod.subclass.ClassManagement;
 import net.jaju.subservermod.util.KeyBindings;
 import net.jaju.subservermod.util.KeyInputHandler;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
@@ -37,6 +39,7 @@ public class Subservermod {
     public Subservermod() {
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
 
+        ModSounds.register(modEventBus);
         ModCreativeModTabs.register(modEventBus);
         ModItem.register(modEventBus);
         ModBlocks.register(modEventBus);
@@ -47,10 +50,11 @@ public class Subservermod {
         MinecraftForge.EVENT_BUS.register(KeyInputHandler.class);
         MinecraftForge.EVENT_BUS.register(new ChunkOwnershipHandler());
         MinecraftForge.EVENT_BUS.register(new ServerSideEventHandler());
+        MinecraftForge.EVENT_BUS.register(MailboxManager.class);
+        MinecraftForge.EVENT_BUS.register(MailboxCommand.class);
         MinecraftForge.EVENT_BUS.register(this);
         MinecraftForge.EVENT_BUS.register(CoinHud.class);
         modEventBus.addListener(KeyBindings::registerKeyMappings);
-
         modEventBus.addListener(this::commonSetup);
         DistExecutor.runWhenOn(Dist.CLIENT, () -> () -> {
             modEventBus.addListener(this::clientSetup);

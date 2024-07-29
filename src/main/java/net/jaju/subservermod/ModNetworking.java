@@ -1,13 +1,18 @@
 package net.jaju.subservermod;
 
-import net.jaju.subservermod.coinsystem.network.CoinDataSyncPacket;
+import net.jaju.subservermod.auction.network.packet.AuctionPacket;
+import net.jaju.subservermod.auction.network.packet.UpdateAuctionPacket;
+import net.jaju.subservermod.coinsystem.network.*;
 //import net.jaju.subservermod.encyclopedia.network.EncyclopediaDataPacket;
 import net.jaju.subservermod.encyclopedia.network.EncyclopediaPacket;
 import net.jaju.subservermod.encyclopedia.network.ItemDiscoveryPacket;
 import net.jaju.subservermod.encyclopedia.network.giftGetPacket;
 import net.jaju.subservermod.landsystem.network.packet.*;
+import net.jaju.subservermod.mailbox.network.packet.MailboxPacket;
+import net.jaju.subservermod.mailbox.network.packet.UpdateMailboxPacket;
 import net.jaju.subservermod.shopsystem.network.ShopEntityDataPacket;
 import net.jaju.subservermod.shopsystem.network.UpdateInventoryPacket;
+import net.jaju.subservermod.shopsystem.network.UpdateShopEntityPacket;
 import net.jaju.subservermod.subclass.network.*;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
@@ -44,16 +49,41 @@ public class ModNetworking {
         INSTANCE.registerMessage(id++, ItemDiscoveryPacket.class, ItemDiscoveryPacket::encode, ItemDiscoveryPacket::decode, ItemDiscoveryPacket::handle, Optional.of(NetworkDirection.PLAY_TO_SERVER));
         INSTANCE.registerMessage(id++, giftGetPacket.class, giftGetPacket::encode, giftGetPacket::decode, giftGetPacket::handle, Optional.of(NetworkDirection.PLAY_TO_SERVER));
         INSTANCE.registerMessage(id++, EncyclopediaPacket.class, EncyclopediaPacket::encode, EncyclopediaPacket::decode, EncyclopediaPacket::handle);
+        INSTANCE.registerMessage(id++, MailboxPacket.class, MailboxPacket::encode, MailboxPacket::decode, MailboxPacket::handle);
+        INSTANCE.registerMessage(id++, AuctionPacket.class, AuctionPacket::encode, AuctionPacket::decode, AuctionPacket::handle);
+        INSTANCE.registerMessage(id++, CoinDataRequestFromShopPacket.class, CoinDataRequestFromShopPacket::toBytes, CoinDataRequestFromShopPacket::new, CoinDataRequestFromShopPacket::handle);
+        INSTANCE.registerMessage(id++, CoinDataShopSyncPacket.class, CoinDataShopSyncPacket::toBytes, CoinDataShopSyncPacket::new, CoinDataShopSyncPacket::handle);
+        INSTANCE.registerMessage(id++, CoinDataRequestFromAuctionPacket.class, CoinDataRequestFromAuctionPacket::toBytes, CoinDataRequestFromAuctionPacket::new, CoinDataRequestFromAuctionPacket::handle);
+        INSTANCE.registerMessage(id++, CoinDataAuctionSyncPacket.class, CoinDataAuctionSyncPacket::toBytes, CoinDataAuctionSyncPacket::new, CoinDataAuctionSyncPacket::handle);
+        INSTANCE.registerMessage(id++, CoinDataUpdatePacket.class, CoinDataUpdatePacket::toBytes, CoinDataUpdatePacket::new, CoinDataUpdatePacket::handle);
+        INSTANCE.registerMessage(id++, UpdateMailboxPacket.class, UpdateMailboxPacket::encode, UpdateMailboxPacket::decode, UpdateMailboxPacket::handle);
+        INSTANCE.registerMessage(id++, UpdateAuctionPacket.class, UpdateAuctionPacket::encode, UpdateAuctionPacket::decode, UpdateAuctionPacket::handle);
 
-        INSTANCE.messageBuilder(CoinDataSyncPacket.class, id++, NetworkDirection.PLAY_TO_CLIENT)
-                .decoder(CoinDataSyncPacket::new)
-                .encoder(CoinDataSyncPacket::toBytes)
-                .consumerMainThread(CoinDataSyncPacket::handle)
+        ModNetworking.INSTANCE.registerMessage(id++, UpdateShopEntityPacket.class, UpdateShopEntityPacket::toBytes, UpdateShopEntityPacket::new, UpdateShopEntityPacket::handle);
+        INSTANCE.messageBuilder(CoinDataServerSyncPacket.class, id++, NetworkDirection.PLAY_TO_CLIENT)
+                .decoder(CoinDataServerSyncPacket::new)
+                .encoder(CoinDataServerSyncPacket::toBytes)
+                .consumerMainThread(CoinDataServerSyncPacket::handle)
                 .add();
         INSTANCE.messageBuilder(SetFlagPacket.class, id++, NetworkDirection.PLAY_TO_SERVER)
                 .decoder(SetFlagPacket::decode)
                 .encoder(SetFlagPacket::encode)
                 .consumerMainThread(SetFlagPacket::handle)
+                .add();
+        INSTANCE.messageBuilder(UpdateOvenRecipePacket.class, id++, NetworkDirection.PLAY_TO_SERVER)
+                .decoder(UpdateOvenRecipePacket::decode)
+                .encoder(UpdateOvenRecipePacket::encode)
+                .consumerMainThread(UpdateOvenRecipePacket::handle)
+                .add();
+        INSTANCE.messageBuilder(UpdateMiddleOvenRecipePacket.class, id++, NetworkDirection.PLAY_TO_SERVER)
+                .decoder(UpdateMiddleOvenRecipePacket::decode)
+                .encoder(UpdateMiddleOvenRecipePacket::encode)
+                .consumerMainThread(UpdateMiddleOvenRecipePacket::handle)
+                .add();
+        INSTANCE.messageBuilder(UpdateWoodcuttingUnionRecipePacket.class, id++, NetworkDirection.PLAY_TO_SERVER)
+                .decoder(UpdateWoodcuttingUnionRecipePacket::decode)
+                .encoder(UpdateWoodcuttingUnionRecipePacket::encode)
+                .consumerMainThread(UpdateWoodcuttingUnionRecipePacket::handle)
                 .add();
     }
 

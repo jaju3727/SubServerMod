@@ -42,27 +42,27 @@ public class LandManagerScreen extends Screen {
     private void initializeWidgets() {
         this.clearWidgets();
 
-        int standardX = 70;
-        int standardY = 30;
-        int intervalX = 130;
-        int intervalY = 60;
+        int standardX = 115;
+        int standardY = 80;
+        int intervalX = 140;
+        int intervalY = 90;
 
         int end = page == maxPage ? (ownerList.size() - 1) % 4 + 1 : 4;
 
         for (int i = 0; i < end; i++) {
 
             String chunkKey = ownerList.get((page - 1) * 4 + i);
-            this.addRenderableWidget(new ImageButton(standardX + 50 + (i % 2) * intervalX,
-                    standardY + 30 + (i / 2) * intervalY,
-                    30, 15, 0, 0, 1,
-                    new ResourceLocation(Subservermod.MOD_ID, "textures/gui/landsystem/landshare.png"),
-                    30, 15, button -> Minecraft.getInstance().setScreen(new ShareScreen(Component.literal("Reclaim Screen"), player, chunkKey))));
+            this.addRenderableWidget(new ImageButton(standardX + 50 + (i % 2) * intervalX +20,
+                    standardY + 30 + (i / 2) * intervalY - 10,
+                    60, 18, 0, 0, 1,
+                    new ResourceLocation(Subservermod.MOD_ID, "textures/gui/landsystem/share.png"),
+                    60, 18, button -> Minecraft.getInstance().setScreen(new ShareScreen(Component.literal("Reclaim Screen"), player, chunkKey))));
 
             this.addRenderableWidget(new ImageButton(standardX + (i % 2) * intervalX,
-                    standardY + 40 + (i / 2) * intervalY,
-                    50, 15, 0, 0, 1,
-                    new ResourceLocation(Subservermod.MOD_ID, "textures/gui/landsystem/landreclaim.png"),
-                    50, 15, button -> Minecraft.getInstance().setScreen(new ReclaimScreen(Component.literal("Reclaim Screen"), player, chunkKey))));
+                    standardY + 30 + (i / 2) * intervalY - 10,
+                    60, 18, 0, 0, 1,
+                    new ResourceLocation(Subservermod.MOD_ID, "textures/gui/landsystem/reclaim.png"),
+                    60, 18, button -> Minecraft.getInstance().setScreen(new ReclaimScreen(Component.literal("Reclaim Screen"), player, chunkKey))));
 
             this.addRenderableWidget(new CustomPlainTextButton(
                     standardX + (i % 2) * intervalX, // 버튼의 X 좌표
@@ -76,17 +76,18 @@ public class LandManagerScreen extends Screen {
             ));
         }
 
+        int x = 160;
         if (page != minPage) {
-            this.addRenderableWidget(new ImageButton(40, 150,
-                    40, 40, 0, 0, 0,
+            this.addRenderableWidget(new ImageButton(this.width/2 - x - 30, (this.height)/2,
+                    30, 15, 0, 0, 0,
                     new ResourceLocation(Subservermod.MOD_ID, "textures/gui/leftarrow.png"),
-                    40, 40, button -> leftPage()));
+                    30, 15, button -> leftPage()));
         }
         if (page != maxPage) {
-            this.addRenderableWidget(new ImageButton(280, 150,
-                    40, 40, 0, 0, 0,
+            this.addRenderableWidget(new ImageButton(this.width/2 + x, (this.height)/2,
+                    30, 15, 0, 0, 0,
                     new ResourceLocation(Subservermod.MOD_ID, "textures/gui/rightarrow.png"),
-                    40, 40, button -> rightPage()));
+                    30, 15, button -> rightPage()));
         }
     }
 
@@ -119,9 +120,12 @@ public class LandManagerScreen extends Screen {
     @Override
     public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
         this.renderBackground(guiGraphics);
-        int centerX = (this.width - 256) / 2;
-        int centerY = (this.height - 256) / 2;
-        guiGraphics.blit(new ResourceLocation(Subservermod.MOD_ID, "textures/gui/landsystem/example.png"), centerX, centerY, 0, 0, 256, 256);
+        int width = 300;
+        int height = (int) (300*0.833);
+        int centerX = (this.width - width) / 2;
+        int centerY = (this.height - height) / 2;
+        guiGraphics.blit(new ResourceLocation(Subservermod.MOD_ID, "textures/gui/landsystem/landsystem_background.png"),
+                centerX, centerY, 0, 0, width, height, width, height);
         super.render(guiGraphics, mouseX, mouseY, partialTicks);
     }
 }

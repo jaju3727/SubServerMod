@@ -4,27 +4,33 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
+import com.mojang.brigadier.suggestion.SuggestionProvider;
 import net.jaju.subservermod.shopsystem.entity.ModEntities;
 import net.jaju.subservermod.shopsystem.entity.ShopEntity;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.coordinates.BlockPosArgument;
-import net.minecraft.commands.arguments.item.ItemArgument;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.entity.EntityTypeTest;
-import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
+import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 public class ShopCommands {
+
+    private static final List<String> COIN_TYPES = Arrays.asList(
+            "sub_coin", "chef_coin", "farmer_coin", "fisherman_coin",
+            "alchemist_coin", "miner_coin", "woodcutter_coin"
+    );
+
+    private static final SuggestionProvider<CommandSourceStack> COIN_TYPE_SUGGESTIONS =
+            (context, builder) -> net.minecraft.commands.SharedSuggestionProvider.suggest(COIN_TYPES, builder);
 
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher, CommandBuildContext buildContext) {
         dispatcher.register(Commands.literal("shop")
@@ -32,53 +38,74 @@ public class ShopCommands {
                         .then(Commands.argument("name", StringArgumentType.string())
                                 .then(Commands.argument("buyPrice", IntegerArgumentType.integer())
                                         .then(Commands.argument("sellPrice", IntegerArgumentType.integer())
-                                                .then(Commands.argument("isBuyable", BoolArgumentType.bool())
-                                                        .then(Commands.argument("isSellable", BoolArgumentType.bool())
-                                                                .executes(context -> {
-                                                                    String name = StringArgumentType.getString(context, "name");
-                                                                    ItemStack itemStack = context.getSource().getPlayerOrException().getMainHandItem();
-                                                                    int buyPrice = IntegerArgumentType.getInteger(context, "buyPrice");
-                                                                    int sellPrice = IntegerArgumentType.getInteger(context, "sellPrice");
-                                                                    boolean isBuyable = BoolArgumentType.getBool(context, "isBuyable");
-                                                                    boolean isSellable = BoolArgumentType.getBool(context, "isSellable");
-
-                                                                    ServerLevel world = context.getSource().getLevel();
-                                                                    int addedEntities = addItemsToShopEntities(world, name, itemStack, buyPrice, sellPrice, isBuyable, isSellable);
-
-                                                                    if (addedEntities > 0) {
-                                                                        context.getSource().sendSuccess(() -> Component.literal("Added item to " + addedEntities + " shop entities with name: " + name), true);
-                                                                    } else {
-                                                                        context.getSource().sendFailure(Component.literal("No shop entities found with name: " + name));
-                                                                    }
-                                                                    return 1;
-                                                                })))))))
-                .then(Commands.literal("set")
-                        .then(Commands.literal("set")
-                                .then(Commands.argument("id", IntegerArgumentType.integer())
-                                        .then(Commands.argument("name", StringArgumentType.string())
-                                                .then(Commands.argument("buyPrice", IntegerArgumentType.integer())
-                                                        .then(Commands.argument("sellPrice", IntegerArgumentType.integer())
+                                                .then(Commands.argument("dailyBuyLimitNum", IntegerArgumentType.integer())
+                                                        .then(Commands.argument("dailySellLimitNum", IntegerArgumentType.integer())
                                                                 .then(Commands.argument("isBuyable", BoolArgumentType.bool())
                                                                         .then(Commands.argument("isSellable", BoolArgumentType.bool())
-                                                                                .executes(context -> {
-                                                                                    String name = StringArgumentType.getString(context, "name");
-                                                                                    ItemStack itemStack = context.getSource().getPlayerOrException().getMainHandItem();
-                                                                                    int buyPrice = IntegerArgumentType.getInteger(context, "buyPrice");
-                                                                                    int sellPrice = IntegerArgumentType.getInteger(context, "sellPrice");
-                                                                                    int id = IntegerArgumentType.getInteger(context, "id");
-                                                                                    boolean isBuyable = BoolArgumentType.getBool(context, "isBuyable");
-                                                                                    boolean isSellable = BoolArgumentType.getBool(context, "isSellable");
+                                                                                .then(Commands.argument("isDailyBuyLimit", BoolArgumentType.bool())
+                                                                                        .then(Commands.argument("isDailySellLimit", BoolArgumentType.bool())
+                                                                                            .then(Commands.argument("coinType", StringArgumentType.string())
+                                                                                                    .suggests(COIN_TYPE_SUGGESTIONS)
+                                                                                                    .executes(context -> {
+                                                                                                        String name = StringArgumentType.getString(context, "name");
+                                                                                                        ItemStack itemStack = context.getSource().getPlayerOrException().getMainHandItem();
+                                                                                                        int buyPrice = IntegerArgumentType.getInteger(context, "buyPrice");
+                                                                                                        int sellPrice = IntegerArgumentType.getInteger(context, "sellPrice");
+                                                                                                        int dailyBuyLimitNum = IntegerArgumentType.getInteger(context, "dailyBuyLimitNum");
+                                                                                                        int dailySellLimitNum = IntegerArgumentType.getInteger(context, "dailySellLimitNum");
+                                                                                                        boolean isBuyable = BoolArgumentType.getBool(context, "isBuyable");
+                                                                                                        boolean isSellable = BoolArgumentType.getBool(context, "isSellable");
+                                                                                                        boolean isDailyBuyLimit = BoolArgumentType.getBool(context, "isDailyBuyLimit");
+                                                                                                        boolean isDailySellLimit = BoolArgumentType.getBool(context, "isDailySellLimit");
+                                                                                                        String coinType = StringArgumentType.getString(context, "coinType");
 
-                                                                                    ServerLevel world = context.getSource().getLevel();
-                                                                                    int setEntities = setItemsToShopEntities(world, name, itemStack, buyPrice, sellPrice, id, isBuyable, isSellable);
+                                                                                                        ServerLevel world = context.getSource().getLevel();
+                                                                                                        int addedEntities = addItemsToShopEntities(world, name, itemStack, buyPrice, sellPrice, dailyBuyLimitNum, dailySellLimitNum, isBuyable, isSellable, isDailyBuyLimit, isDailySellLimit, coinType);
 
-                                                                                    if (setEntities > 0) {
-                                                                                        context.getSource().sendSuccess(() -> Component.literal("Set item to " + setEntities + " shop entities with name: " + name), true);
-                                                                                    } else {
-                                                                                        context.getSource().sendFailure(Component.literal("No shop entities found with name: " + name));
-                                                                                    }
-                                                                                    return 1;
-                                                                                })))))))))
+                                                                                                        if (addedEntities > 0) {
+                                                                                                            context.getSource().sendSuccess(() -> Component.literal("Added item to " + addedEntities + " shop entities with name: " + name), true);
+                                                                                                        } else {
+                                                                                                            context.getSource().sendFailure(Component.literal("No shop entities found with name: " + name));
+                                                                                                        }
+                                                                                                        return 1;
+                                                                                                    }))))))))))))
+                .then(Commands.literal("set")
+                        .then(Commands.argument("id", IntegerArgumentType.integer())
+                                .then(Commands.argument("name", StringArgumentType.string())
+                                        .then(Commands.argument("buyPrice", IntegerArgumentType.integer())
+                                                .then(Commands.argument("sellPrice", IntegerArgumentType.integer())
+                                                        .then(Commands.argument("dailyBuyLimitNum", IntegerArgumentType.integer())
+                                                                .then(Commands.argument("dailySellLimitNum", IntegerArgumentType.integer())
+                                                                        .then(Commands.argument("isBuyable", BoolArgumentType.bool())
+                                                                                .then(Commands.argument("isSellable", BoolArgumentType.bool())
+                                                                                        .then(Commands.argument("isDailyBuyLimit", BoolArgumentType.bool())
+                                                                                                .then(Commands.argument("isDailySellLimit", BoolArgumentType.bool())
+                                                                                                        .then(Commands.argument("isDailySellLimit", BoolArgumentType.bool())
+                                                                                                                .then(Commands.argument("coinType", StringArgumentType.string())
+                                                                                                                .executes(context -> {
+                                                                                                                    String name = StringArgumentType.getString(context, "name");
+                                                                                                                    ItemStack itemStack = context.getSource().getPlayerOrException().getMainHandItem();
+                                                                                                                    int buyPrice = IntegerArgumentType.getInteger(context, "buyPrice");
+                                                                                                                    int sellPrice = IntegerArgumentType.getInteger(context, "sellPrice");
+                                                                                                                    int dailyBuyLimitNum = IntegerArgumentType.getInteger(context, "dailyBuyLimitNum");
+                                                                                                                    int dailySellLimitNum = IntegerArgumentType.getInteger(context, "dailySellLimitNum");
+                                                                                                                    int id = IntegerArgumentType.getInteger(context, "id");
+                                                                                                                    boolean isBuyable = BoolArgumentType.getBool(context, "isBuyable");
+                                                                                                                    boolean isSellable = BoolArgumentType.getBool(context, "isSellable");
+                                                                                                                    boolean isDailyBuyLimit = BoolArgumentType.getBool(context, "isDailyBuyLimit");
+                                                                                                                    boolean isDailySellLimit = BoolArgumentType.getBool(context, "isDailySellLimit");
+                                                                                                                    String coinType = StringArgumentType.getString(context, "coinType");
+
+                                                                                                                    ServerLevel world = context.getSource().getLevel();
+                                                                                                                    int setEntities = setItemsToShopEntities(world, name, itemStack, buyPrice, sellPrice, dailyBuyLimitNum, dailySellLimitNum, id, isBuyable, isSellable, isDailyBuyLimit, isDailySellLimit, coinType);
+
+                                                                                                                    if (setEntities > 0) {
+                                                                                                                        context.getSource().sendSuccess(() -> Component.literal("Set item to " + setEntities + " shop entities with name: " + name), true);
+                                                                                                                    } else {
+                                                                                                                        context.getSource().sendFailure(Component.literal("No shop entities found with name: " + name));
+                                                                                                                    }
+                                                                                                                    return 1;
+                                                                                                                }))))))))))))))
                 .then(Commands.literal("remove")
                         .then(Commands.argument("name", StringArgumentType.string())
                                 .executes(context -> {
@@ -196,24 +223,24 @@ public class ShopCommands {
         return removedCount;
     }
 
-    private static int addItemsToShopEntities(ServerLevel world, String name, ItemStack itemStack, int buyPrice, int sellPrice, boolean isBuyable, boolean isSellable) {
+    private static int addItemsToShopEntities(ServerLevel world, String name, ItemStack itemStack, int buyPrice, int sellPrice, int dailyBuyLimitNum, int dailySellLimitNum, boolean isBuyable, boolean isSellable, boolean isDailyBuyLimit, boolean isDailySellLimit, String coinType) {
         int addedCount = 0;
         List<ShopEntity> entities = (List<ShopEntity>) world.getEntities(EntityTypeTest.forClass(ShopEntity.class), entity -> entity.hasCustomName() && entity.getCustomName().getString().equals(name));
         for (ShopEntity entity : entities) {
             if (entity.getCustomName() != null && entity.getCustomName().getString().equals(name)) {
-                entity.getShopItems().add(new ShopItem(itemStack, buyPrice, sellPrice, isBuyable, isSellable));
+                entity.getShopItems().add(new ShopItem(itemStack, buyPrice, sellPrice, dailyBuyLimitNum, dailyBuyLimitNum, dailySellLimitNum , dailySellLimitNum, isBuyable, isSellable, isDailyBuyLimit, isDailySellLimit, coinType));
                 addedCount++;
             }
         }
         return addedCount;
     }
 
-    private static int setItemsToShopEntities(ServerLevel world, String name, ItemStack itemStack, int buyPrice, int sellPrice, int id, boolean isBuyable, boolean isSellable) {
+    private static int setItemsToShopEntities(ServerLevel world, String name, ItemStack itemStack, int buyPrice, int sellPrice, int dailyBuyLimitNum, int dailySellLimitNum, int id, boolean isBuyable, boolean isSellable, boolean isDailyBuyLimit, boolean isDailySellLimit, String coinType) {
         int addedCount = 0;
         List<ShopEntity> entities = (List<ShopEntity>) world.getEntities(EntityTypeTest.forClass(ShopEntity.class), entity -> entity.hasCustomName() && entity.getCustomName().getString().equals(name));
         for (ShopEntity entity : entities) {
             if (entity.getCustomName() != null && entity.getCustomName().getString().equals(name)) {
-                entity.getShopItems().set(id, new ShopItem(itemStack, buyPrice, sellPrice, isBuyable, isSellable));
+                entity.getShopItems().set(id, new ShopItem(itemStack, buyPrice, sellPrice, dailyBuyLimitNum, dailyBuyLimitNum, dailySellLimitNum, dailySellLimitNum, isBuyable, isSellable, isDailyBuyLimit, isDailySellLimit, coinType));
                 addedCount++;
             }
         }
