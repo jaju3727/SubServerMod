@@ -34,11 +34,12 @@ import org.slf4j.Logger;
 @Mod(Subservermod.MOD_ID)
 public class Subservermod {
     public static final String MOD_ID = "subservermod";
-    private static final Logger LOGGER = LogUtils.getLogger();
+    public static final Logger LOGGER = LogUtils.getLogger();
 
     public Subservermod() {
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
 
+        // Register all necessary mod components
         ModSounds.register(modEventBus);
         ModCreativeModTabs.register(modEventBus);
         ModItem.register(modEventBus);
@@ -47,20 +48,25 @@ public class Subservermod {
         ModContainers.register(modEventBus);
         ModEntities.ENTITIES.register(modEventBus);
 
+        // Register event handlers
         MinecraftForge.EVENT_BUS.register(KeyInputHandler.class);
         MinecraftForge.EVENT_BUS.register(new ChunkOwnershipHandler());
         MinecraftForge.EVENT_BUS.register(new ServerSideEventHandler());
         MinecraftForge.EVENT_BUS.register(MailboxManager.class);
         MinecraftForge.EVENT_BUS.register(MailboxCommand.class);
-        MinecraftForge.EVENT_BUS.register(this);
         MinecraftForge.EVENT_BUS.register(CoinHud.class);
-        modEventBus.addListener(KeyBindings::registerKeyMappings);
+
         modEventBus.addListener(this::commonSetup);
-        DistExecutor.runWhenOn(Dist.CLIENT, () -> () -> {
+        modEventBus.addListener(this::addCreative);
+
+        // Register client-specific event handlers
+        DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> {
             modEventBus.addListener(this::clientSetup);
             MinecraftForge.EVENT_BUS.register(ClientModEventSubscriber.class);
         });
-        modEventBus.addListener(this::addCreative);
+
+        // Register this class to handle server events
+        MinecraftForge.EVENT_BUS.register(this);
     }
 
     private void commonSetup(final FMLCommonSetupEvent event) {
@@ -69,18 +75,18 @@ public class Subservermod {
     }
 
     private void clientSetup(final FMLClientSetupEvent event) {
+        IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
         ModScreens.register();
         event.enqueueWork(() -> {
             ItemBlockRenderTypes.setRenderLayer(ModBlocks.BREWING_BLOCK.get(), RenderType.cutout());
             ItemBlockRenderTypes.setRenderLayer(ModBlocks.OVEN_BLOCK.get(), RenderType.cutout());
         });
+        modEventBus.register(KeyBindings.class);
 
     }
 
     private void addCreative(BuildCreativeModeTabContentsEvent event) {
-//        if (event.getTabKey() == CreativeModeTabs.INGREDIENTS) {
-//            event.accept(ModItem.CONSTRUNTING_ALLOW);
-//        }
+        // Creative tab에 아이템 추가 로직
     }
 
     @SubscribeEvent

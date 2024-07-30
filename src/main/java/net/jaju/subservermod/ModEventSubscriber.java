@@ -8,7 +8,6 @@ import net.jaju.subservermod.shopsystem.entity.rederer.ShopEntityRenderer;
 import net.jaju.subservermod.subclass.ClassCommand;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -19,6 +18,7 @@ public class ModEventSubscriber {
 
     @SubscribeEvent
     public static void onRegisterCommands(RegisterCommandsEvent event) {
+        Subservermod.LOGGER.info("2");
         CommandDispatcher<CommandSourceStack> dispatcher = event.getDispatcher();
         CommandBuildContext buildContext = event.getBuildContext();
         ShopCommands.register(dispatcher, buildContext);

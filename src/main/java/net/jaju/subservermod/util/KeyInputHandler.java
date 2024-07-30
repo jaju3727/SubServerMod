@@ -1,6 +1,7 @@
 package net.jaju.subservermod.util;
 
 import net.jaju.subservermod.ModNetworking;
+import net.jaju.subservermod.Subservermod;
 import net.jaju.subservermod.auction.AuctionScreen;
 import net.jaju.subservermod.encyclopedia.EncyclopediaManager;
 import net.jaju.subservermod.encyclopedia.screen.EncyclopediaScreen;
@@ -17,10 +18,8 @@ import net.minecraftforge.fml.common.Mod;
 
 import java.util.Map;
 
-@Mod.EventBusSubscriber
+@Mod.EventBusSubscriber(modid = Subservermod.MOD_ID, value = Dist.CLIENT)
 public class KeyInputHandler {
-    public static final EncyclopediaManager landManager = new EncyclopediaManager();
-
     @OnlyIn(Dist.CLIENT)
     @SubscribeEvent
     public static void onKeyInput(InputEvent.Key event) {
@@ -29,7 +28,7 @@ public class KeyInputHandler {
                 assert Minecraft.getInstance().player != null;
                 Minecraft.getInstance().setScreen(new LandManagerScreen(Component.empty(), Minecraft.getInstance().player));
 //                Minecraft.getInstance().setScreen(new MailboxScreen(Minecraft.getInstance().player));
-            } else if (KeyBindings.TestKey.consumeClick()) {
+            } else if (KeyBindings.testKey.consumeClick()) {
                 assert Minecraft.getInstance().player != null;
 //                Minecraft.getInstance().setScreen(new AuctionScreen(Minecraft.getInstance().player));
                 Minecraft.getInstance().setScreen(new EncyclopediaScreen(Minecraft.getInstance().player));

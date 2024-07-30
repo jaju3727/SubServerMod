@@ -1,16 +1,14 @@
 package net.jaju.subservermod.randombox;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import net.jaju.subservermod.util.ItemStackSerializer;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.StringTag;
 import net.minecraft.world.item.ItemStack;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import java.util.stream.Collectors;
 
 public class RandomBox {
     private final String name;
@@ -48,25 +46,25 @@ public class RandomBox {
         return items;
     }
 
-    public List<JsonObject> getSerializedItems() {
-        return items.stream()
-                .map(item -> {
-                    JsonObject jsonObject = new JsonObject();
-                    jsonObject.add("item", ItemStackSerializer.serialize(item.getItem()));
-                    jsonObject.addProperty("chance", item.getChance());
-                    return jsonObject;
-                })
-                .collect(Collectors.toList());
+    public JsonObject serialize() {
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.addProperty("name", name);
+        JsonArray jsonArray = new JsonArray();
+        for (RandomBoxItem item : items) {
+            jsonArray.add(item.serialize());
+        }
+        jsonObject.add("items", jsonArray);
+        return jsonObject;
     }
 
-    public static RandomBox fromSerialized(String name, List<JsonObject> serializedItems) {
-        RandomBox randomBox = new RandomBox(name);
-        for (JsonObject jsonObject : serializedItems) {
-            ItemStack itemStack = ItemStackSerializer.deserialize(jsonObject.getAsJsonObject("item"));
-            int chance = jsonObject.get("chance").getAsInt();
-            randomBox.addItem(itemStack, chance);
+    public static RandomBox deserialize(JsonObject jsonObject) {
+        String name = jsonObject.get("name").getAsString();
+        RandomBox box = new RandomBox(name);
+        JsonArray jsonArray = jsonObject.getAsJsonArray("items");
+        for (JsonElement element : jsonArray) {
+            box.items.add(RandomBoxItem.deserialize(element.getAsJsonObject()));
         }
-        return randomBox;
+        return box;
     }
 
     public static class RandomBoxItem {
@@ -84,6 +82,19 @@ public class RandomBox {
 
         public int getChance() {
             return chance;
+        }
+
+        public JsonObject serialize() {
+            JsonObject jsonObject = new JsonObject();
+            jsonObject.add("item", ItemStackSerializer.serialize(item));
+            jsonObject.addProperty("chance", chance);
+            return jsonObject;
+        }
+
+        public static RandomBoxItem deserialize(JsonObject jsonObject) {
+            ItemStack item = ItemStackSerializer.deserialize(jsonObject.getAsJsonObject("item"));
+            int chance = jsonObject.get("chance").getAsInt();
+            return new RandomBoxItem(item, chance);
         }
     }
 }

@@ -14,7 +14,6 @@ import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.jaju.subservermod.Subservermod;
-import net.minecraftforge.fml.common.Mod;
 
 import java.util.Arrays;
 import java.util.List;
