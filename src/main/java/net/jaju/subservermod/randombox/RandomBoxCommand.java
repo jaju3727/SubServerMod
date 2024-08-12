@@ -21,6 +21,8 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -50,6 +52,7 @@ public class RandomBoxCommand {
         CommandDispatcher<CommandSourceStack> dispatcher = event.getDispatcher();
 
         dispatcher.register(Commands.literal("randombox")
+                .requires(source -> source.hasPermission(2))
                 .then(Commands.literal("create")
                         .then(Commands.argument("name", StringArgumentType.string())
                                 .executes(context -> {
@@ -111,15 +114,53 @@ public class RandomBoxCommand {
 
                                     if (box != null) {
                                         context.getSource().sendSuccess(() -> Component.literal("랜덤 박스 '" + name + "'의 아이템 목록:"), false);
-                                        box.getItems().forEach(item -> {
-                                            context.getSource().sendSuccess(() -> Component.literal(item.getItem().getDisplayName().getString() + " - 확률: " + item.getChance() + "%"), false);
-                                        });
+                                        for (int i = 0; i < box.getItems().size(); i++) {
+                                            RandomBox.RandomBoxItem item = box.getItems().get(i);
+                                            int finalI = i;
+                                            context.getSource().sendSuccess(() -> Component.literal(finalI +": "+item.getItem().getDisplayName().getString() + " - 확률: " + item.getChance() + "%"), false);
+                                        }
                                     } else {
                                         context.getSource().sendFailure(Component.literal("랜덤 박스를 찾을 수 없습니다."));
                                     }
 
                                     return 1;
                                 })))
+                .then(Commands.literal("remove")
+                        .then(Commands.argument("name", StringArgumentType.string())
+                                .suggests(RANDOM_BOX_SUGGESTIONS)
+                                .executes(context -> {
+                                    String name = StringArgumentType.getString(context, "name");
+
+                                    if (randomBoxes.remove(name) != null) {
+                                        saveRandomBoxes();
+                                        context.getSource().sendSuccess(() -> Component.literal("랜덤 박스 '" + name + "'이(가) 삭제되었습니다."), true);
+                                    } else {
+                                        context.getSource().sendFailure(Component.literal("랜덤 박스를 찾을 수 없습니다."));
+                                    }
+
+                                    return 1;
+                                })
+                                .then(Commands.argument("index", IntegerArgumentType.integer(0))
+                                        .executes(context -> {
+                                            String name = StringArgumentType.getString(context, "name");
+                                            int index = IntegerArgumentType.getInteger(context, "index");
+
+                                            RandomBox box = randomBoxes.get(name);
+                                            if (box != null) {
+                                                if (index >= 0 && index < box.getItems().size()) {
+                                                    RandomBox.RandomBoxItem removedItem = box.getItems().remove(index);
+                                                    saveRandomBoxes();
+                                                    context.getSource().sendSuccess(() -> Component.literal("아이템 '" + removedItem.getItem().getDisplayName().getString() + "'이(가) 랜덤 박스 '" + name + "'에서 삭제되었습니다."), true);
+                                                } else {
+                                                    context.getSource().sendFailure(Component.literal("해당 인덱스에 아이템이 없습니다."));
+                                                }
+                                            } else {
+                                                context.getSource().sendFailure(Component.literal("랜덤 박스를 찾을 수 없습니다."));
+                                            }
+
+                                            return 1;
+                                        }))))
+
         );
     }
 
@@ -139,7 +180,7 @@ public class RandomBoxCommand {
         }
     }
 
-    private static void loadRandomBoxes() {
+    public static void loadRandomBoxes() {
         try (FileReader reader = new FileReader(FILE_PATH)) {
             Type type = new TypeToken<JsonArray>() {}.getType();
             JsonArray jsonArray = gson.fromJson(reader, type);

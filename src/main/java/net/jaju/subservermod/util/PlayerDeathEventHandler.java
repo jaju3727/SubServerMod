@@ -1,4 +1,4 @@
-package net.jaju.subservermod.events;
+package net.jaju.subservermod.util;
 
 import net.jaju.subservermod.item.ModItem;
 import net.minecraft.network.chat.Component;
@@ -21,11 +21,13 @@ import java.util.UUID;
 @Mod.EventBusSubscriber(modid = Subservermod.MOD_ID)
 public class PlayerDeathEventHandler {
     private static final Map<UUID, ListTag> playerInventories = new HashMap<>();
+    private static final Map<UUID, Integer> playerExperience = new HashMap<>();
 
     @SubscribeEvent
     public static void onPlayerDeath(LivingDeathEvent event) {
         if (event.getEntity() instanceof Player player) {
             if (hasSpecialItem(player)) {
+                playerExperience.put(player.getUUID(), player.totalExperience);
                 event.setCanceled(true);
                 ListTag inventoryList = new ListTag();
                 for (int i = 0; i < player.getInventory().getContainerSize(); i++) {
@@ -47,6 +49,7 @@ public class PlayerDeathEventHandler {
     public static void onPlayerRespawn(PlayerEvent.PlayerRespawnEvent event) {
         Player player = event.getEntity();
         UUID playerUUID = player.getUUID();
+
         if (playerInventories.containsKey(playerUUID)) {
             ListTag inventoryList = playerInventories.get(playerUUID);
             for (Tag tag : inventoryList) {
@@ -56,6 +59,12 @@ public class PlayerDeathEventHandler {
                 player.getInventory().setItem(slot, stack);
             }
             playerInventories.remove(playerUUID);
+        }
+
+        if (playerExperience.containsKey(playerUUID)) {
+            int experience = playerExperience.get(playerUUID);
+            player.giveExperiencePoints(experience);
+            playerExperience.remove(playerUUID);
         }
     }
 

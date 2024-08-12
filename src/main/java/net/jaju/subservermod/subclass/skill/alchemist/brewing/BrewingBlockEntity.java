@@ -67,8 +67,7 @@ public class BrewingBlockEntity extends BlockEntity implements MenuProvider {
                 itemHandler.setStackInSlot(0, new ItemStack(itemHandler.getStackInSlot(0).getItem(), itemHandler.getStackInSlot(0).getCount() - 1));
             }
             if (itemHandler.getStackInSlot(1).getItem() == Items.WATER_BUCKET && waterCount == 0) {
-                waterCount = 16;
-                //$물소리
+                waterCount = 32;
                 itemHandler.setStackInSlot(1, new ItemStack(Items.BUCKET, 1));
             }
             if (waterCount != 0 && itemHandler.getStackInSlot(6).getItem() == Items.GLASS_BOTTLE && itemHandler.getStackInSlot(7+ i*2).isEmpty()) {
@@ -118,8 +117,8 @@ public class BrewingBlockEntity extends BlockEntity implements MenuProvider {
     private void sendBrewingUpdateToClient() {
         if (level != null && !level.isClientSide) {
             level.players().forEach(player -> {
-                if (player instanceof ServerPlayer serverPlayer) {
-                    ModNetworking.sendToClient(new BrewingVarSendToClientPacket(blazeCount, waterCount), serverPlayer);
+                if (player instanceof ServerPlayer serverPlayer && serverPlayer.containerMenu instanceof BrewingContainer container && container.getBlockEntity() == this) {
+                    ModNetworking.sendToClient(new BrewingVarSendToClientPacket(blazeCount, waterCount, updateTimer.get(0)), serverPlayer);
                 }
             });
         }

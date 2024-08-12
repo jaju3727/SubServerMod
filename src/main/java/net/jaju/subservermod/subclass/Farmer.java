@@ -22,16 +22,13 @@ public class Farmer extends BaseClass {
         if (getLevel() == 2) {
             RecipeManager recipeManager = player.server.getRecipeManager();
 
-            recipeManager.byKey(new ResourceLocation(Subservermod.MOD_ID, "butter_recipe")).ifPresent(recipe -> {
-                player.awardRecipes(Collections.singleton(recipe));
-            });
             recipeManager.byKey(new ResourceLocation(Subservermod.MOD_ID, "whipped_cream_recipe")).ifPresent(recipe -> {
                 player.awardRecipes(Collections.singleton(recipe));
             });
-            recipeManager.byKey(new ResourceLocation(Subservermod.MOD_ID, "cream_bread_recipe")).ifPresent(recipe -> {
+            recipeManager.byKey(new ResourceLocation(Subservermod.MOD_ID, "apple_diffuser_recipe")).ifPresent(recipe -> {
                 player.awardRecipes(Collections.singleton(recipe));
             });
-            recipeManager.byKey(new ResourceLocation(Subservermod.MOD_ID, "apple_diffuser_recipe")).ifPresent(recipe -> {
+            recipeManager.byKey(new ResourceLocation(Subservermod.MOD_ID, "chocolate_recipe")).ifPresent(recipe -> {
                 player.awardRecipes(Collections.singleton(recipe));
             });
         }

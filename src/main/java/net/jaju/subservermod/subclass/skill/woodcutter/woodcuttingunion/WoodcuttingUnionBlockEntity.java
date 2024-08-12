@@ -1,6 +1,7 @@
 package net.jaju.subservermod.subclass.skill.woodcutter.woodcuttingunion;
 
 import net.jaju.subservermod.ModNetworking;
+import net.jaju.subservermod.Subservermod;
 import net.jaju.subservermod.block.ModBlockEntities;
 import net.jaju.subservermod.item.ModItem;
 import net.jaju.subservermod.subclass.network.GaugeSendToClientPacket;
@@ -33,7 +34,6 @@ public class WoodcuttingUnionBlockEntity extends BlockEntity implements MenuProv
     public boolean flag = false;
     private int minItemNum = Integer.MAX_VALUE;
     private int updateTimer = 0;
-    private static final int UPDATE_INTERVAL = 20 * 10;
     private static final List<Item> ALL_PLANKS = List.of(
             Items.OAK_PLANKS, Items.SPRUCE_PLANKS, Items.BIRCH_PLANKS, Items.JUNGLE_PLANKS,
             Items.ACACIA_PLANKS, Items.DARK_OAK_PLANKS, Items.CRIMSON_PLANKS, Items.WARPED_PLANKS,
@@ -217,8 +217,9 @@ public class WoodcuttingUnionBlockEntity extends BlockEntity implements MenuProv
     private void sendGaugeUpdateToClient() {
         if (level != null && !level.isClientSide) {
             level.players().forEach(player -> {
-                if (player instanceof ServerPlayer serverPlayer) {
+                if (player instanceof ServerPlayer serverPlayer && serverPlayer.containerMenu instanceof WoodcuttingUnionContainer container && container.getBlockEntity() == this) {
                     ModNetworking.sendToClient(new GaugeSendToClientPacket(gaugeX, flag, minItemNum), serverPlayer);
+                    Subservermod.LOGGER.info(gaugeX + "   " + flag);
                 }
             });
         }

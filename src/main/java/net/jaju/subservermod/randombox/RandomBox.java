@@ -32,7 +32,7 @@ public class RandomBox {
         for (RandomBoxItem item : items) {
             randomValue -= item.getChance();
             if (randomValue < 0) {
-                return item.getItem().copy();
+                return item.getItem();
             }
         }
         return ItemStack.EMPTY;

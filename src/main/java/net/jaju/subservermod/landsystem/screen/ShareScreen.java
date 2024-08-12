@@ -1,6 +1,7 @@
 package net.jaju.subservermod.landsystem.screen;
 
 import net.jaju.subservermod.Subservermod;
+import net.jaju.subservermod.landsystem.LandManager;
 import net.jaju.subservermod.landsystem.network.ClientPacketHandler;
 import net.jaju.subservermod.ModNetworking;
 import net.jaju.subservermod.landsystem.network.packet.LandManagerMethodPacket;
@@ -53,7 +54,7 @@ public class ShareScreen extends Screen {
 
         int standardX = 70;
         int standardY = 30;
-        int intervalX = 70;
+        int intervalX = 120;
         int intervalY = 60;
 
         if (sharerList != null) {
@@ -65,21 +66,22 @@ public class ShareScreen extends Screen {
                 ModNetworking.INSTANCE.sendToServer(new PlayerNamePacket(sharerUUID));
 
                 CustomPlainTextButton textButton = new CustomPlainTextButton(
-                        standardX + 30 + (i % 2) * intervalX, // 버튼의 X 좌표
-                        standardY + 70 + (i / 2) * intervalY, // 버튼의 Y 좌표
+                        standardX + 45 + (i % 2) * intervalX, // 버튼의 X 좌표
+                        standardY + 100 + (i / 2) * intervalY, // 버튼의 Y 좌표
                         0,
                         0,
-                        Component.literal("Loading..."), // 버튼 텍스트 초기값
-                        button -> {}, // 클릭 시 실행될 함수
+                        Component.literal("Player Not Found"), // 버튼 텍스트 초기값
+                        button -> {},
                         minecraft.font,
-                        1.5f
+                        1.5f, 0xA4A4A4
                 );
-                this.addRenderableWidget(new ImageButton(standardX + 50 + (i % 2) * intervalX,
-                        standardY + 100 + (i / 2) * intervalY,
+                this.addRenderableWidget(new ImageButton(standardX + 40 + (i % 2) * intervalX,
+                        standardY + 120 + (i / 2) * intervalY,
                         60, 18, 0, 0, 1,
                         new ResourceLocation(Subservermod.MOD_ID, "textures/gui/landsystem/delete.png"),
                         60, 18, button -> {
                     ModNetworking.INSTANCE.sendToServer(new LandManagerMethodPacket(chunkKey, sharerList.get(getI), "removeChunkSharer"));
+                    this.onClose();
                 }));
 
                 this.addRenderableWidget(textButton);
@@ -87,7 +89,7 @@ public class ShareScreen extends Screen {
             }
         }
 
-        inputField = new EditBox(this.font, standardX+30, standardY, 170, 50, Component.literal("Enter here"));
+        inputField = new EditBox(this.font, standardX+36, standardY + 36, 220, 45, Component.literal("Enter here"));
         inputField.setMaxLength(100); // 최대 입력 길이 설정
         inputField.setBordered(true); // 경계선 표시
         inputField.setVisible(true); // 표시 여부 설정
@@ -95,15 +97,43 @@ public class ShareScreen extends Screen {
         inputField.setHint(Component.literal("플레이어의 닉네임을 입력하세요."));
         this.addRenderableWidget(inputField);
 
-        this.addRenderableWidget(new ImageButton(standardX + 210, standardY + 17,
-                30, 30, 0, 0, 0,
+        this.addRenderableWidget(new ImageButton(standardX + 260, standardY + 38,
+                40, 40, 0, 0, 0,
                 new ResourceLocation(Subservermod.MOD_ID, "textures/gui/landsystem/allow.png"),
-                30, 30, button -> {
+                40, 40, button -> {
             String playerName = inputField.getValue();
             ModNetworking.INSTANCE.sendToServer(new PlayerNamePacket(playerName));
             inputField.setValue("");
         }));
 
+        int x = 150;
+        if (page != minPage) {
+            this.addRenderableWidget(new ImageButton(this.width/2 - x - 30, (this.height)/2,
+                    30, 15, 0, 0, 0,
+                    new ResourceLocation(Subservermod.MOD_ID, "textures/gui/leftarrow.png"),
+                    30, 15, button -> leftPage()));
+        }
+        if (page != maxPage) {
+            this.addRenderableWidget(new ImageButton(this.width/2 + x, (this.height)/2,
+                    30, 15, 0, 0, 0,
+                    new ResourceLocation(Subservermod.MOD_ID, "textures/gui/rightarrow.png"),
+                    30, 15, button -> rightPage()));
+        }
+
+    }
+
+    private void rightPage() {
+        if (page < maxPage) {
+            page++;
+            initializedWidgets();
+        }
+    }
+
+    private void leftPage() {
+        if (page > minPage) {
+            page--;
+            initializedWidgets();
+        }
     }
 
     @SubscribeEvent
@@ -132,7 +162,7 @@ public class ShareScreen extends Screen {
     @Override
     public void onClose() {
         super.onClose();
-        MinecraftForge.EVENT_BUS.unregister(this);  // 이벤트 핸들러 해제
+        MinecraftForge.EVENT_BUS.unregister(this);
     }
 
 

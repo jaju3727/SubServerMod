@@ -110,7 +110,7 @@ public class SkinUtils {
         connection.connect();
 
         try (InputStream inputStream = connection.getInputStream();
-            FileOutputStream outputStream = new FileOutputStream(skinFilePath)) {
+             FileOutputStream outputStream = new FileOutputStream(skinFilePath)) {
             byte[] buffer = new byte[4096];
             int bytesRead;
             while ((bytesRead = inputStream.read(buffer)) != -1) {

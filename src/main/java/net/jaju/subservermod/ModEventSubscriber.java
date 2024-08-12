@@ -2,10 +2,13 @@ package net.jaju.subservermod;
 
 import com.mojang.brigadier.CommandDispatcher;
 import net.jaju.subservermod.coinsystem.CoinCommands;
-import net.jaju.subservermod.shopsystem.entity.ModEntities;
+import net.jaju.subservermod.entity.ModEntities;
+import net.jaju.subservermod.entity.rederer.PlayerEntityRenderer;
+import net.jaju.subservermod.player.PlayerCommand;
+import net.jaju.subservermod.entity.rederer.ShopEntityRenderer;
 import net.jaju.subservermod.shopsystem.ShopCommands;
-import net.jaju.subservermod.shopsystem.entity.rederer.ShopEntityRenderer;
 import net.jaju.subservermod.subclass.ClassCommand;
+import net.jaju.subservermod.village.VillageCommand;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraftforge.client.event.EntityRenderersEvent;
@@ -18,16 +21,18 @@ public class ModEventSubscriber {
 
     @SubscribeEvent
     public static void onRegisterCommands(RegisterCommandsEvent event) {
-        Subservermod.LOGGER.info("2");
         CommandDispatcher<CommandSourceStack> dispatcher = event.getDispatcher();
         CommandBuildContext buildContext = event.getBuildContext();
         ShopCommands.register(dispatcher, buildContext);
+        PlayerCommand.register(dispatcher, buildContext);
         CoinCommands.onRegisterCommands(event);
         ClassCommand.register(dispatcher);
+        VillageCommand.register(dispatcher);
     }
 
     @SubscribeEvent
     public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
-        event.registerEntityRenderer(ModEntities.CUSTOM_ENTITY.get(), ShopEntityRenderer::new);
+        event.registerEntityRenderer(ModEntities.SHOP_ENTITY.get(), ShopEntityRenderer::new);
+        event.registerEntityRenderer(ModEntities.PLAYER_ENTITY.get(), PlayerEntityRenderer::new);
     }
 }

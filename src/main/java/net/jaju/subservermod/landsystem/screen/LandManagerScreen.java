@@ -42,8 +42,8 @@ public class LandManagerScreen extends Screen {
     private void initializeWidgets() {
         this.clearWidgets();
 
-        int standardX = 115;
-        int standardY = 80;
+        int standardX = 105;
+        int standardY = 90;
         int intervalX = 140;
         int intervalY = 90;
 
@@ -53,13 +53,13 @@ public class LandManagerScreen extends Screen {
 
             String chunkKey = ownerList.get((page - 1) * 4 + i);
             this.addRenderableWidget(new ImageButton(standardX + 50 + (i % 2) * intervalX +20,
-                    standardY + 30 + (i / 2) * intervalY - 10,
+                    standardY + 30 + (i / 2) * intervalY + 2,
                     60, 18, 0, 0, 1,
                     new ResourceLocation(Subservermod.MOD_ID, "textures/gui/landsystem/share.png"),
                     60, 18, button -> Minecraft.getInstance().setScreen(new ShareScreen(Component.literal("Reclaim Screen"), player, chunkKey))));
 
             this.addRenderableWidget(new ImageButton(standardX + (i % 2) * intervalX,
-                    standardY + 30 + (i / 2) * intervalY - 10,
+                    standardY + 30 + (i / 2) * intervalY + 2,
                     60, 18, 0, 0, 1,
                     new ResourceLocation(Subservermod.MOD_ID, "textures/gui/landsystem/reclaim.png"),
                     60, 18, button -> Minecraft.getInstance().setScreen(new ReclaimScreen(Component.literal("Reclaim Screen"), player, chunkKey))));
@@ -72,11 +72,11 @@ public class LandManagerScreen extends Screen {
                     Component.literal(centerCoor(chunkKey)), // 버튼 텍스트
                     button -> {}, // 클릭 시 실행될 함수
                     minecraft.font,
-                    1.5f
+                    1.4f, 0xA4A4A4
             ));
         }
 
-        int x = 160;
+        int x = 150;
         if (page != minPage) {
             this.addRenderableWidget(new ImageButton(this.width/2 - x - 30, (this.height)/2,
                     30, 15, 0, 0, 0,
@@ -96,11 +96,12 @@ public class LandManagerScreen extends Screen {
         List<String> co = Arrays.stream(chunkKey.split(":")).toList();
         List<String> coor = List.of(co.get(co.size() - 1).split(","));
         int x = Integer.parseInt(coor.get(0));
-        int z = Integer.parseInt(coor.get(1));
+        int y = Integer.parseInt(coor.get(1));
+        int z = Integer.parseInt(coor.get(2));
         String centerX = String.valueOf(x * 16 + 8);
         String centerZ = String.valueOf(z * 16 + 8);
 
-        return "중심좌표:" + centerX + "," + centerZ;
+        return "중심좌표:" + centerX + "," + y + "," + centerZ;
     }
 
     private void rightPage() {

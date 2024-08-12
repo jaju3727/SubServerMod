@@ -82,6 +82,19 @@ public class ChefBlockRenderer implements BlockEntityRenderer<ChefBlockEntity> {
                         renderGauge(poseStack, bufferSource, OVERCOOKGAUGE, chefBlockEntity, ((float) 4000 - overCookTick) / 4000, direction);
                         renderGaugeBackground(poseStack, bufferSource, OVERCOOKGAUGEBACKGROUND, chefBlockEntity, ((float) overCookTick) / 8000, direction);
                     }
+                    if (chefBlockEntity.getoverCooked()) {
+                        poseStack.pushPose();
+                        applyDirectionTranslation(poseStack, direction, 0.40, 1.1, 0.5);
+                        poseStack.scale(1.0f, 1.0f, 1.0f);
+                        applyDirectionRotation(poseStack, direction);
+                        poseStack.mulPose(Axis.ZP.rotationDegrees(90.0f));
+                        poseStack.mulPose(Axis.YP.rotationDegrees(90.0f));
+                        int combinedLightLevel = 0xFFFFFF;
+
+                        BakedModel model = Minecraft.getInstance().getItemRenderer().getModel(itemStack, chefBlockEntity.getLevel(), null, 0);
+                        Minecraft.getInstance().getItemRenderer().render(itemStack, ItemDisplayContext.GROUND, false, poseStack, bufferSource, combinedLightLevel, combinedOverlay, model);
+                        poseStack.popPose();
+                    }
                 }
             }
         }

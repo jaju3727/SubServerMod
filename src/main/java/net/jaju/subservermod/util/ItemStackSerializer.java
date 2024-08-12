@@ -1,5 +1,6 @@
 package net.jaju.subservermod.util;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -31,7 +32,6 @@ public class ItemStackSerializer {
     public static ItemStack deserialize(JsonObject jsonObject) {
         ResourceLocation itemResourceLocation = new ResourceLocation(jsonObject.get("id").getAsString());
         ItemStack itemStack = new ItemStack(Objects.requireNonNull(ForgeRegistries.ITEMS.getValue(itemResourceLocation)), jsonObject.get("count").getAsInt());
-
         if (jsonObject.has("tag")) {
             try {
                 CompoundTag tag = TagParser.parseTag(jsonObject.get("tag").toString());
@@ -87,5 +87,24 @@ public class ItemStackSerializer {
             // 수정된 태그를 아이템 스택에 설정합니다.
             itemStack.setTag(tag);
         }
+    }
+
+    public static JsonArray serializeInventory(ItemStack[] inventory) {
+        JsonArray jsonArray = new JsonArray();
+        for (ItemStack itemStack : inventory) {
+            if (!itemStack.isEmpty()) {
+                jsonArray.add(serialize(itemStack));
+            }
+        }
+        return jsonArray;
+    }
+
+    public static ItemStack[] deserializeInventory(JsonArray jsonArray) {
+        ItemStack[] inventory = new ItemStack[jsonArray.size()];
+        for (int i = 0; i < jsonArray.size(); i++) {
+            JsonObject jsonObject = jsonArray.get(i).getAsJsonObject();
+            inventory[i] = deserialize(jsonObject);
+        }
+        return inventory;
     }
 }

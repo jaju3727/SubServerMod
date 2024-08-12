@@ -15,10 +15,18 @@
       }
     ]
   },
+  "howsweet_sound": {
+    "sounds": [
+      {
+        "name": "subservermod:howsweet_sound",
+        "stream": true
+      }
+    ]
+  },
   "frypan_sound": {
     "sounds": [
       {
-        "name": "subservermod:miner_sound",
+        "name": "subservermod:frypan_sound",
         "stream": false
       }
     ]
@@ -26,7 +34,7 @@
   "ovenbake_sound": {
     "sounds": [
       {
-        "name": "subservermod:miner_sound",
+        "name": "subservermod:ovenbake_sound",
         "stream": false
       }
     ]
@@ -34,7 +42,7 @@
   "ovenfinish_sound": {
     "sounds": [
       {
-        "name": "subservermod:miner_sound",
+        "name": "subservermod:ovenfinish_sound",
         "stream": false
       }
     ]
@@ -42,7 +50,7 @@
   "fishing_sound": {
     "sounds": [
       {
-        "name": "subservermod:miner_sound",
+        "name": "subservermod:fishing_sound",
         "stream": false
       }
     ]
@@ -50,7 +58,7 @@
   "buying_sound": {
     "sounds": [
       {
-        "name": "subservermod:miner_sound",
+        "name": "subservermod:buying_sound",
         "stream": false
       }
     ]
@@ -58,7 +66,39 @@
   "rawfish_sound": {
     "sounds": [
       {
-        "name": "subservermod:miner_sound",
+        "name": "subservermod:rawfish_sound",
+        "stream": false
+      }
+    ]
+  },
+  "drink_potion_sound": {
+    "sounds": [
+      {
+        "name": "subservermod:drink_potion_sound",
+        "stream": false
+      }
+    ]
+  },
+  "loudspeaker_sound": {
+    "sounds": [
+      {
+        "name": "subservermod:loudspeaker_sound",
+        "stream": false
+      }
+    ]
+  },
+  "gohome_sound": {
+    "sounds": [
+      {
+        "name": "subservermod:gohome_sound",
+        "stream": false
+      }
+    ]
+  },
+  "randombox_sound": {
+    "sounds": [
+      {
+        "name": "subservermod:randombox_sound",
         "stream": false
       }
     ]

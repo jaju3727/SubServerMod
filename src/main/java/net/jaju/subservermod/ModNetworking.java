@@ -7,13 +7,18 @@ import net.jaju.subservermod.coinsystem.network.*;
 import net.jaju.subservermod.encyclopedia.network.EncyclopediaPacket;
 import net.jaju.subservermod.encyclopedia.network.ItemDiscoveryPacket;
 import net.jaju.subservermod.encyclopedia.network.giftGetPacket;
+import net.jaju.subservermod.entity.packet.PlayerEntityPositionPacket;
+import net.jaju.subservermod.entity.packet.ShopEntityPositionPacket;
+import net.jaju.subservermod.integrated_menu.network.*;
 import net.jaju.subservermod.landsystem.network.packet.*;
+import net.jaju.subservermod.mailbox.network.AddItemToMailboxPacket;
 import net.jaju.subservermod.mailbox.network.packet.MailboxPacket;
 import net.jaju.subservermod.mailbox.network.packet.UpdateMailboxPacket;
 import net.jaju.subservermod.shopsystem.network.ShopEntityDataPacket;
 import net.jaju.subservermod.shopsystem.network.UpdateInventoryPacket;
 import net.jaju.subservermod.shopsystem.network.UpdateShopEntityPacket;
 import net.jaju.subservermod.subclass.network.*;
+import net.jaju.subservermod.village.VillageHudPacket;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.network.NetworkDirection;
@@ -56,10 +61,22 @@ public class ModNetworking {
         INSTANCE.registerMessage(id++, CoinDataRequestFromAuctionPacket.class, CoinDataRequestFromAuctionPacket::toBytes, CoinDataRequestFromAuctionPacket::new, CoinDataRequestFromAuctionPacket::handle);
         INSTANCE.registerMessage(id++, CoinDataAuctionSyncPacket.class, CoinDataAuctionSyncPacket::toBytes, CoinDataAuctionSyncPacket::new, CoinDataAuctionSyncPacket::handle);
         INSTANCE.registerMessage(id++, CoinDataUpdatePacket.class, CoinDataUpdatePacket::toBytes, CoinDataUpdatePacket::new, CoinDataUpdatePacket::handle);
+        INSTANCE.registerMessage(id++, ClassDataRequestFromInformationPacket.class, ClassDataRequestFromInformationPacket::toBytes, ClassDataRequestFromInformationPacket::new, ClassDataRequestFromInformationPacket::handle);
+        INSTANCE.registerMessage(id++, ClassDataInformationSyncPacket.class, ClassDataInformationSyncPacket::toBytes, ClassDataInformationSyncPacket::new, ClassDataInformationSyncPacket::handle);
         INSTANCE.registerMessage(id++, UpdateMailboxPacket.class, UpdateMailboxPacket::encode, UpdateMailboxPacket::decode, UpdateMailboxPacket::handle);
         INSTANCE.registerMessage(id++, UpdateAuctionPacket.class, UpdateAuctionPacket::encode, UpdateAuctionPacket::decode, UpdateAuctionPacket::handle);
+        INSTANCE.registerMessage(id++, CoinDataSyncPacket.class, CoinDataSyncPacket::encode, CoinDataSyncPacket::decode, CoinDataSyncPacket::handle);
+        INSTANCE.registerMessage(id++, CommandExecutorPacket.class, CommandExecutorPacket::encode, CommandExecutorPacket::decode, CommandExecutorPacket::handle);
+        INSTANCE.registerMessage(id++, AddItemToMailboxPacket.class, AddItemToMailboxPacket::toBytes, AddItemToMailboxPacket::new, AddItemToMailboxPacket::handle);
+        INSTANCE.registerMessage(id++, TemporaryOpPacket.class, TemporaryOpPacket::toBytes, TemporaryOpPacket::new, TemporaryOpPacket::handle);
+        INSTANCE.registerMessage(id++, TemporaryOpRequestPacket.class, TemporaryOpRequestPacket::toBytes, TemporaryOpRequestPacket::new, TemporaryOpRequestPacket::handle);
+        INSTANCE.registerMessage(id++, TemporaryOpResponsePacket.class, TemporaryOpResponsePacket::toBytes, TemporaryOpResponsePacket::new, TemporaryOpResponsePacket::handle);
+        INSTANCE.registerMessage(id++, ShopEntityPositionPacket.class, ShopEntityPositionPacket::encode, ShopEntityPositionPacket::decode, ShopEntityPositionPacket::handle);
+        INSTANCE.registerMessage(id++, PlayerEntityPositionPacket.class, PlayerEntityPositionPacket::encode, PlayerEntityPositionPacket::decode, PlayerEntityPositionPacket::handle);
 
-        ModNetworking.INSTANCE.registerMessage(id++, UpdateShopEntityPacket.class, UpdateShopEntityPacket::toBytes, UpdateShopEntityPacket::new, UpdateShopEntityPacket::handle);
+        INSTANCE.registerMessage(id++, VillageHudPacket.class, VillageHudPacket::toBytes, VillageHudPacket::new, VillageHudPacket::handle);
+
+        INSTANCE.registerMessage(id++, UpdateShopEntityPacket.class, UpdateShopEntityPacket::toBytes, UpdateShopEntityPacket::new, UpdateShopEntityPacket::handle);
         INSTANCE.messageBuilder(CoinDataServerSyncPacket.class, id++, NetworkDirection.PLAY_TO_CLIENT)
                 .decoder(CoinDataServerSyncPacket::new)
                 .encoder(CoinDataServerSyncPacket::toBytes)
@@ -88,6 +105,10 @@ public class ModNetworking {
     }
 
     public static <MSG> void sendToClient(MSG message, ServerPlayer player) {
+        INSTANCE.send(PacketDistributor.PLAYER.with(() -> player), message);
+    }
+
+    public static <MSG> void sendToPlayer(ServerPlayer player, MSG message) {
         INSTANCE.send(PacketDistributor.PLAYER.with(() -> player), message);
     }
 }

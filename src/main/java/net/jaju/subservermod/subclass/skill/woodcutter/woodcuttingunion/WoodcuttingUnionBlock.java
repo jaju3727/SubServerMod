@@ -53,6 +53,26 @@ public class WoodcuttingUnionBlock extends Block implements EntityBlock {
         return InteractionResult.SUCCESS;
     }
 
+    @Override
+    public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean isMoving) {
+        if (state.getBlock() != newState.getBlock()) {
+            BlockEntity blockEntity = level.getBlockEntity(pos);
+            if (blockEntity instanceof WoodcuttingUnionBlockEntity) {
+                WoodcuttingUnionBlockEntity woodcuttingUnionBlockEntity = (WoodcuttingUnionBlockEntity) blockEntity;
+                for (int i = 0; i < woodcuttingUnionBlockEntity.getItemHandler().getSlots(); i++) {
+                    ItemStack stack = woodcuttingUnionBlockEntity.getItemHandler().getStackInSlot(i);
+                    while (!stack.isEmpty()) {
+                        ItemStack singleStack = stack.split(1);
+                        popResource(level, pos, singleStack);
+                    }
+                }
+                popResource(level, pos, new ItemStack(this));
+                level.updateNeighbourForOutputSignal(pos, this);
+            }
+            super.onRemove(state, level, pos, newState, isMoving);
+        }
+    }
+
     @Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {

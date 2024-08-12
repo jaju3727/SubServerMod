@@ -13,8 +13,8 @@ public class ClientPacketHandler {
     private static LinkedHashMap<String, List<UUID>> chunkSharers;
     private static final Map<UUID, UUID> playerInChunk = new HashMap<>();
     private static UUID receivedPlayerUUID;
-    private static String receivedPlayerName;
     private static final Map<UUID, String> playerNames = new HashMap<>();
+    private static String ownerName;
 
     public static void handleChunkOwnersPacket(LinkedHashMap<String, UUID> receivedChunkOwners) {
         Minecraft.getInstance().execute(() -> {
@@ -28,14 +28,19 @@ public class ClientPacketHandler {
         });
     }
 
-    public static void handleChunkOwnerUpdatePacket(UUID playerUUID, UUID ownerUUID) {
+    public static void handleChunkOwnerUpdatePacket(UUID playerUUID, UUID ownerUUID, String receivedOwnerName) {
         Minecraft.getInstance().execute(() -> {
             if (ownerUUID != null) {
                 playerInChunk.put(playerUUID, ownerUUID);
+                ownerName = receivedOwnerName;
             } else {
                 playerInChunk.remove(playerUUID);
             }
         });
+    }
+
+    public static String getOwnerName() {
+        return ownerName;
     }
 
     public static void playerNamePacket(UUID playerUUID) {

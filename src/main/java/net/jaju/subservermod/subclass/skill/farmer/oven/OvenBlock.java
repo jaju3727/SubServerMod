@@ -91,7 +91,6 @@ public class OvenBlock extends Block implements EntityBlock {
     }
 
     private BaseClass getFarmerInstance(Player player) {
-        // 예제: 플레이어 이름을 기반으로 Farmer 인스턴스를 찾는 로직
         String playerName = player.getName().getString();
         return ClassManagement.getClasses(playerName).get("Farmer");
     }
@@ -105,10 +104,11 @@ public class OvenBlock extends Block implements EntityBlock {
                 for (int i = 0; i < ovenBlockEntity.getItemHandler().getSlots(); i++) {
                     ItemStack stack = ovenBlockEntity.getItemHandler().getStackInSlot(i);
                     while (!stack.isEmpty()) {
-                        ItemStack singleStack = stack.split(1); // 한 번에 한 아이템씩 분리하여 드롭
+                        ItemStack singleStack = stack.split(1);
                         popResource(level, pos, singleStack);
                     }
                 }
+                popResource(level, pos, new ItemStack(this));
                 level.updateNeighbourForOutputSignal(pos, this);
             }
             super.onRemove(state, level, pos, newState, isMoving);

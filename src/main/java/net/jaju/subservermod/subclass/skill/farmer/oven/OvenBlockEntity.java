@@ -1,10 +1,13 @@
 package net.jaju.subservermod.subclass.skill.farmer.oven;
 
+import net.jaju.subservermod.Subservermod;
 import net.jaju.subservermod.block.ModBlockEntities;
 import net.jaju.subservermod.item.ModItem;
+import net.jaju.subservermod.sound.SoundPlayer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -15,6 +18,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.items.ItemStackHandler;
 import org.jetbrains.annotations.Nullable;
 
@@ -44,11 +48,11 @@ public class OvenBlockEntity extends BlockEntity implements MenuProvider {
                 ItemStack.EMPTY, new ItemStack(Items.WHEAT, 1), ItemStack.EMPTY,
                 new ItemStack(ModItem.BAGUETTE.get(), 1)
         ));
-        recipes.put("Chocloate", List.of(
-                new ItemStack(Items.COCOA_BEANS, 1), new ItemStack(Items.COCOA_BEANS, 1), new ItemStack(Items.COCOA_BEANS, 1),
-                new ItemStack(Items.SUGAR, 1), new ItemStack(Items.SUGAR, 1), new ItemStack(Items.SUGAR, 1),
-                ItemStack.EMPTY, new ItemStack(ModItem.BUTTER.get(), 1), ItemStack.EMPTY,
-                new ItemStack(ModItem.CHOCOLATE.get(), 1)
+        recipes.put("Cream_bread", List.of(
+                ItemStack.EMPTY, new ItemStack(Items.WHEAT, 1), ItemStack.EMPTY,
+                ItemStack.EMPTY, new ItemStack(ModItem.WHIPPED_CREAM.get(), 1), ItemStack.EMPTY,
+                ItemStack.EMPTY, new ItemStack(Items.WHEAT, 1), ItemStack.EMPTY,
+                new ItemStack(ModItem.CREAM_BREAD.get(), 1)
         ));
         recipes.put("Brownie", List.of(
                 ItemStack.EMPTY, new ItemStack(Items.EGG, 1), ItemStack.EMPTY,
@@ -131,12 +135,12 @@ public class OvenBlockEntity extends BlockEntity implements MenuProvider {
     public static void tick(Level level, BlockPos pos, BlockState state, OvenBlockEntity entity) {
         if (!level.isClientSide) {
             for (var entry : recipes.entrySet()) {
-                entity.updateResultSlot(entry.getValue());
+                entity.updateResultSlot(entry.getValue(), pos);
             }
         }
     }
 
-    private void updateResultSlot(List<ItemStack> ingredientList) {
+    private void updateResultSlot(List<ItemStack> ingredientList, BlockPos pos) {
         int minItemNum = Integer.MAX_VALUE;
         int temp;
         for (int i = 0; i < 9; i++) {
@@ -161,12 +165,20 @@ public class OvenBlockEntity extends BlockEntity implements MenuProvider {
             return;
         }
 
+        if (updateTimer == 0) {
+            Vec3 vecPos = Vec3.atCenterOf(pos);
+//            SoundPlayer.playCustomSoundInRadius(level, vecPos, 7f, new ResourceLocation(Subservermod.MOD_ID, "ovenbake_sound"), 1.0f, 1.0f);
+        }
+
         updateTimer++;
         if (updateTimer >= UPDATE_INTERVAL) {
             updateTimer = 0;
         } else {
             return;
         }
+
+        Vec3 vecPos = Vec3.atCenterOf(pos);
+//        SoundPlayer.playCustomSoundInRadius(level, vecPos, 7f, new ResourceLocation(Subservermod.MOD_ID, "ovenfinish_sound"), 10.0f, 10.0f);
 
         itemHandler.setStackInSlot(9, itemstack);
 
@@ -193,6 +205,7 @@ public class OvenBlockEntity extends BlockEntity implements MenuProvider {
         this.updateTimer = tag.getInt("UpdateTimer");
     }
 
+    @Override
     protected void saveAdditional(CompoundTag tag) {
         super.saveAdditional(tag);
         tag.put("Inventory", itemHandler.serializeNBT());

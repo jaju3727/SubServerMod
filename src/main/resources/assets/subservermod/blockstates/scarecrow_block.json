@@ -1,7 +1,8 @@
 {
   "variants": {
-    "": {
-      "model": "subservermod:block/scarerow_block"
-    }
+    "facing=north": { "model": "subservermod:block/scarecrow_block", "y": 0 },
+    "facing=south": { "model": "subservermod:block/scarecrow_block", "y": 180 },
+    "facing=west": { "model": "subservermod:block/scarecrow_block", "y": 270 },
+    "facing=east": { "model": "subservermod:block/scarecrow_block", "y": 90 }
   }
 }

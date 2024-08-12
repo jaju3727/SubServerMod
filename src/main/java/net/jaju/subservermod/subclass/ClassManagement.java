@@ -13,12 +13,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ClassManagement {
-    private static final String FILE_PATH = "config/class_data.json";
+    private static final String FILE_PATH = "plugins/QuestPlugin/class_data.json";
     private static final Map<String, Map<String, BaseClass>> classMap = new HashMap<>();
-
-    static {
-        loadClassData();
-    }
 
     public static void addClass(String playerName, BaseClass playerClass) {
         classMap.computeIfAbsent(playerName, k -> new HashMap<>()).put(playerClass.getName(), playerClass);

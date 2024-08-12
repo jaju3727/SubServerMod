@@ -68,6 +68,9 @@ public class CuttingBoardBlockEntity extends BlockEntity {
                 if (item == Items.SALMON) {
                     entity.setItem(ModItem.SALMON_RAW_FISH.get());
                 }
+                if (item == ModItem.SQUID.get()) {
+                    entity.setItem(ModItem.SQUID_SASHIMI.get());
+                }
             }
         }
     }

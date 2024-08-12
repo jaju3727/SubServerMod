@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "CCC",
+    "III",
+    " O "
+  ],
+  "key": {
+    "C": {
+      "item": "minecraft:cocoa_beans"
+    },
+    "I": {
+      "item": "minecraft:sugar"
+    },
+    "O": {
+      "item": "subservermod:butter"
+    }
+  },
+  "result": {
+    "item": "subservermod:chocolate",
+    "count": 2
+  },
+  "show_notification": true
+}

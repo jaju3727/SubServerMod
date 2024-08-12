@@ -21,6 +21,7 @@ public class MailboxCommand {
         CommandDispatcher<CommandSourceStack> dispatcher = event.getDispatcher();
 
         dispatcher.register(Commands.literal("mailbox")
+                .requires(source -> source.hasPermission(2))
                 .then(Commands.argument("players", EntityArgument.players())
                         .executes(context -> {
                             ServerPlayer sender = context.getSource().getPlayerOrException();

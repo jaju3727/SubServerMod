@@ -181,4 +181,8 @@ public class BrewingContainer extends AbstractContainerMenu {
         }
         return super.canTakeItemForPickAll(stack, slot);
     }
+
+    public BrewingBlockEntity getBlockEntity() {
+        return this.blockEntity;
+    }
 }

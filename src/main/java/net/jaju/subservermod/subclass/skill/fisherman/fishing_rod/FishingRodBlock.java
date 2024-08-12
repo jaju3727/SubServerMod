@@ -1,6 +1,9 @@
 package net.jaju.subservermod.subclass.skill.fisherman.fishing_rod;
 
 import net.jaju.subservermod.block.ModBlockEntities;
+import net.jaju.subservermod.subclass.BaseClass;
+import net.jaju.subservermod.subclass.ClassManagement;
+import net.jaju.subservermod.subclass.skill.alchemist.brewing.BrewingBlockEntity;
 import net.jaju.subservermod.subclass.skill.fisherman.raw_fished.CuttingBoardBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -49,6 +52,12 @@ public class FishingRodBlock extends Block implements EntityBlock {
         if (!level.isClientSide) {
             BlockEntity blockEntity = level.getBlockEntity(pos);
             if (blockEntity instanceof FishingRodBlockEntity fishingRodBlockEntity) {
+                BaseClass fisherman = getFishermanInstance(player);
+
+                if (fisherman == null || fisherman.getLevel() < 2) {
+                    player.sendSystemMessage(Component.literal("도마는 2차를 전직해야 열 수 있습니다"));
+                    return InteractionResult.FAIL;
+                }
                 ItemStack heldItem = player.getMainHandItem();
                 ItemStack itemStack = fishingRodBlockEntity.getItemStack();
 
@@ -193,5 +202,24 @@ public class FishingRodBlock extends Block implements EntityBlock {
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
         builder.add(FACING);
+    }
+
+    private BaseClass getFishermanInstance(Player player) {
+        String playerName = player.getName().getString();
+        return ClassManagement.getClasses(playerName).get("Fisherman");
+    }
+
+    @Override
+    public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean isMoving) {
+        if (state.getBlock() != newState.getBlock()) {
+            BlockEntity blockEntity = level.getBlockEntity(pos);
+            if (blockEntity instanceof FishingRodBlockEntity) {
+                FishingRodBlockEntity brewingBlockEntity = (FishingRodBlockEntity) blockEntity;
+                popResource(level, pos, brewingBlockEntity.getItemStack());
+                popResource(level, pos, new ItemStack(this));
+                level.updateNeighbourForOutputSignal(pos, this);
+            }
+            super.onRemove(state, level, pos, newState, isMoving);
+        }
     }
 }

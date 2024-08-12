@@ -42,7 +42,7 @@ public class MiddleOvenBlock extends Block implements EntityBlock {
             BaseClass farmer = getFarmerInstance(player);
 
             if (farmer == null || farmer.getLevel() < 2) {
-                player.sendSystemMessage(Component.literal("오븐은 2차를 전직해야 열 수 있습니다"));
+                player.sendSystemMessage(Component.literal("중형 오븐은 2차를 전직해야 열 수 있습니다"));
                 return InteractionResult.FAIL;
             }
             BlockEntity blockEntity = level.getBlockEntity(pos);
@@ -109,6 +109,7 @@ public class MiddleOvenBlock extends Block implements EntityBlock {
                         popResource(level, pos, singleStack);
                     }
                 }
+                popResource(level, pos, new ItemStack(this));
                 level.updateNeighbourForOutputSignal(pos, this);
             }
             super.onRemove(state, level, pos, newState, isMoving);

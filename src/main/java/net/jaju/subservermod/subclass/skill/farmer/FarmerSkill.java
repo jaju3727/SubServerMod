@@ -27,9 +27,6 @@ import java.util.Random;
 @Mod.EventBusSubscriber
 public class FarmerSkill {
     private final Farmer farmer;
-    private static final int EFFECT_RADIUS = 5;
-    private static final Random random = new Random();
-    private static final RandomSource randomSource = RandomSource.create();
 
     public FarmerSkill(Farmer farmer) {
         this.farmer = farmer;
@@ -147,44 +144,6 @@ public class FarmerSkill {
                     world.destroyBlock(rightPos, true, player);
                 }
             }
-        }
-    }
-
-    @SubscribeEvent
-    public void onServerTick(TickEvent.ServerTickEvent event) {
-        if (event.phase == TickEvent.Phase.END) {
-            event.getServer().getAllLevels().forEach(world -> {
-                world.players().forEach(player -> {
-                    BlockPos playerPos = player.blockPosition();
-                    BlockPos.betweenClosedStream(playerPos.offset(-EFFECT_RADIUS, -EFFECT_RADIUS, -EFFECT_RADIUS),
-                                    playerPos.offset(EFFECT_RADIUS, EFFECT_RADIUS, EFFECT_RADIUS))
-                            .forEach(pos -> {
-                                BlockState state = world.getBlockState(pos);
-                                Block block = state.getBlock();
-                                if (random.nextFloat(1.0f) >= 0.000045776 * 5) return;
-                                if (block == ModBlocks.SCARECROW_BLOCK.get()) {
-
-                                    BlockPos.betweenClosedStream(pos.offset(-EFFECT_RADIUS, -EFFECT_RADIUS, -EFFECT_RADIUS),
-                                                    pos.offset(EFFECT_RADIUS, EFFECT_RADIUS, EFFECT_RADIUS))
-                                            .forEach(cropPos -> {
-                                                BlockState cropState = world.getBlockState(cropPos);
-                                                Block cropBlock = cropState.getBlock();
-
-
-                                                if (cropBlock instanceof CropBlock) {
-                                                    CropBlock crop = (CropBlock) cropBlock;
-                                                    crop.randomTick(cropState, world, cropPos, randomSource);
-                                                }
-                                                else if (cropBlock instanceof StemBlock) {
-                                                    StemBlock stem = (StemBlock) cropBlock;
-                                                    stem.randomTick(cropState, world, cropPos, randomSource);
-
-                                                }
-                                            });
-                                }
-                            });
-                });
-            });
         }
     }
 }

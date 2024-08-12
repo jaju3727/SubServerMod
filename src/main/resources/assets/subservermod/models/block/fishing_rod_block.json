@@ -2,7 +2,8 @@
   "credit": "Made with Blockbench",
   "texture_size": [32, 32],
   "textures": {
-    "1": "subservermod:block/fishing_rod_block"
+    "1": "subservermod:block/fishing_rod_block",
+    "particle": "subservermod:block/fishing_rod_block"
   },
   "elements": [
     {

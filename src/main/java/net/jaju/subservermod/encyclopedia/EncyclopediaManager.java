@@ -4,6 +4,10 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import net.jaju.subservermod.item.ModItem;
 import net.jaju.subservermod.landsystem.LandManager;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.StringTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -16,6 +20,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class EncyclopediaManager {
     private static EncyclopediaManager INSTANCE;
@@ -39,11 +44,55 @@ public class EncyclopediaManager {
         return INSTANCE;
     }
 
+    public Map<UUID, Integer> getTopDiscoverers(int num) {
+        Map<UUID, Integer> playerDiscoveriesCount = new HashMap<>();
+        for (Map.Entry<UUID, HashMap<String, Boolean>> entry : categoryDiscoveries.entrySet()) {
+            int count = (int) entry.getValue().values().stream().filter(Boolean::booleanValue).count();
+            playerDiscoveriesCount.put(entry.getKey(), count);
+        }
+        return playerDiscoveriesCount.entrySet()
+                .stream()
+                .sorted(Map.Entry.<UUID, Integer>comparingByValue().reversed())
+                .limit(num)
+                .collect(Collectors.toMap(
+                        Map.Entry::getKey,
+                        Map.Entry::getValue,
+                        (e1, e2) -> e1,
+                        LinkedHashMap::new
+                ));
+    }
+
+
+    private static ItemStack returnSub(String num) {
+        ItemStack subCoin = new ItemStack(ModItem.SUB_COIN.get(), 1);
+        ListTag subList = new ListTag();
+        subList.add(StringTag.valueOf(Component.Serializer.toJson(Component.literal(num+"원"))));
+        subCoin.getOrCreateTagElement("display").put("Lore", subList);
+
+        return subCoin;
+    }
+
     private static void addGifts() {
-        addGift(10, List.of(new ItemStack((ModItem.BUTTER.get()), 2), new ItemStack((ModItem.BUTTER.get()), 2), new ItemStack((ModItem.BUTTER.get()), 2)));
-        addGift(30, List.of(new ItemStack((ModItem.BUTTER.get()), 2)));
-        addGift(40, List.of(new ItemStack((ModItem.BUTTER.get()), 2)));
-        addGift(165, List.of(new ItemStack((ModItem.BUTTER.get()), 2)));
+
+        addGift(10, List.of(returnSub("10")));
+        addGift(20, List.of(returnSub("30"), new ItemStack((ModItem.HOLY_GRAIL.get()), 1)));
+        addGift(30, List.of(returnSub("30"), new ItemStack((ModItem.CONSTRUNTING_ALLOW.get()), 1)));
+        addGift(50, List.of(returnSub("60"),
+                new ItemStack((ModItem.CLASS_FORMER_1.get()), 6)));
+        ItemStack randomBoxItem = new ItemStack(ModItem.RANDOMBOX.get(), 1);
+
+        MutableComponent lore = Component.literal("clothes");
+        ListTag loreList = new ListTag();
+        loreList.add(StringTag.valueOf(Component.Serializer.toJson(lore)));
+        randomBoxItem.getOrCreateTagElement("display").put("Lore", loreList);
+        addGift(100, List.of(returnSub("120"), randomBoxItem));
+        addGift(150, List.of(returnSub("180"),
+                new ItemStack((ModItem.CLASS_FORMER_2.get()), 6)));
+        addGift(200, List.of(returnSub("300"),
+                new ItemStack((ModItem.SPECIAL_STORE_TELEPORT.get()), 1)));
+        addGift(250, List.of(returnSub("600"),
+                new ItemStack((ModItem.CLASS_FORMER_3.get()), 1)));
+        addGift(300, List.of(returnSub("1200")));
     }
 
     private static void addItems() {

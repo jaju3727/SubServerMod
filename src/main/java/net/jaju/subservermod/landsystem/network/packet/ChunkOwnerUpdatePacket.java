@@ -1,5 +1,6 @@
 package net.jaju.subservermod.landsystem.network.packet;
 
+import net.jaju.subservermod.landsystem.LandManager;
 import net.jaju.subservermod.landsystem.network.ClientPacketHandler;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.api.distmarker.Dist;
@@ -13,10 +14,12 @@ import java.util.function.Supplier;
 public class ChunkOwnerUpdatePacket {
     private final UUID playerUUID;
     private final UUID ownerUUID;
+    private final String ownerName;
 
-    public ChunkOwnerUpdatePacket(UUID playerUUID, UUID ownerUUID) {
+    public ChunkOwnerUpdatePacket(UUID playerUUID, UUID ownerUUID, String ownerName) {
         this.playerUUID = playerUUID;
         this.ownerUUID = ownerUUID;
+        this.ownerName = ownerName;
     }
 
     public static void encode(ChunkOwnerUpdatePacket msg, FriendlyByteBuf buf) {
@@ -24,18 +27,24 @@ public class ChunkOwnerUpdatePacket {
         buf.writeBoolean(msg.ownerUUID != null);
         if (msg.ownerUUID != null) {
             buf.writeUUID(msg.ownerUUID);
+            buf.writeUtf(msg.ownerName);
         }
     }
 
     public static ChunkOwnerUpdatePacket decode(FriendlyByteBuf buf) {
         UUID playerUUID = buf.readUUID();
-        UUID ownerUUID = buf.readBoolean() ? buf.readUUID() : null;
-        return new ChunkOwnerUpdatePacket(playerUUID, ownerUUID);
+        UUID ownerUUID = null;
+        String ownerName = null;
+        if (buf.readBoolean()) {
+            ownerUUID = buf.readUUID();
+            ownerName = buf.readUtf();
+        }
+        return new ChunkOwnerUpdatePacket(playerUUID, ownerUUID, ownerName);
     }
 
     public static void handle(ChunkOwnerUpdatePacket msg, Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
-            ClientPacketHandler.handleChunkOwnerUpdatePacket(msg.playerUUID, msg.ownerUUID);
+            ClientPacketHandler.handleChunkOwnerUpdatePacket(msg.playerUUID, msg.ownerUUID, msg.ownerName);
         });
         ctx.get().setPacketHandled(true);
     }

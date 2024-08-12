@@ -1,13 +1,16 @@
 package net.jaju.subservermod.subclass.skill.fisherman.fishing_rod;
 
+import net.jaju.subservermod.Subservermod;
 import net.jaju.subservermod.block.ModBlockEntities;
 import net.jaju.subservermod.item.ModItem;
+import net.jaju.subservermod.sound.SoundPlayer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Connection;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -16,6 +19,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.loot.LootTable;
+import net.minecraft.world.phys.Vec3;
 import org.bukkit.loot.LootTables;
 
 import java.util.Random;
@@ -63,8 +67,10 @@ public class FishingRodBlockEntity extends BlockEntity {
         if (!level.isClientSide) {
             if (entity.getItemStack().getItem() != Items.AIR) {
                 long tick = System.currentTimeMillis() - entity.getFishingTick();
-                if (tick > 0) {
+                if (tick > 0 && !entity.isCatchFish()) {
                     entity.setCatchFish(true);
+                    Vec3 vecPos = Vec3.atCenterOf(pos);
+//                    SoundPlayer.playCustomSoundInRadius(level, vecPos, 7f, new ResourceLocation(Subservermod.MOD_ID, "fishing_sound"), 5.0f, 5.0f);
                 }
                 if (tick > 3000) {
                     entity.setCatchFish(false);

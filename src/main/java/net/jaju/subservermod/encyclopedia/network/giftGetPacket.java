@@ -1,6 +1,7 @@
 package net.jaju.subservermod.encyclopedia.network;
 
 import net.jaju.subservermod.encyclopedia.EncyclopediaManager;
+import net.jaju.subservermod.mailbox.MailboxManager;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
@@ -35,8 +36,7 @@ public class giftGetPacket {
             if (player != null) {
                 LinkedHashMap<Integer, List<ItemStack>> giftList = EncyclopediaManager.getGiftList();
                 for (ItemStack itemStack : giftList.get(num)) {
-                    player.getInventory().add(itemStack);
-                    player.inventoryMenu.broadcastChanges();
+                    MailboxManager.getInstance().addItemToMailbox(player.getUUID(), itemStack);
                 }
                 EncyclopediaManager.getInstance().getGift(player.getUUID(), num);
             }

@@ -59,19 +59,17 @@ public class PlayerNamePacket {
                     ServerPlayer targetPlayer = sender.getServer().getPlayerList().getPlayerByName(playerName);
                     if (targetPlayer != null) {
                         UUID targetUUID = targetPlayer.getUUID();
-                        sender.sendSystemMessage(Component.literal(targetUUID.toString() + "  " + targetPlayer));
                         ModNetworking.INSTANCE.send(PacketDistributor.PLAYER.with(() -> sender), new PlayerNameResponsePacket(targetUUID));
                     } else {
-                        sender.sendSystemMessage(Component.literal("Player not found: " + playerName));
+                        sender.sendSystemMessage(Component.literal(playerName + "란 이름의 플레이어를 찾을 수 없습니다."));
                     }
 
                 } else {
                     String playerName = PlayerUtils.getPlayerNameByUUID(sender.getServer(), playerUUID);
                     if (playerName != null) {
-                        sender.sendSystemMessage(Component.literal(playerName));
                         ModNetworking.INSTANCE.send(PacketDistributor.PLAYER.with(() -> sender), new PlayerNameResponsePacket(playerUUID, playerName));
                     } else {
-                        sender.sendSystemMessage(Component.literal("Player not found: " + playerUUID));
+                        sender.sendSystemMessage(Component.literal(playerName + "란 이름의 플레이어를 찾을 수 없습니다."));
                     }
                 }
             }

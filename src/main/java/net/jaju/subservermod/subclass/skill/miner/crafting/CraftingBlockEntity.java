@@ -29,7 +29,6 @@ public class CraftingBlockEntity extends BlockEntity implements MenuProvider {
     public boolean flag = false;
     public static Random random = new Random();
     private int updateTimer = 0;
-    private static final int UPDATE_INTERVAL = 20 * 10;
 
     public CraftingBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.CRAFTING_BLOCK_ENTITY.get(), pos, state);

@@ -45,7 +45,7 @@ public class CraftingScreen extends AbstractContainerScreen<CraftingContainer> {
                 new ResourceLocation(Subservermod.MOD_ID, "textures/gui/miner/crafting_button.png"),
                 30, 15, button -> {
             //$
-            SoundPlayer.playCustomSound(Minecraft.getInstance().player, new ResourceLocation(Subservermod.MOD_ID, "miner_sound"), 1.0f, 1.0f);
+//            SoundPlayer.playCustomSound(Minecraft.getInstance().player, new ResourceLocation(Subservermod.MOD_ID, "miner_sound"), 1.0f, 1.0f);
             SetFlagPacket packet = new SetFlagPacket(blockEntity.getBlockPos(), true);
             ModNetworking.INSTANCE.sendToServer(packet);
         }));

@@ -45,8 +45,36 @@ public class BrewingHelper {
         addPotionMix(Potions.NIGHT_VISION, Items.FERMENTED_SPIDER_EYE, Potions.INVISIBILITY);
         // 나약함의 포션
         addPotionMix(Potions.WATER, Items.FERMENTED_SPIDER_EYE, Potions.WEAKNESS);
+        addPotionMix(Potions.POISON, Items.FERMENTED_SPIDER_EYE, Potions.HARMING);
+        addPotionMix(Potions.HEALING, Items.FERMENTED_SPIDER_EYE, Potions.HARMING);
+        addPotionMix(Potions.REGENERATION, Items.FERMENTED_SPIDER_EYE, Potions.HARMING);
+
+        addPotionMix(Potions.STRENGTH, Items.FERMENTED_SPIDER_EYE, Potions.WEAKNESS);
+        addPotionMix(Potions.SWIFTNESS, Items.FERMENTED_SPIDER_EYE, Potions.SLOWNESS);
+        addPotionMix(Potions.LEAPING, Items.FERMENTED_SPIDER_EYE, Potions.SLOWNESS);
+
+        addPotionMix(Potions.SWIFTNESS, Items.REDSTONE, Potions.LONG_SWIFTNESS);
+        addPotionMix(Potions.LEAPING, Items.REDSTONE, Potions.LONG_LEAPING);
+        addPotionMix(Potions.STRENGTH, Items.REDSTONE, Potions.LONG_STRENGTH);
+        addPotionMix(Potions.SLOWNESS, Items.REDSTONE, Potions.LONG_SLOWNESS);
+        addPotionMix(Potions.POISON, Items.REDSTONE, Potions.LONG_POISON);
+        addPotionMix(Potions.REGENERATION, Items.REDSTONE, Potions.LONG_REGENERATION);
+        addPotionMix(Potions.FIRE_RESISTANCE, Items.REDSTONE, Potions.LONG_FIRE_RESISTANCE);
+        addPotionMix(Potions.NIGHT_VISION, Items.REDSTONE, Potions.LONG_NIGHT_VISION);
+        addPotionMix(Potions.WATER_BREATHING, Items.REDSTONE, Potions.LONG_WATER_BREATHING);
+        addPotionMix(Potions.INVISIBILITY, Items.REDSTONE, Potions.LONG_INVISIBILITY);
+        addPotionMix(Potions.SLOW_FALLING, Items.REDSTONE, Potions.LONG_SLOW_FALLING);
         // 나약함의 포션 +
         addPotionMix(Potions.WEAKNESS, Items.REDSTONE, Potions.LONG_WEAKNESS);
+
+        addPotionMix(Potions.SWIFTNESS, Items.GLOWSTONE_DUST, Potions.STRONG_SWIFTNESS);
+        addPotionMix(Potions.LEAPING, Items.GLOWSTONE_DUST, Potions.STRONG_LEAPING);
+        addPotionMix(Potions.STRENGTH, Items.GLOWSTONE_DUST, Potions.STRONG_STRENGTH);
+        addPotionMix(Potions.POISON, Items.GLOWSTONE_DUST, Potions.STRONG_POISON);
+        addPotionMix(Potions.REGENERATION, Items.GLOWSTONE_DUST, Potions.STRONG_REGENERATION);
+        addPotionMix(Potions.HEALING, Items.GLOWSTONE_DUST, Potions.STRONG_HEALING);
+        addPotionMix(Potions.HARMING, Items.GLOWSTONE_DUST, Potions.STRONG_HARMING);
+        addPotionMix(Potions.TURTLE_MASTER, Items.GLOWSTONE_DUST, Potions.STRONG_TURTLE_MASTER);
         
     }
 

@@ -43,7 +43,7 @@ public class CoinData implements INBTSerializable<CompoundTag> {
         this.farmercoin = nbt.getInt("farmercoin");
         this.fishermancoin = nbt.getInt("fishermancoin");
         this.alchemistcoin = nbt.getInt("alchemistcoin");
-        this.minercoin = nbt.getInt("ainercoin");
+        this.minercoin = nbt.getInt("minercoin");
         this.woodcuttercoin = nbt.getInt("woodcuttercoin");
     }
 
@@ -104,7 +104,7 @@ public class CoinData implements INBTSerializable<CompoundTag> {
     }
 
     public void saveToPlayer(ServerPlayer player) {
-        CompoundTag tag = player.getPersistentData();
+        CompoundTag tag = new CompoundTag();
         tag.putInt("subcoin", subcoin);
         tag.putInt("chefcoin", chefcoin);
         tag.putInt("farmercoin", farmercoin);
@@ -112,10 +112,11 @@ public class CoinData implements INBTSerializable<CompoundTag> {
         tag.putInt("alchemistcoin", alchemistcoin);
         tag.putInt("minercoin", minercoin);
         tag.putInt("woodcuttercoin", woodcuttercoin);
+        player.getPersistentData().put("coinData", tag);
     }
 
     public void loadFromPlayer(ServerPlayer player) {
-        CompoundTag tag = player.getPersistentData();
+        CompoundTag tag = player.getPersistentData().getCompound("coinData");
         subcoin = tag.getInt("subcoin");
         chefcoin = tag.getInt("chefcoin");
         farmercoin = tag.getInt("farmercoin");

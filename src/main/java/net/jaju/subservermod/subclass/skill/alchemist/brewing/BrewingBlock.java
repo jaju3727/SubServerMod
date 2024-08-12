@@ -108,6 +108,7 @@ public class BrewingBlock extends Block implements EntityBlock {
                         popResource(level, pos, singleStack);
                     }
                 }
+                popResource(level, pos, new ItemStack(this));
                 level.updateNeighbourForOutputSignal(pos, this);
             }
             super.onRemove(state, level, pos, newState, isMoving);

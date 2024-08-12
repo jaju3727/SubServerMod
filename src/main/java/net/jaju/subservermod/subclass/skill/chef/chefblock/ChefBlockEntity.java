@@ -1,18 +1,22 @@
 package net.jaju.subservermod.subclass.skill.chef.chefblock;
 
+import net.jaju.subservermod.Subservermod;
 import net.jaju.subservermod.block.ModBlockEntities;
 import net.jaju.subservermod.item.ModItem;
+import net.jaju.subservermod.sound.SoundPlayer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Connection;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.Vec3;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -148,7 +152,6 @@ public class ChefBlockEntity extends BlockEntity {
     public static void tick(Level level, BlockPos pos, BlockState state, ChefBlockEntity entity) {
         if (!level.isClientSide) {
             if (entity.getcookFlag()){
-                //$반경 5m 프라이팬에서 굽는소리
                 long cookTick = System.currentTimeMillis() - entity.getCookTick();
                 if (cookTick > entity.getcookGauge() * 1000L) {
                     entity.setcookFlag(false);

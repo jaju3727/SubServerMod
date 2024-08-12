@@ -12,14 +12,17 @@ import net.minecraft.world.entity.player.Inventory;
 public class BrewingScreen extends AbstractContainerScreen<BrewingContainer> {
     private int blazeCount;
     private int waterCount;
+    private boolean brewingFlag;
+    private int brewingNum = 0;
 
     public BrewingScreen(BrewingContainer container, Inventory inv, Component title) {
         super(container, inv, title);
     }
 
-    public void updateVar(int blazeCount, int waterCount) {
+    public void updateVar(int blazeCount, int waterCount, int brewingNum) {
         this.blazeCount = blazeCount;
         this.waterCount = waterCount;
+        this.brewingNum = brewingNum;
     }
 
     @Override
@@ -42,9 +45,13 @@ public class BrewingScreen extends AbstractContainerScreen<BrewingContainer> {
                 posX, 50, 0, 0, textureWidth, textureHeight, textureWidth, textureHeight);
         guiGraphics.blit(new ResourceLocation(Subservermod.MOD_ID, "textures/gui/inventory.png"),
                 158, 170, 0, 0, 164, 78, 164, 78);
-        guiGraphics.drawCenteredString(this.font, Component.literal(String.valueOf(blazeCount)).withStyle(ChatFormatting.YELLOW), 100, 100, 0);
-        guiGraphics.drawCenteredString(this.font, Component.literal(String.valueOf(waterCount)).withStyle(ChatFormatting.BLUE), 130, 100, 0);
-
+        guiGraphics.drawCenteredString(this.font, Component.literal(String.valueOf(blazeCount)).withStyle(ChatFormatting.YELLOW), 165, 70, 0);
+        guiGraphics.drawCenteredString(this.font, Component.literal(String.valueOf(waterCount)).withStyle(ChatFormatting.BLUE), 165, 88, 0);
+        textureWidth = 7;
+        textureHeight = 27;
+        int i = brewingNum/5 % 27;
+        guiGraphics.blit(new ResourceLocation(Subservermod.MOD_ID, "textures/gui/alchemist/brewing_gauge.png"),
+                    195, 107, 0, 0, textureWidth, i, textureWidth, textureHeight);
 
         super.render(guiGraphics, mouseX, mouseY, partialTicks);
         this.renderTooltip(guiGraphics, mouseX, mouseY);

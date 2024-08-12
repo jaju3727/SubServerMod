@@ -5,6 +5,7 @@ import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
 import net.jaju.subservermod.ModNetworking;
+import net.jaju.subservermod.Subservermod;
 import net.jaju.subservermod.coinsystem.network.CoinDataServerSyncPacket;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -16,8 +17,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.network.PacketDistributor;
 
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 @Mod.EventBusSubscriber
 public class CoinCommands {
@@ -31,6 +31,7 @@ public class CoinCommands {
 
     @SubscribeEvent
     public static void onRegisterCommands(RegisterCommandsEvent event) {
+        Subservermod.LOGGER.info("CoinCommandLoading");
         CommandDispatcher<CommandSourceStack> dispatcher = event.getDispatcher();
 
         dispatcher.register(Commands.literal("coin")
@@ -73,7 +74,21 @@ public class CoinCommands {
                                                     removeCoin(player, type, amount);
                                                     context.getSource().sendSuccess(() -> Component.literal("Removed " + amount + " from " + type + " for player " + player.getName().getString()), true);
                                                     return 1;
-                                                }))))));
+                                                })))))
+                .then(Commands.literal("list")
+                        .then(Commands.argument("player", EntityArgument.player())
+                                .executes(context -> {
+                                    ServerPlayer player = EntityArgument.getPlayer(context, "player");
+                                    listCoins(context.getSource(), player);
+                                    return 1;})))
+                .then(Commands.literal("top")
+                        .then(Commands.argument("type", StringArgumentType.string())
+                                .suggests(COIN_TYPE_SUGGESTIONS)
+                                .executes(context -> {
+                                    String type = StringArgumentType.getString(context, "type");
+                                    listTopPlayers(context.getSource(), type);
+                                    return 1;
+                                }))));
     }
 
     private static void setCoin(ServerPlayer player, String type, int amount) {
@@ -119,5 +134,36 @@ public class CoinCommands {
         }
         coinData.saveToPlayer(player);
         ModNetworking.INSTANCE.send(PacketDistributor.PLAYER.with(() -> player), new CoinDataServerSyncPacket(coinData));
+    }
+
+    private static void listCoins(CommandSourceStack source, ServerPlayer player) {
+        CoinData coinData = CoinHud.getCoinData(player);
+        source.sendSuccess(() -> Component.literal("Coins for player " + player.getName().getString() + ":"
+                + "\nSubcoin: " + coinData.getSubcoin()
+                + "\nChefcoin: " + coinData.getChefcoin()
+                + "\nFarmercoin: " + coinData.getFarmercoin()
+                + "\nFishermancoin: " + coinData.getFishermancoin()
+                + "\nAlchemistcoin: " + coinData.getAlchemistcoin()
+                + "\nMinercoin: " + coinData.getMinercoin()
+                + "\nWoodcuttercoin: " + coinData.getWoodcuttercoin()), false);
+    }
+
+    private static void listTopPlayers(CommandSourceStack source, String type) {
+        Map<String, List<Map.Entry<UUID, Integer>>> topPlayers = CoinHud.getTopPlayers();
+        List<Map.Entry<UUID, Integer>> topList = topPlayers.get(type);
+
+        if (topList == null || topList.isEmpty()) {
+            source.sendSuccess(() -> Component.literal("No data available for " + type), false);
+            return;
+        }
+
+        source.sendSuccess(() -> Component.literal(type + " top 5 players:"), false);
+        for (int i = 0; i < topList.size(); i++) {
+            UUID playerUUID = topList.get(i).getKey();
+            int amount = topList.get(i).getValue();
+            String playerName = Objects.requireNonNull(source.getServer().getPlayerList().getPlayer(playerUUID)).getName().getString();
+            int finalI = i;
+            source.sendSuccess(() -> Component.literal((finalI + 1) + ". " + playerName + ": " + amount), false);
+        }
     }
 }

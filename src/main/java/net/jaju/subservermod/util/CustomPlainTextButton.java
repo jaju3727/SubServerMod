@@ -13,14 +13,16 @@ public class CustomPlainTextButton extends Button {
     private final float scale;
     private int x;
     private int y;
+    private int color;
 
-    public CustomPlainTextButton(int x, int y, int width, int height, Component text, Button.OnPress onPress, Font font, float scale) {
+    public CustomPlainTextButton(int x, int y, int width, int height, Component text, Button.OnPress onPress, Font font, float scale, int color) {
         super(x, y, width, height, text, onPress, DEFAULT_NARRATION);
         this.x = x;
         this.y = y;
         this.font = font;
         this.message = text;
         this.scale = scale;
+        this.color = color;
     }
 
     public void setMessage(Component message) {
@@ -32,7 +34,7 @@ public class CustomPlainTextButton extends Button {
         guiGraphics.pose().pushPose();
         guiGraphics.pose().scale(this.scale, this.scale, this.scale);
 
-        guiGraphics.drawString(this.font, this.message, (int) (x / this.scale), (int) (y / this.scale), 0x000000);
+        guiGraphics.drawString(this.font, this.message, (int) (x / this.scale), (int) (y / this.scale), color);
 
         guiGraphics.pose().popPose();
     }

@@ -3,9 +3,13 @@ package net.jaju.subservermod.mailbox;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
+import net.jaju.subservermod.Subservermod;
 import net.jaju.subservermod.encyclopedia.EncyclopediaManager;
+import net.jaju.subservermod.sound.SoundPlayer;
 import net.jaju.subservermod.util.ItemStackSerializer;
+import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
@@ -52,6 +56,7 @@ public class MailboxManager {
         if (server != null) {
             ServerPlayer player = server.getPlayerList().getPlayer(playerUUID);
             if (player != null) {
+//                SoundPlayer.playCustomSound(player, new ResourceLocation(Subservermod.MOD_ID, "loudspeaker_sound"), 4.0f, 4.0f);
                 player.sendSystemMessage(message);
             }
         }

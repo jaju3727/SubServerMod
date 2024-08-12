@@ -169,4 +169,13 @@ public class TeleportBlock extends Block implements EntityBlock {
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
         builder.add(FACING);
     }
+
+    @Override
+    public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean isMoving) {
+        if (state.getBlock() != newState.getBlock()) {
+            popResource(level, pos, new ItemStack(this));
+            level.updateNeighbourForOutputSignal(pos, this);
+            super.onRemove(state, level, pos, newState, isMoving);
+        }
+    }
 }

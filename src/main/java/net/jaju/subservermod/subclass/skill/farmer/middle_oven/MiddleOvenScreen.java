@@ -4,19 +4,50 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.jaju.subservermod.ModNetworking;
 import net.jaju.subservermod.Subservermod;
 import net.jaju.subservermod.item.ModItem;
+import net.jaju.subservermod.subclass.network.UpdateMiddleOvenRecipePacket;
 import net.jaju.subservermod.subclass.network.UpdateOvenRecipePacket;
+import net.jaju.subservermod.subclass.skill.farmer.oven.OvenBlockEntity;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 
 import java.util.LinkedHashMap;
+import java.util.List;
 
 public class MiddleOvenScreen extends AbstractContainerScreen<MiddleOvenContainer> {
     private final MiddleOvenBlockEntity blockEntity;
-    private static final LinkedHashMap<String, ItemStack> recipeItems = new LinkedHashMap<>();
+    private static final LinkedHashMap<String, List<ItemStack>> recipes = new LinkedHashMap<>();
+
+    static {
+        recipes.put("Croissant", List.of(
+                ItemStack.EMPTY, new ItemStack(Items.WHEAT, 1), ItemStack.EMPTY,
+                ItemStack.EMPTY, new ItemStack(ModItem.BUTTER.get(), 1), ItemStack.EMPTY,
+                ItemStack.EMPTY, new ItemStack(Items.WHEAT, 1), ItemStack.EMPTY,
+                new ItemStack(ModItem.CROISSANT.get(), 1)
+        ));
+        recipes.put("Baguette", List.of(
+                ItemStack.EMPTY, new ItemStack(Items.WHEAT, 1), ItemStack.EMPTY,
+                ItemStack.EMPTY, new ItemStack(Items.WHEAT, 1), ItemStack.EMPTY,
+                ItemStack.EMPTY, new ItemStack(Items.WHEAT, 1), ItemStack.EMPTY,
+                new ItemStack(ModItem.BAGUETTE.get(), 1)
+        ));
+        recipes.put("Cream_bread", List.of(
+                ItemStack.EMPTY, new ItemStack(Items.WHEAT, 1), ItemStack.EMPTY,
+                ItemStack.EMPTY, new ItemStack(ModItem.WHIPPED_CREAM.get(), 1), ItemStack.EMPTY,
+                ItemStack.EMPTY, new ItemStack(Items.WHEAT, 1), ItemStack.EMPTY,
+                new ItemStack(ModItem.CREAM_BREAD.get(), 1)
+        ));
+        recipes.put("Browine", List.of(
+                ItemStack.EMPTY, new ItemStack(Items.EGG, 1), ItemStack.EMPTY,
+                ItemStack.EMPTY, new ItemStack(ModItem.CHOCOLATE.get(), 1), ItemStack.EMPTY,
+                new ItemStack(Items.WHEAT, 1), new ItemStack(Items.WHEAT, 1), new ItemStack(Items.WHEAT, 1),
+                new ItemStack(ModItem.BROWNIE.get(), 1)
+        ));
+    }
 
     private static final int ITEM_SIZE = 16;
     private static final int ITEM_SCALE = 1;
@@ -26,10 +57,6 @@ public class MiddleOvenScreen extends AbstractContainerScreen<MiddleOvenContaine
     public MiddleOvenScreen(MiddleOvenContainer container, Inventory inv, Component title) {
         super(container, inv, title);
         blockEntity = container.getBlockEntity();
-        recipeItems.put("Croissant", new ItemStack(ModItem.CROISSANT.get()));
-        recipeItems.put("Baguette", new ItemStack(ModItem.BAGUETTE.get()));
-        recipeItems.put("Chocolate", new ItemStack(ModItem.CHOCOLATE.get()));
-        recipeItems.put("Brownie", new ItemStack(ModItem.BROWNIE.get()));
     }
 
     @Override
@@ -44,9 +71,9 @@ public class MiddleOvenScreen extends AbstractContainerScreen<MiddleOvenContaine
 
     private void renderRecipeItems(GuiGraphics guiGraphics) {
         int i = 0;
-        for (var entry : recipeItems.entrySet()) {
-            ItemStack itemStack = entry.getValue();
-            int xPosition = 50;
+        for (var entry : recipes.entrySet()) {
+            ItemStack itemStack = entry.getValue().get(9);
+            int xPosition = 167;
             int yPosition = 50 + i * ITEM_SPACING;
 
             PoseStack poseStack = guiGraphics.pose();
@@ -56,10 +83,47 @@ public class MiddleOvenScreen extends AbstractContainerScreen<MiddleOvenContaine
             poseStack.scale(ITEM_SCALE, ITEM_SCALE, ITEM_SCALE);
 
             guiGraphics.renderItem(itemStack, 0, 0);
+            guiGraphics.blit(new ResourceLocation(Subservermod.MOD_ID, "textures/gui/ui_slot.png"),
+                    -1, -1, 0, 0, (ITEM_SIZE + 2), (ITEM_SIZE + 2), (ITEM_SIZE + 2), (ITEM_SIZE + 2));
 
             poseStack.popPose();
             i++;
         }
+    }
+
+    private void renderRecipeTooltip(GuiGraphics guiGraphics, int mouseX, int mouseY) {
+        int i = 0;
+        for (var entry : recipes.entrySet()) {
+            int xPosition = 167;
+            int yPosition = 50 + i * ITEM_SPACING;
+
+            if (isMouseOverItem(mouseX, mouseY, xPosition, yPosition, ITEM_SIZE * ITEM_SCALE, ITEM_SIZE * ITEM_SCALE)) {
+                List<ItemStack> recipe = entry.getValue();
+                renderRecipeGrid(guiGraphics, mouseX, mouseY, recipe);
+                break;
+            }
+            i++;
+        }
+    }
+
+    private void renderRecipeGrid(GuiGraphics guiGraphics, int mouseX, int mouseY, List<ItemStack> recipe) {
+        PoseStack poseStack = guiGraphics.pose();
+        poseStack.pushPose();
+        poseStack.translate(mouseX + 10, mouseY - 10, 0);
+        guiGraphics.blit(new ResourceLocation(Subservermod.MOD_ID, "textures/gui/9_slots.png"),
+                -1, -1,0, 0, (ITEM_SIZE + 2)*3, (ITEM_SIZE + 2)*3, (ITEM_SIZE + 2)*3, (ITEM_SIZE + 2)*3);
+        int index = 0;
+        for (int row = 0; row < 3; row++) {
+            for (int col = 0; col < 3; col++) {
+                ItemStack itemStack = recipe.get(index);
+                if (!itemStack.isEmpty()) {
+                    guiGraphics.renderItem(itemStack, col * (ITEM_SIZE + 2), row * (ITEM_SIZE + 2));
+                }
+                index++;
+            }
+        }
+
+        poseStack.popPose();
     }
 
     @Override
@@ -75,18 +139,19 @@ public class MiddleOvenScreen extends AbstractContainerScreen<MiddleOvenContaine
         renderRecipeItems(guiGraphics);
         super.render(guiGraphics, mouseX, mouseY, partialTicks);
         this.renderTooltip(guiGraphics, mouseX, mouseY);
+        renderRecipeTooltip(guiGraphics, mouseX, mouseY);
     }
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         if (button == 0) {
             int i = 0;
-            for (var entry : recipeItems.entrySet()) {
-                int xPosition = 50;
+            for (var entry : recipes.entrySet()) {
+                int xPosition = 167;
                 int yPosition = 50 + i * ITEM_SPACING;
 
                 if (isMouseOverItem(mouseX, mouseY, xPosition, yPosition, ITEM_SIZE * ITEM_SCALE, ITEM_SIZE * ITEM_SCALE)) {
-                    UpdateOvenRecipePacket packet = new UpdateOvenRecipePacket(blockEntity.getBlockPos(), entry.getKey());
+                    UpdateMiddleOvenRecipePacket packet = new UpdateMiddleOvenRecipePacket(blockEntity.getBlockPos(), entry.getKey());
                     ModNetworking.INSTANCE.sendToServer(packet);
                     return true;
                 }

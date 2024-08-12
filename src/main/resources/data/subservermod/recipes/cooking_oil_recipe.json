@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "CCC",
+    "CCC",
+    " I "
+  ],
+  "key": {
+    "C": {
+      "item": "minecraft:wheat_seeds"
+    },
+    "I": {
+      "item": "minecraft:glass_bottle"
+    }
+  },
+  "result": {
+    "item": "subservermod:cooking_oil",
+    "count": 1
+  },
+  "show_notification": true
+}

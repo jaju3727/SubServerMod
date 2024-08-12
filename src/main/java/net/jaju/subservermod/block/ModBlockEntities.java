@@ -5,6 +5,7 @@ import net.jaju.subservermod.subclass.skill.alchemist.brewing.BrewingBlockEntity
 import net.jaju.subservermod.subclass.skill.alchemist.teleport.TeleportBlockEntity;
 import net.jaju.subservermod.subclass.skill.chef.chefblock.ChefBlockEntity;
 import net.jaju.subservermod.subclass.skill.farmer.middle_oven.MiddleOvenBlockEntity;
+import net.jaju.subservermod.subclass.skill.farmer.scarecrow_block.ScareCrowBlockEntity;
 import net.jaju.subservermod.subclass.skill.fisherman.fishing_rod.FishingRodBlockEntity;
 import net.jaju.subservermod.subclass.skill.fisherman.raw_fished.CuttingBoardBlockEntity;
 import net.jaju.subservermod.subclass.skill.miner.crafting.CraftingBlockEntity;
@@ -37,6 +38,8 @@ public class ModBlockEntities {
             BlockEntityType.Builder.of(CuttingBoardBlockEntity::new, ModBlocks.CUTTING_BOARD_BLOCK.get()).build(null));
     public static final RegistryObject<BlockEntityType<FishingRodBlockEntity>> FISHING_ROD_BLOCK_ENTITY = BLOCK_ENTITIES.register("fishing_rod_block_entity", () ->
             BlockEntityType.Builder.of(FishingRodBlockEntity::new, ModBlocks.FISHING_ROD_BLOCK.get()).build(null));
+    public static final RegistryObject<BlockEntityType<ScareCrowBlockEntity>> SCARECROW_BLOCK_ENTITY = BLOCK_ENTITIES.register("scarecrow_block_entity", () ->
+            BlockEntityType.Builder.of(ScareCrowBlockEntity::new, ModBlocks.SCARECROW_BLOCK.get()).build(null));
 
     public static void register(IEventBus eventBus) {
         BLOCK_ENTITIES.register(eventBus);

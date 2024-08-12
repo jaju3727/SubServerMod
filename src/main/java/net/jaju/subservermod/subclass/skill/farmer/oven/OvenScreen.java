@@ -4,11 +4,8 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.jaju.subservermod.ModNetworking;
 import net.jaju.subservermod.Subservermod;
 import net.jaju.subservermod.item.ModItem;
-import net.jaju.subservermod.shopsystem.ShopItem;
-import net.jaju.subservermod.subclass.network.SetFlagPacket;
 import net.jaju.subservermod.subclass.network.UpdateOvenRecipePacket;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -36,11 +33,11 @@ public class OvenScreen extends AbstractContainerScreen<OvenContainer> {
                 ItemStack.EMPTY, new ItemStack(Items.WHEAT, 1), ItemStack.EMPTY,
                 new ItemStack(ModItem.BAGUETTE.get(), 1)
         ));
-        recipes.put("Chocloate", List.of(
-                new ItemStack(Items.COCOA_BEANS, 1), new ItemStack(Items.COCOA_BEANS, 1), new ItemStack(Items.COCOA_BEANS, 1),
-                new ItemStack(Items.SUGAR, 1), new ItemStack(Items.SUGAR, 1), new ItemStack(Items.SUGAR, 1),
-                ItemStack.EMPTY, new ItemStack(ModItem.BUTTER.get(), 1), ItemStack.EMPTY,
-                new ItemStack(ModItem.CHOCOLATE.get(), 1)
+        recipes.put("Cream_bread", List.of(
+                ItemStack.EMPTY, new ItemStack(Items.WHEAT, 1), ItemStack.EMPTY,
+                ItemStack.EMPTY, new ItemStack(ModItem.WHIPPED_CREAM.get(), 1), ItemStack.EMPTY,
+                ItemStack.EMPTY, new ItemStack(Items.WHEAT, 1), ItemStack.EMPTY,
+                new ItemStack(ModItem.CREAM_BREAD.get(), 1)
         ));
         recipes.put("Brownie", List.of(
                 ItemStack.EMPTY, new ItemStack(Items.EGG, 1), ItemStack.EMPTY,
@@ -74,7 +71,7 @@ public class OvenScreen extends AbstractContainerScreen<OvenContainer> {
         int i = 0;
         for (var entry : recipes.entrySet()) {
             ItemStack itemStack = entry.getValue().get(9);
-            int xPosition = 50;
+            int xPosition = 167;
             int yPosition = 50 + i * ITEM_SPACING;
 
             PoseStack poseStack = guiGraphics.pose();
@@ -84,6 +81,8 @@ public class OvenScreen extends AbstractContainerScreen<OvenContainer> {
             poseStack.scale(ITEM_SCALE, ITEM_SCALE, ITEM_SCALE);
 
             guiGraphics.renderItem(itemStack, 0, 0);
+            guiGraphics.blit(new ResourceLocation(Subservermod.MOD_ID, "textures/gui/ui_slot.png"),
+                    -1, -1, 0, 0, (ITEM_SIZE + 2), (ITEM_SIZE + 2), (ITEM_SIZE + 2), (ITEM_SIZE + 2));
 
             poseStack.popPose();
             i++;
@@ -93,7 +92,7 @@ public class OvenScreen extends AbstractContainerScreen<OvenContainer> {
     private void renderRecipeTooltip(GuiGraphics guiGraphics, int mouseX, int mouseY) {
         int i = 0;
         for (var entry : recipes.entrySet()) {
-            int xPosition = 50;
+            int xPosition = 167;
             int yPosition = 50 + i * ITEM_SPACING;
 
             if (isMouseOverItem(mouseX, mouseY, xPosition, yPosition, ITEM_SIZE * ITEM_SCALE, ITEM_SIZE * ITEM_SCALE)) {
@@ -109,7 +108,8 @@ public class OvenScreen extends AbstractContainerScreen<OvenContainer> {
         PoseStack poseStack = guiGraphics.pose();
         poseStack.pushPose();
         poseStack.translate(mouseX + 10, mouseY - 10, 0);
-
+        guiGraphics.blit(new ResourceLocation(Subservermod.MOD_ID, "textures/gui/9_slots.png"),
+                -1, -1,0, 0, (ITEM_SIZE + 2)*3, (ITEM_SIZE + 2)*3, (ITEM_SIZE + 2)*3, (ITEM_SIZE + 2)*3);
         int index = 0;
         for (int row = 0; row < 3; row++) {
             for (int col = 0; col < 3; col++) {
@@ -145,7 +145,7 @@ public class OvenScreen extends AbstractContainerScreen<OvenContainer> {
         if (button == 0) {
             int i = 0;
             for (var entry : recipes.entrySet()) {
-                int xPosition = 50;
+                int xPosition = 167;
                 int yPosition = 50 + i * ITEM_SPACING;
 
                 if (isMouseOverItem(mouseX, mouseY, xPosition, yPosition, ITEM_SIZE * ITEM_SCALE, ITEM_SIZE * ITEM_SCALE)) {

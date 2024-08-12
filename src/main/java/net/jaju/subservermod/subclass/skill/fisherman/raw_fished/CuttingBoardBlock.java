@@ -1,11 +1,17 @@
 package net.jaju.subservermod.subclass.skill.fisherman.raw_fished;
 
+import net.jaju.subservermod.Subservermod;
 import net.jaju.subservermod.block.ModBlockEntities;
 import net.jaju.subservermod.item.ModItem;
+import net.jaju.subservermod.sound.SoundPlayer;
+import net.jaju.subservermod.subclass.BaseClass;
+import net.jaju.subservermod.subclass.ClassManagement;
 import net.jaju.subservermod.subclass.skill.chef.chefblock.ChefBlockEntity;
+import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
@@ -50,24 +56,32 @@ public class CuttingBoardBlock extends Block implements EntityBlock {
         if (!level.isClientSide) {
             BlockEntity blockEntity = level.getBlockEntity(pos);
             if (blockEntity instanceof CuttingBoardBlockEntity) {
+                BaseClass fisherman = getFishermanInstance(player);
+
+                if (fisherman == null || fisherman.getLevel() < 2) {
+                    player.sendSystemMessage(Component.literal("낚싯대 블럭은 2차를 전직해야 열 수 있습니다"));
+                    return InteractionResult.FAIL;
+                }
+
                 ItemStack heldItem = player.getMainHandItem();
                 ItemStack offItem = player.getOffhandItem();
                 CuttingBoardBlockEntity cuttingBoardBlockEntity = (CuttingBoardBlockEntity) blockEntity;
                 Item item = cuttingBoardBlockEntity.getItem();
 
-                if (item == ModItem.COD_RAW_FISH.get() || item == ModItem.SALMON_RAW_FISH.get()) {
+                if (item == ModItem.COD_RAW_FISH.get() || item == ModItem.SALMON_RAW_FISH.get() || item == ModItem.SQUID_SASHIMI.get()) {
                     ItemHandlerHelper.giveItemToPlayer(player, new ItemStack(item, 1));
                     cuttingBoardBlockEntity.setItem(Items.AIR);
                     return InteractionResult.PASS;
                 }
 
-                if (!(heldItem.getItem() == Items.COD || heldItem.getItem() == Items.SALMON || offItem.getItem() == Items.COD || offItem.getItem() == Items.SALMON)) {
+                if (!(heldItem.getItem() == Items.COD || heldItem.getItem() == Items.SALMON || heldItem.getItem() == ModItem.SQUID.get()
+                        || offItem.getItem() == Items.COD || offItem.getItem() == Items.SALMON || offItem.getItem() == ModItem.SQUID.get())) {
                     player.sendSystemMessage(Component.literal("도마에 올릴 수 없는 아이템입니다."));
                     return InteractionResult.PASS;
                 }
 
-                if (!(item == Items.COD || item == Items.SALMON)) {
-                    if (heldItem.getItem() == Items.COD || heldItem.getItem() == Items.SALMON) {
+                if (!(item == Items.COD || item == Items.SALMON || item == ModItem.SQUID.get())) {
+                    if (heldItem.getItem() == Items.COD || heldItem.getItem() == Items.SALMON || heldItem.getItem() == ModItem.SQUID.get()) {
                         cuttingBoardBlockEntity.setItem(heldItem.getItem());
                         heldItem.shrink(1);
                         player.setItemInHand(hand, heldItem);
@@ -105,6 +119,7 @@ public class CuttingBoardBlock extends Block implements EntityBlock {
 
                 if (((clickCount > 0 && clickTime > 80) || clickCount == 10) && heldItem.getItem() == ModItem.SASHIMI_KNIFE.get()) {
                     cuttingBoardBlockEntity.setClickCount(clickCount - 1);
+//                    SoundPlayer.playCustomSound(Minecraft.getInstance().player, new ResourceLocation(Subservermod.MOD_ID, "rawfish_sound"), 8.0f, 8.0f);
                     heldItem.hurtAndBreak(1, player, (p) -> p.broadcastBreakEvent(event.getHand()));
                     cuttingBoardBlockEntity.setClickTime(System.currentTimeMillis());
                     player.getInventory().setChanged();
@@ -150,4 +165,22 @@ public class CuttingBoardBlock extends Block implements EntityBlock {
         builder.add(FACING);
     }
 
+    private BaseClass getFishermanInstance(Player player) {
+        String playerName = player.getName().getString();
+        return ClassManagement.getClasses(playerName).get("Fisherman");
+    }
+
+    @Override
+    public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean isMoving) {
+        if (state.getBlock() != newState.getBlock()) {
+            BlockEntity blockEntity = level.getBlockEntity(pos);
+            if (blockEntity instanceof CuttingBoardBlockEntity) {
+                CuttingBoardBlockEntity brewingBlockEntity = (CuttingBoardBlockEntity) blockEntity;
+                popResource(level, pos, new ItemStack(brewingBlockEntity.getItem()));
+                popResource(level, pos, new ItemStack(this));
+                level.updateNeighbourForOutputSignal(pos, this);
+            }
+            super.onRemove(state, level, pos, newState, isMoving);
+        }
+    }
 }

@@ -40,6 +40,7 @@ public class ItemDiscoveryPacket {
         context.get().enqueueWork(() -> {
             ServerPlayer player = context.get().getSender();
             if (player != null) {
+                int itemCountToRemove = itemCount;
                 ResourceLocation itemResourceLocation = new ResourceLocation(itemName);
                 Item item = ForgeRegistries.ITEMS.getValue(itemResourceLocation);
                 ItemStack itemStack = new ItemStack(Objects.requireNonNull(item));
@@ -48,6 +49,19 @@ public class ItemDiscoveryPacket {
                     CompoundTag tag = itemStack.getOrCreateTag();
                     tag.putString("instrument", itemResourceLocation.toString());
                     itemStack.setTag(tag);
+                    for (int i = 0; i < player.getInventory().getContainerSize(); i++) {
+                        ItemStack inventoryStack = player.getInventory().getItem(i);
+                        if (ItemStack.isSameItemSameTags(inventoryStack, itemStack)) {
+                            if (inventoryStack.getCount() <= itemCountToRemove) {
+                                itemCountToRemove -= inventoryStack.getCount();
+                                player.getInventory().removeItem(inventoryStack);
+                            } else {
+                                player.getInventory().removeItem(i, itemCountToRemove);
+                                itemCountToRemove = 0;
+                            }
+                            if (itemCountToRemove <= 0) break;
+                        }
+                    }
                 } else if (itemResourceLocation.toString().contains("potion")) {
                     String key = itemResourceLocation.toString();
                     String potionName = key.substring(key.indexOf(':') + 1).replace("_potion", "");
@@ -55,24 +69,35 @@ public class ItemDiscoveryPacket {
                     if (potionType != null) {
                         itemStack = PotionUtils.setPotion(new ItemStack(Items.POTION), potionType);
                     }
-                }
-
-                int itemCountToRemove = itemCount;
-                for (int i = 0; i < player.getInventory().getContainerSize(); i++) {
-                    ItemStack inventoryStack = player.getInventory().getItem(i);
-                    if (ItemStack.isSameItemSameTags(inventoryStack, itemStack)) {
-                        if (inventoryStack.getCount() <= itemCountToRemove) {
-                            itemCountToRemove -= inventoryStack.getCount();
-                            player.getInventory().removeItem(inventoryStack);
-                        } else {
-                            ItemStack copyStack = inventoryStack.copy();
-                            copyStack.setCount(itemCountToRemove);
-                            player.getInventory().removeItem(copyStack);
-                            itemCountToRemove = 0;
+                    for (int i = 0; i < player.getInventory().getContainerSize(); i++) {
+                        ItemStack inventoryStack = player.getInventory().getItem(i);
+                        if (ItemStack.isSameItemSameTags(inventoryStack, itemStack)) {
+                            if (inventoryStack.getCount() <= itemCountToRemove) {
+                                itemCountToRemove -= inventoryStack.getCount();
+                                player.getInventory().removeItem(inventoryStack);
+                            } else {
+                                player.getInventory().removeItem(i, itemCountToRemove);
+                                itemCountToRemove = 0;
+                            }
+                            if (itemCountToRemove <= 0) break;
                         }
-                        if (itemCountToRemove <= 0) break;
+                    }
+                } else {
+                    for (int i = 0; i < player.getInventory().getContainerSize(); i++) {
+                        ItemStack inventoryStack = player.getInventory().getItem(i);
+                        if (inventoryStack.getItem() == itemStack.getItem()) {
+                            if (inventoryStack.getCount() <= itemCountToRemove) {
+                                itemCountToRemove -= inventoryStack.getCount();
+                                player.getInventory().removeItem(inventoryStack);
+                            } else {
+                                player.getInventory().removeItem(i, itemCountToRemove);
+                                itemCountToRemove = 0;
+                            }
+                            if (itemCountToRemove <= 0) break;
+                        }
                     }
                 }
+
                 player.inventoryMenu.broadcastChanges();
                 EncyclopediaManager.getInstance().discoverItem(player.getUUID(), itemName);
             }

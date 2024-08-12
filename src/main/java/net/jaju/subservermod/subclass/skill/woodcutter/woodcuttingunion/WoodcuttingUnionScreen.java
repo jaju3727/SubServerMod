@@ -15,9 +15,12 @@ import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Random;
 
 public class WoodcuttingUnionScreen extends AbstractContainerScreen<WoodcuttingUnionContainer> {
@@ -25,7 +28,7 @@ public class WoodcuttingUnionScreen extends AbstractContainerScreen<WoodcuttingU
     private int minItemNum;
     private boolean flag = false;
     private final WoodcuttingUnionBlockEntity blockEntity;
-    private static final LinkedHashMap<String, ItemStack> recipeItems = new LinkedHashMap<>();
+    private static final LinkedHashMap<String, List<Item>> recipes = new LinkedHashMap<>();
     private static final Random random = new Random();
 
     private static final int ITEM_SIZE = 16;
@@ -35,11 +38,36 @@ public class WoodcuttingUnionScreen extends AbstractContainerScreen<WoodcuttingU
     public WoodcuttingUnionScreen(WoodcuttingUnionContainer container, Inventory inv, Component title) {
         super(container, inv, title);
         this.blockEntity = container.getBlockEntity();
-        recipeItems.put("Wooden_chair", new ItemStack(ModItem.WOODEN_CHAIR.get()));
-        recipeItems.put("Wooden_table", new ItemStack(ModItem.WOODEN_TABLE.get()));
-        recipeItems.put("Wooden_cutting_board", new ItemStack(ModItem.WOODEN_CUTTING_BOARD.get()));
-        recipeItems.put("Wooden_drawer", new ItemStack(ModItem.WOODEN_DRAWER.get()));
-        recipeItems.put("Wooden_shelf", new ItemStack(ModItem.WOODEN_SHELF.get()));
+        recipes.put("Wooden_chair", List.of(
+                Items.OAK_PLANKS, Items.AIR, Items.AIR, Items.AIR,
+                Items.OAK_PLANKS, Items.AIR, Items.AIR, Items.AIR,
+                Items.OAK_SLAB, Items.OAK_SLAB, Items.OAK_SLAB, Items.OAK_SLAB,
+                Items.OAK_FENCE, Items.AIR, Items.AIR, Items.OAK_FENCE
+        , ModItem.WOODEN_CHAIR.get()));
+        recipes.put("Wooden_table", List.of(
+                Items.OAK_SLAB, Items.OAK_SLAB, Items.OAK_SLAB, Items.OAK_SLAB,
+                Items.OAK_SLAB, Items.OAK_SLAB, Items.OAK_SLAB, Items.OAK_SLAB,
+                Items.OAK_FENCE, Items.AIR, Items.AIR, Items.OAK_FENCE,
+                Items.OAK_FENCE, Items.AIR, Items.AIR, Items.OAK_FENCE,
+                ModItem.WOODEN_TABLE.get()));
+        recipes.put("Wooden_cutting_board", List.of(
+                Items.AIR, Items.AIR, Items.AIR, Items.AIR,
+                Items.OAK_SLAB, Items.OAK_SLAB, Items.OAK_SLAB, Items.OAK_SLAB,
+                Items.OAK_SLAB, Items.OAK_SLAB, Items.OAK_SLAB, Items.OAK_SLAB,
+                Items.AIR, Items.AIR, Items.AIR, Items.AIR
+                ,ModItem.WOODEN_CUTTING_BOARD.get()));
+        recipes.put("Wooden_drawer", List.of(
+                Items.AIR, Items.OAK_SLAB, Items.OAK_SLAB, Items.AIR,
+                Items.AIR, Items.OAK_SLAB, Items.OAK_SLAB, Items.AIR,
+                Items.AIR, Items.OAK_SLAB, Items.OAK_SLAB, Items.AIR,
+                Items.AIR, Items.OAK_SLAB, Items.OAK_SLAB, Items.AIR
+                , ModItem.WOODEN_DRAWER.get()));
+        recipes.put("Wooden_shelf", List.of(
+                Items.OAK_SLAB, Items.OAK_SLAB, Items.OAK_SLAB, Items.OAK_SLAB,
+                Items.OAK_SLAB, Items.OAK_SLAB, Items.OAK_SLAB, Items.OAK_SLAB,
+                Items.STICK, Items.AIR, Items.AIR, Items.STICK,
+                Items.AIR, Items.AIR, Items.AIR, Items.AIR
+                , ModItem.WOODEN_SHELF.get()));
     }
 
     @Override
@@ -60,10 +88,10 @@ public class WoodcuttingUnionScreen extends AbstractContainerScreen<WoodcuttingU
 
     private void renderRecipeItems(GuiGraphics guiGraphics) {
         int i = 0;
-        for (var entry : recipeItems.entrySet()) {
-            ItemStack itemStack = entry.getValue();
-            int xPosition = 50;
-            int yPosition = 50 + i * ITEM_SPACING;
+        for (var entry : recipes.entrySet()) {
+            ItemStack itemStack = new ItemStack(entry.getValue().get(entry.getValue().size() - 1));
+            int xPosition = 193 + i * ITEM_SPACING;
+            int yPosition = 160;
 
             PoseStack poseStack = guiGraphics.pose();
             poseStack.pushPose();
@@ -72,10 +100,46 @@ public class WoodcuttingUnionScreen extends AbstractContainerScreen<WoodcuttingU
             poseStack.scale(ITEM_SCALE, ITEM_SCALE, ITEM_SCALE);
 
             guiGraphics.renderItem(itemStack, 0, 0);
+            guiGraphics.blit(new ResourceLocation(Subservermod.MOD_ID, "textures/gui/ui_slot.png"),
+                    -1, -1, 0, 0, (ITEM_SIZE + 2), (ITEM_SIZE + 2), (ITEM_SIZE + 2), (ITEM_SIZE + 2));
 
             poseStack.popPose();
             i++;
         }
+    }
+
+    private void renderRecipeTooltip(GuiGraphics guiGraphics, int mouseX, int mouseY) {
+        int i = 0;
+        for (var entry : recipes.entrySet()) {
+            int xPosition = 193 + i * ITEM_SPACING;
+            int yPosition = 160;
+
+            if (isMouseOverItem(mouseX, mouseY, xPosition, yPosition, ITEM_SIZE * ITEM_SCALE, ITEM_SIZE * ITEM_SCALE)) {
+                List<Item> recipe = entry.getValue();
+                renderRecipeGrid(guiGraphics, mouseX, mouseY, recipe);
+                break;
+            }
+            i++;
+        }
+    }
+
+    private void renderRecipeGrid(GuiGraphics guiGraphics, int mouseX, int mouseY, List<Item> recipe) {
+        PoseStack poseStack = guiGraphics.pose();
+        poseStack.pushPose();
+        poseStack.translate(mouseX + 10, mouseY - 10, 0);
+        guiGraphics.blit(new ResourceLocation(Subservermod.MOD_ID, "textures/gui/16_slots.png"),
+                -1, -1, 0, 0, (ITEM_SIZE + 2) * 4, (ITEM_SIZE + 2) * 4, (ITEM_SIZE + 2) * 4, (ITEM_SIZE + 2) * 4);
+        int index = 0;
+        for (int row = 0; row < 4; row++) {
+            for (int col = 0; col < 4; col++) {
+                ItemStack itemStack = new ItemStack(recipe.get(index));
+                if (!itemStack.isEmpty()) {
+                    guiGraphics.renderItem(itemStack, col * (ITEM_SIZE + 2), row * (ITEM_SIZE + 2));
+                }
+                index++;
+            }
+        }
+        poseStack.popPose();
     }
 
     @Override
@@ -92,7 +156,7 @@ public class WoodcuttingUnionScreen extends AbstractContainerScreen<WoodcuttingU
                 30, 15, button -> {
 
             if (flag) {
-                SoundPlayer.playCustomSound(Minecraft.getInstance().player, new ResourceLocation(Subservermod.MOD_ID, "woodcutter_sound"), 1.0f, 1.0f);
+//                SoundPlayer.playCustomSound(Minecraft.getInstance().player, new ResourceLocation(Subservermod.MOD_ID, "woodcutter_sound"), 1.0f, 1.0f);
                 gaugeX -= 10;
                 ModNetworking.INSTANCE.sendToServer(new GaugeSendToEntityPacket(blockEntity.getBlockPos(), gaugeX));
             }
@@ -108,6 +172,7 @@ public class WoodcuttingUnionScreen extends AbstractContainerScreen<WoodcuttingU
         }
 
         renderRecipeItems(guiGraphics);
+        renderRecipeTooltip(guiGraphics, mouseX, mouseY);
         super.render(guiGraphics, mouseX, mouseY, partialTicks);
         this.renderTooltip(guiGraphics, mouseX, mouseY);
     }
@@ -116,12 +181,12 @@ public class WoodcuttingUnionScreen extends AbstractContainerScreen<WoodcuttingU
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         if (button == 0) {
             int i = 0;
-            for (var entry : recipeItems.entrySet()) {
-                int xPosition = 50;
-                int yPosition = 50 + i * ITEM_SPACING;
+            for (var entry : recipes.entrySet()) {
+                int xPosition = 193 + i * ITEM_SPACING;
+                int yPosition = 160;
 
                 if (isMouseOverItem(mouseX, mouseY, xPosition, yPosition, ITEM_SIZE * ITEM_SCALE, ITEM_SIZE * ITEM_SCALE)) {
-                    UpdateWoodcuttingUnionRecipePacket packet = new UpdateWoodcuttingUnionRecipePacket(blockEntity.getBlockPos(), entry.getValue());
+                    UpdateWoodcuttingUnionRecipePacket packet = new UpdateWoodcuttingUnionRecipePacket(blockEntity.getBlockPos(), new ItemStack(entry.getValue().get(16)));
                     ModNetworking.INSTANCE.sendToServer(packet);
                     return true;
                 }

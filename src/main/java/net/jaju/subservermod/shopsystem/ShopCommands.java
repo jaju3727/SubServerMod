@@ -2,11 +2,12 @@ package net.jaju.subservermod.shopsystem;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.BoolArgumentType;
+import com.mojang.brigadier.arguments.FloatArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
-import net.jaju.subservermod.shopsystem.entity.ModEntities;
-import net.jaju.subservermod.shopsystem.entity.ShopEntity;
+import net.jaju.subservermod.entity.ModEntities;
+import net.jaju.subservermod.entity.ShopEntity;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -34,6 +35,7 @@ public class ShopCommands {
 
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher, CommandBuildContext buildContext) {
         dispatcher.register(Commands.literal("shop")
+                .requires(source -> source.hasPermission(2))
                 .then(Commands.literal("add")
                         .then(Commands.argument("name", StringArgumentType.string())
                                 .then(Commands.argument("buyPrice", IntegerArgumentType.integer())
@@ -44,7 +46,7 @@ public class ShopCommands {
                                                                         .then(Commands.argument("isSellable", BoolArgumentType.bool())
                                                                                 .then(Commands.argument("isDailyBuyLimit", BoolArgumentType.bool())
                                                                                         .then(Commands.argument("isDailySellLimit", BoolArgumentType.bool())
-                                                                                            .then(Commands.argument("coinType", StringArgumentType.string())
+                                                                                                .then(Commands.argument("coinType", StringArgumentType.string())
                                                                                                     .suggests(COIN_TYPE_SUGGESTIONS)
                                                                                                     .executes(context -> {
                                                                                                         String name = StringArgumentType.getString(context, "name");
@@ -70,8 +72,8 @@ public class ShopCommands {
                                                                                                         return 1;
                                                                                                     }))))))))))))
                 .then(Commands.literal("set")
-                        .then(Commands.argument("id", IntegerArgumentType.integer())
-                                .then(Commands.argument("name", StringArgumentType.string())
+                        .then(Commands.argument("name", StringArgumentType.string())
+                                .then(Commands.argument("id", IntegerArgumentType.integer())
                                         .then(Commands.argument("buyPrice", IntegerArgumentType.integer())
                                                 .then(Commands.argument("sellPrice", IntegerArgumentType.integer())
                                                         .then(Commands.argument("dailyBuyLimitNum", IntegerArgumentType.integer())
@@ -80,9 +82,9 @@ public class ShopCommands {
                                                                                 .then(Commands.argument("isSellable", BoolArgumentType.bool())
                                                                                         .then(Commands.argument("isDailyBuyLimit", BoolArgumentType.bool())
                                                                                                 .then(Commands.argument("isDailySellLimit", BoolArgumentType.bool())
-                                                                                                        .then(Commands.argument("isDailySellLimit", BoolArgumentType.bool())
-                                                                                                                .then(Commands.argument("coinType", StringArgumentType.string())
-                                                                                                                .executes(context -> {
+                                                                                                        .then(Commands.argument("coinType", StringArgumentType.string())
+                                                                                                                .suggests(COIN_TYPE_SUGGESTIONS)
+                                                                                                                        .executes(context -> {
                                                                                                                     String name = StringArgumentType.getString(context, "name");
                                                                                                                     ItemStack itemStack = context.getSource().getPlayerOrException().getMainHandItem();
                                                                                                                     int buyPrice = IntegerArgumentType.getInteger(context, "buyPrice");
@@ -105,7 +107,7 @@ public class ShopCommands {
                                                                                                                         context.getSource().sendFailure(Component.literal("No shop entities found with name: " + name));
                                                                                                                     }
                                                                                                                     return 1;
-                                                                                                                }))))))))))))))
+                                                                                                                })))))))))))))
                 .then(Commands.literal("remove")
                         .then(Commands.argument("name", StringArgumentType.string())
                                 .executes(context -> {
@@ -122,7 +124,7 @@ public class ShopCommands {
                                 })
                                 .then(Commands.argument("startId", IntegerArgumentType.integer())
                                         .then(Commands.argument("endId", IntegerArgumentType.integer())
-                                            .executes(context -> {
+                                                .executes(context -> {
                                                 int startId = IntegerArgumentType.getInteger(context, "startId");
                                                 int endId = IntegerArgumentType.getInteger(context, "endId");
                                                 String name = StringArgumentType.getString(context, "name");
@@ -147,18 +149,20 @@ public class ShopCommands {
                 .then(Commands.literal("move")
                         .then(Commands.argument("name", StringArgumentType.string())
                                 .then(Commands.argument("pos", BlockPosArgument.blockPos())
+                                        .then(Commands.argument("yaw", FloatArgumentType.floatArg(0.0F, 360.0F))
                                         .executes(context -> {
                                             CommandSourceStack source = context.getSource();
                                             String name = StringArgumentType.getString(context, "name");
                                             BlockPos pos = BlockPosArgument.getLoadedBlockPos(context, "pos");
+                                            float yaw = FloatArgumentType.getFloat(context, "yaw");
                                             ServerLevel world = source.getLevel();
                                             boolean found = false;
 
                                             List<ShopEntity> entities = (List<ShopEntity>) world.getEntities(EntityTypeTest.forClass(ShopEntity.class), entity -> entity.hasCustomName() && entity.getCustomName().getString().equals(name));
 
                                             for (ShopEntity entity : entities) {
-                                                entity.moveTo(pos.getX(), pos.getY(), pos.getZ());
-                                                source.sendSuccess(() -> Component.literal("Moved entity " + name + " to " + pos.toShortString()), true);
+                                                entity.updatePositionAndRotation(pos, yaw);
+                                                source.sendSuccess(() -> Component.literal("Moved entity " + name + " to " + pos.toShortString() + " with yaw " + yaw), true);
                                                 found = true;
                                                 break;
                                             }
@@ -167,9 +171,8 @@ public class ShopCommands {
                                                 source.sendFailure(Component.literal("No entity found with name: " + name));
                                             }
                                             return 1;
-                                }))))
+                                        })))))
                 .then(Commands.literal("create")
-                        .requires(source -> source.hasPermission(2))
                         .then(Commands.argument("name", StringArgumentType.string())
                                 .then(Commands.argument("skinName", StringArgumentType.string())
                                 .executes(context -> {
@@ -179,7 +182,7 @@ public class ShopCommands {
 
                                     ServerLevel world = source.getLevel();
                                     Vec3 position = source.getPosition();
-                                    ShopEntity entity = ModEntities.CUSTOM_ENTITY.get().create(world);
+                                    ShopEntity entity = ModEntities.SHOP_ENTITY.get().create(world);
 
                                     if (entity != null) {
                                         entity.setSkinPlayerName(skinName, name);

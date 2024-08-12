@@ -35,8 +35,10 @@ public class CoinItem extends Item {
 
             int amount = getAmountFromLore(itemStack);
             if (amount == 0) {
-                amount = player.isShiftKeyDown() ? itemStack.getCount() : 1;
+                amount = 1;
             }
+            int count = player.isShiftKeyDown() ? itemStack.getCount() : 1;
+            amount = count * amount;
 
             switch (coinType) {
                 case "sub_coin" -> coinData.setSubcoin(coinData.getSubcoin() + amount);
@@ -52,7 +54,7 @@ public class CoinItem extends Item {
             ModNetworking.INSTANCE.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) player), new CoinDataServerSyncPacket(coinData));
             player.sendSystemMessage(Component.literal(coinType + "이(가) " + amount + " 추가되었습니다!"));
 
-            itemStack.shrink(1);
+            itemStack.shrink(count);
             return InteractionResultHolder.sidedSuccess(itemStack, false);
         }
 

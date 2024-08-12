@@ -1,5 +1,6 @@
 package net.jaju.subservermod.subclass;
 
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 
 public abstract class BaseClass {
@@ -30,4 +31,28 @@ public abstract class BaseClass {
     }
 
     public abstract void performSkill(String skillName, ServerPlayer player);
+
+    public void toBytes(FriendlyByteBuf buf) {
+        buf.writeUtf(name);
+        buf.writeInt(level);
+        buf.writeUtf(playerName);
+    }
+
+    public static BaseClass fromBytes(FriendlyByteBuf buf) {
+        String name = buf.readUtf();
+        int level = buf.readInt();
+        String playerName = buf.readUtf();
+        return new SubClass(name, level, playerName);
+    }
+}
+
+class SubClass extends BaseClass {
+    public SubClass(String name, int level, String playerName) {
+        super(name, level, playerName);
+    }
+
+    @Override
+    public void performSkill(String skillName, ServerPlayer player) {
+        // Implement skill logic here
+    }
 }

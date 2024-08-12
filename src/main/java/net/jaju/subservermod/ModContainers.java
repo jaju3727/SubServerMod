@@ -1,6 +1,6 @@
 package net.jaju.subservermod;
 
-import net.jaju.subservermod.shopsystem.entity.ShopEntity;
+import net.jaju.subservermod.entity.ShopEntity;
 import net.jaju.subservermod.shopsystem.screen.ShopContainer;
 import net.jaju.subservermod.subclass.skill.alchemist.brewing.BrewingContainer;
 import net.jaju.subservermod.subclass.skill.farmer.middle_oven.MiddleOvenContainer;
@@ -13,7 +13,6 @@ import net.minecraft.world.level.Level;
 import net.minecraftforge.common.extensions.IForgeMenuType;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.items.ItemStackHandler;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;

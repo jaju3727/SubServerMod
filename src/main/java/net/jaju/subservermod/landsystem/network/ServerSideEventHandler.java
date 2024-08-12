@@ -6,6 +6,7 @@ import net.jaju.subservermod.landsystem.network.packet.ChunkOwnerUpdatePacket;
 import net.jaju.subservermod.landsystem.network.packet.ChunkOwnersPacket;
 import net.jaju.subservermod.landsystem.network.packet.ChunkSharersPacket;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
@@ -45,18 +46,19 @@ public class ServerSideEventHandler {
             BlockPos pos = player.blockPosition();
             ChunkPos chunkPos = new ChunkPos(pos);
             ResourceKey<Level> worldKey = world.dimension();
-            String chunkKey = LandManager.getInstance().getChunkKey(worldKey, chunkPos);
+            String chunkKey = LandManager.getInstance().getChunkKey(worldKey, chunkPos, pos.getY());
             UUID owner = LandManager.getInstance().getOwner(chunkKey);
 
-            // 클라이언트로 패킷 전송
+
             if (player instanceof ServerPlayer serverPlayer) {
+                ChunkOwnerUpdatePacket packet;
+                String ownerName = LandManager.getInstance().getPlayerName(owner);
                 if (owner != null) {
-                    ChunkOwnerUpdatePacket packet = new ChunkOwnerUpdatePacket(player.getUUID(), owner);
-                    ModNetworking.INSTANCE.send(PacketDistributor.PLAYER.with(() -> serverPlayer), packet);
+                    packet = new ChunkOwnerUpdatePacket(player.getUUID(), owner, ownerName);
                 } else {
-                    ChunkOwnerUpdatePacket packet = new ChunkOwnerUpdatePacket(player.getUUID(), null);
-                    ModNetworking.INSTANCE.send(PacketDistributor.PLAYER.with(() -> serverPlayer), packet);
+                    packet = new ChunkOwnerUpdatePacket(player.getUUID(), null, ownerName);
                 }
+                ModNetworking.INSTANCE.send(PacketDistributor.PLAYER.with(() -> serverPlayer), packet);
             }
         }
     }

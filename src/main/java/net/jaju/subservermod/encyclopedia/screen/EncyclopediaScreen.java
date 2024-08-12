@@ -4,10 +4,12 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.jaju.subservermod.ModNetworking;
 import net.jaju.subservermod.Subservermod;
+import net.jaju.subservermod.encyclopedia.EncyclopediaManager;
 import net.jaju.subservermod.encyclopedia.network.ClientPacketHandler;
 import net.jaju.subservermod.encyclopedia.network.EncyclopediaPacket;
 import net.jaju.subservermod.encyclopedia.network.ItemDiscoveryPacket;
 import net.jaju.subservermod.encyclopedia.network.giftGetPacket;
+import net.jaju.subservermod.mailbox.MailboxManager;
 import net.jaju.subservermod.util.CustomPlainTextButton;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphics;
@@ -16,10 +18,12 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.alchemy.Potion;
 import net.minecraft.world.item.alchemy.PotionUtils;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -80,7 +84,6 @@ public class EncyclopediaScreen extends Screen {
                     new ResourceLocation(Subservermod.MOD_ID, "textures/gui/encyclopedia/encyclopedia_slot.png"),
                     0, 0, button -> {
                         if (!flag) {
-                            System.out.println(entry.getKey()+"  "+entry.getValue());
                             onClickWidget(entry.getKey(), entry.getValue());
                         }
             }));
@@ -94,7 +97,7 @@ public class EncyclopediaScreen extends Screen {
                 Component.literal(page+"/"+maxPage),
                 button -> {},
                 minecraft.font,
-                1.0f
+                1.0f, 0XFFFFFF
         ));
 
         this.addRenderableWidget(new CustomPlainTextButton(
@@ -103,7 +106,7 @@ public class EncyclopediaScreen extends Screen {
                 Component.literal( String.format("%.2f", (float)gauge/(float)encyclopedia.size() * 100) + "% (" + gauge + "/" + encyclopedia.size() + ")"),
                 button -> {},
                 minecraft.font,
-                0.8f
+                0.8f, 0XFFFFFF
         ));
 
         if (page != minPage) {
@@ -119,13 +122,13 @@ public class EncyclopediaScreen extends Screen {
                     20, 10, button -> rightPage()));
         }
 
-        int previousVar = -100;
+        i = 0;
         for (var entry : giftList.entrySet()) {
             int width = 350;
             int height = 170;
             int centerX = (this.width - width) / 2;
             int centerY = (this.height - height) / 2 + 10 + 165;
-            if (entry.getKey() - previousVar <= 10) {
+            if (i <= 4 && i%2 == 1) {
                 centerY -= 35;
             }
             width = (int) (346*(((float) entry.getKey()/ (float) encyclopedia.size()))) - 10;
@@ -143,7 +146,7 @@ public class EncyclopediaScreen extends Screen {
                         new ResourceLocation(Subservermod.MOD_ID, "textures/gui/encyclopedia/gift_check.png"),
                         20, 20, button -> {}));
             }
-            previousVar = entry.getKey();
+            i++;
         }
     }
 
@@ -159,11 +162,18 @@ public class EncyclopediaScreen extends Screen {
         ResourceLocation itemResourceLocation = new ResourceLocation(itemName);
         Item item = ForgeRegistries.ITEMS.getValue(itemResourceLocation);
         ItemStack itemStack = new ItemStack(Objects.requireNonNull(item));
+        int playerItemCount = 0;
         if (itemResourceLocation.toString().contains("goat_horn")) {
             itemStack = new ItemStack(Items.GOAT_HORN);
             CompoundTag tag = itemStack.getOrCreateTag();
             tag.putString("instrument", itemResourceLocation.toString());
             itemStack.setTag(tag);
+            for (int i = 0; i < player.getInventory().getContainerSize(); i++) {
+                ItemStack inventoryStack = player.getInventory().getItem(i);
+                if (ItemStack.isSameItemSameTags(inventoryStack, itemStack)) {
+                    playerItemCount += inventoryStack.getCount();
+                }
+            }
         } else if (itemResourceLocation.toString().contains("potion")) {
             String key = itemResourceLocation.toString();
             String potionName = key.substring(key.indexOf(':') + 1).replace("_potion", "");
@@ -171,8 +181,20 @@ public class EncyclopediaScreen extends Screen {
             if (potionType != null) {
                 itemStack = PotionUtils.setPotion(new ItemStack(Items.POTION), potionType);
             }
+            for (int i = 0; i < player.getInventory().getContainerSize(); i++) {
+                ItemStack inventoryStack = player.getInventory().getItem(i);
+                if (ItemStack.isSameItemSameTags(inventoryStack, itemStack)) {
+                    playerItemCount += inventoryStack.getCount();
+                }
+            }
+        } else {
+            for (int i = 0; i < player.getInventory().getContainerSize(); i++) {
+                ItemStack inventoryStack = player.getInventory().getItem(i);
+                if (inventoryStack.getItem() == itemStack.getItem()) {
+                    playerItemCount += inventoryStack.getCount();
+                }
+            }
         }
-        int playerItemCount = player.getInventory().countItem(itemStack.getItem());
         if (playerItemCount >= itemCount) {
             discoveries.replace(itemName, true);
             gauge++;
@@ -269,13 +291,13 @@ public class EncyclopediaScreen extends Screen {
             i++;
         }
 
-        int previousVar = -100;
+        i = 0;
         for (var entry : giftList.entrySet()) {
             int width = 350;
             int height = 170;
             int centerX = (this.width - width) / 2;
             int centerY = (this.height - height) / 2 + 10 + 165;
-            if (entry.getKey() - previousVar <= 10) {
+            if (i <= 4 && i%2 == 1) {
                 centerY -= 35;
             }
             width = (int) (346*(((float) entry.getKey()/ (float) encyclopedia.size()))) - 10;
@@ -284,12 +306,12 @@ public class EncyclopediaScreen extends Screen {
             if (mouseX >= centerX && mouseX <= centerX + 20 && mouseY >= centerY && mouseY <= centerY + 20) {
                 renderGiftTooltip(guiGraphics, entry.getValue(), centerX, centerY, entry.getKey());
             }
-
-            previousVar = entry.getKey();
+            i++;
         }
     }
 
     private void renderTooltip(GuiGraphics guiGraphics, ItemStack itemStack, int itemCount, int x, int y) {
+        int playerItemCount = 0;
         String itemName = itemStack.getHoverName().getString();
         CompoundTag tag = itemStack.getTag();
         if (tag != null && tag.contains("instrument")) {
@@ -306,11 +328,19 @@ public class EncyclopediaScreen extends Screen {
             };
         }
 
-        int playerItemCount = 0;
-        for (int i = 0; i < player.getInventory().getContainerSize(); i++) {
-            ItemStack inventoryStack = player.getInventory().getItem(i);
-            if (ItemStack.isSameItemSameTags(inventoryStack, itemStack)) {
-                playerItemCount += inventoryStack.getCount();
+        if (itemName.contains("염소 뿔") || itemName.contains("물약")) {
+            for (int i = 0; i < player.getInventory().getContainerSize(); i++) {
+                ItemStack inventoryStack = player.getInventory().getItem(i);
+                if (ItemStack.isSameItemSameTags(inventoryStack, itemStack)) {
+                    playerItemCount += inventoryStack.getCount();
+                }
+            }
+        } else {
+            for (int i = 0; i < player.getInventory().getContainerSize(); i++) {
+                ItemStack inventoryStack = player.getInventory().getItem(i);
+                if (inventoryStack.getItem() == itemStack.getItem()) {
+                    playerItemCount += inventoryStack.getCount();
+                }
             }
         }
         List<Component> tooltip = new ArrayList<>();
@@ -326,15 +356,38 @@ public class EncyclopediaScreen extends Screen {
         guiGraphics.renderComponentTooltip(this.font, tooltip, x, y);
     }
 
+    private int getAmountFromLore(ItemStack itemStack) {
+        List<Component> lore = itemStack.getTooltipLines(null, TooltipFlag.Default.NORMAL);
+
+        for (Component line : lore) {
+            String text = line.getString();
+            if (text.endsWith("원")) {
+                try {
+                    return Integer.parseInt(text.replace("원", "").trim());
+                } catch (NumberFormatException e) {
+                    // Ignore and continue checking other lore lines
+                }
+            }
+        }
+        return 0; // Default amount if no valid lore is found
+    }
+
     private void renderGiftTooltip(GuiGraphics guiGraphics, List<ItemStack> itemStacks, int x, int y, int itemNum) {
         List<Component> tooltip = new ArrayList<>();
         tooltip.add(Component.literal("보상 ").withStyle(ChatFormatting.LIGHT_PURPLE)
                 .append(Component.literal("(" + itemNum + "개)").withStyle(ChatFormatting.WHITE)));
         for (ItemStack itemStack : itemStacks) {
             Component itemName = itemStack.getHoverName();
-            tooltip.add(Component.literal("| ").withStyle(ChatFormatting.BLUE)
-                    .append(itemName.copy().withStyle(ChatFormatting.WHITE))
-                    .append(Component.literal(" "+itemStack.getCount()+"개").withStyle(ChatFormatting.BLUE)));
+            if (itemName.getString().equals("섭코인")) {
+
+                tooltip.add(Component.literal("| ").withStyle(ChatFormatting.BLUE)
+                        .append(itemName.copy().withStyle(ChatFormatting.WHITE))
+                        .append(Component.literal(" " + getAmountFromLore(itemStack) + "원").withStyle(ChatFormatting.BLUE)));
+            } else {
+                tooltip.add(Component.literal("| ").withStyle(ChatFormatting.BLUE)
+                        .append(itemName.copy().withStyle(ChatFormatting.WHITE))
+                        .append(Component.literal(" " + itemStack.getCount() + "개").withStyle(ChatFormatting.BLUE)));
+            }
         }
         guiGraphics.renderComponentTooltip(this.font, tooltip, x, y + 10);
     }
