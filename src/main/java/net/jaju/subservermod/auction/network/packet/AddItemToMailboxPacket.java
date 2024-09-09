@@ -1,4 +1,4 @@
-package net.jaju.subservermod.mailbox.network;
+package net.jaju.subservermod.auction.network.packet;
 
 import net.jaju.subservermod.mailbox.MailboxManager;
 import net.minecraft.network.FriendlyByteBuf;
