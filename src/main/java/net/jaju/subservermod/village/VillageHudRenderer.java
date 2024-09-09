@@ -23,7 +23,9 @@ public class VillageHudRenderer {
 
     public static void showVillageImage(UUID playerUUID, String villageName) {
         if (!(Objects.equals(villageName, "gemshore") || Objects.equals(villageName, "perrygrass") || Objects.equals(villageName, "runegrove")
-                || Objects.equals(villageName, "p" ) || Objects.equals(villageName, "m") || Objects.equals(villageName, "s"))) villageName = "else";
+                || Objects.equals(villageName, "p" ) || Objects.equals(villageName, "m") || Objects.equals(villageName, "s")
+                || Objects.equals(villageName, "dungeon1") || Objects.equals(villageName, "dungeon2")
+                || Objects.equals(villageName, "dungeon3") || Objects.equals(villageName, "dungeon4"))) villageName = "else";
 
         playerHudData.put(playerUUID, new HudData(System.currentTimeMillis(), new ResourceLocation(Subservermod.MOD_ID, "textures/gui/village/" + villageName + ".png")));
     }

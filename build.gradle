@@ -68,10 +68,8 @@ repositories {
 
 dependencies {
     implementation 'com.google.code.gson:gson:2.10'
-    implementation 'mysql:mysql-connector-java:8.0.22'
     compileOnly "io.papermc.paper:paper-api:1.20.1-R0.1-SNAPSHOT"
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
-
 }
 
 tasks.named('processResources', ProcessResources).configure {

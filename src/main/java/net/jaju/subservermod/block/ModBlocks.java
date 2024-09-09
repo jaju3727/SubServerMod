@@ -5,12 +5,14 @@ import net.jaju.subservermod.item.ModItem;
 import net.jaju.subservermod.subclass.skill.alchemist.brewing.BrewingBlock;
 import net.jaju.subservermod.subclass.skill.alchemist.teleport.TeleportBlock;
 import net.jaju.subservermod.subclass.skill.chef.chefblock.ChefBlock;
+import net.jaju.subservermod.subclass.skill.farmer.large_oven.LargeOvenBlock;
 import net.jaju.subservermod.subclass.skill.farmer.middle_oven.MiddleOvenBlock;
 import net.jaju.subservermod.subclass.skill.farmer.scarecrow_block.ScareCrowBlock;
 import net.jaju.subservermod.subclass.skill.fisherman.fishing_rod.FishingRodBlock;
 import net.jaju.subservermod.subclass.skill.fisherman.raw_fished.CuttingBoardBlock;
 import net.jaju.subservermod.subclass.skill.miner.crafting.CraftingBlock;
 import net.jaju.subservermod.subclass.skill.farmer.oven.OvenBlock;
+import net.jaju.subservermod.subclass.skill.miner.upgrade_crafting.UpgradeCraftingBlock;
 import net.jaju.subservermod.subclass.skill.woodcutter.woodcuttingunion.WoodcuttingUnionBlock;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
@@ -35,8 +37,12 @@ public class ModBlocks {
             () -> new OvenBlock(BlockBehaviour.Properties.copy(Blocks.BREWING_STAND).sound(SoundType.METAL)));
     public static final RegistryObject<Block> MIDDLE_OVEN_BLOCK = registerBlock("middle_oven_block",
             () -> new MiddleOvenBlock(BlockBehaviour.Properties.copy(Blocks.BREWING_STAND).sound(SoundType.METAL)));
+    public static final RegistryObject<Block> LARGE_OVEN_BLOCK = registerBlock("large_oven_block",
+            () -> new LargeOvenBlock(BlockBehaviour.Properties.copy(Blocks.BREWING_STAND).sound(SoundType.METAL)));
     public static final RegistryObject<Block> CRAFTING_BLOCK = registerBlock("crafting_block",
             () -> new CraftingBlock(BlockBehaviour.Properties.copy(Blocks.BREWING_STAND).sound(SoundType.METAL)));
+    public static final RegistryObject<Block> UPGRADE_CRAFTING_BLOCK = registerBlock("upgrade_crafting_block",
+            () -> new UpgradeCraftingBlock(BlockBehaviour.Properties.copy(Blocks.BREWING_STAND).sound(SoundType.METAL)));
     public static final RegistryObject<Block> BREWING_BLOCK = registerBlock("brewing_block",
             () -> new BrewingBlock(BlockBehaviour.Properties.copy(Blocks.BREWING_STAND).sound(SoundType.METAL)));
     public static final RegistryObject<Block> TELEPORT_BLOCK = registerBlock("teleport_block",

@@ -38,7 +38,6 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import org.bukkit.plugin.Plugin;
 import org.slf4j.Logger;
 
 import java.util.concurrent.CompletableFuture;
@@ -61,28 +60,21 @@ public class Subservermod {
 
         MinecraftForge.EVENT_BUS.register(KeyInputHandler.class);
         MinecraftForge.EVENT_BUS.register(new ChunkOwnershipHandler());
-        LOGGER.info("10");
         MinecraftForge.EVENT_BUS.register(new ServerSideEventHandler());
-        LOGGER.info("9");
         MinecraftForge.EVENT_BUS.register(MailboxManager.class);
-        LOGGER.info("8");
         MinecraftForge.EVENT_BUS.register(MailboxCommand.class);
-        LOGGER.info("7");
         MinecraftForge.EVENT_BUS.register(CoinHud.class);
-        LOGGER.info("6");
         MinecraftForge.EVENT_BUS.register(VillageEventHandlers.class);
-        LOGGER.info("5");
+
         modEventBus.addListener(this::commonSetup);
-        LOGGER.info("4");
         modEventBus.addListener(this::addCreative);
-        LOGGER.info("3");
+
         DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> {
             modEventBus.addListener(this::clientSetup);
             MinecraftForge.EVENT_BUS.register(ClientModEventSubscriber.class);
         });
-        LOGGER.info("2");
+
         modEventBus.addListener(this::gatherData);
-        LOGGER.info("1");
 
         MinecraftForge.EVENT_BUS.register(this);
     }

@@ -1,4 +1,4 @@
-package net.jaju.subservermod.subclass.skill.farmer.middle_oven;
+package net.jaju.subservermod.subclass.skill.miner.upgrade_crafting;
 
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.items.ItemStackHandler;

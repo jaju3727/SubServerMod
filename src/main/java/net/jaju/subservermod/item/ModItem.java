@@ -155,6 +155,12 @@ public class ModItem {
             () -> new TeleportItem(new Item.Properties(), Level.OVERWORLD, new BlockPos(-372, 68, -20)));
     public static final RegistryObject<Item> RUNEGROVE_TELEPORT = ITEMS.register("runegrove_teleport",
             () -> new TeleportItem(new Item.Properties(), Level.OVERWORLD, new BlockPos(-2750, 83, 2518)));
+    public static final RegistryObject<Item> STAT_RESET = ITEMS.register("stat_reset",
+            () -> new StatResetItem(new Item.Properties()));
+    public static final RegistryObject<Item> STAT_POINT = ITEMS.register("stat_point",
+            () -> new StatPointItem(new Item.Properties()));
+    public static final RegistryObject<Item> CLASS_TRADE = ITEMS.register("class_trade",
+            () -> new ClassResetItem(new Item.Properties()));
     public static final RegistryObject<Item> HOWSWEET = ITEMS.register("howsweet",
             () -> new RecordItem(6, ModSounds.HOWSWEET_SOUND,
                     new Item.Properties().stacksTo(1), 180));

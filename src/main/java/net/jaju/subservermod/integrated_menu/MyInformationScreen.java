@@ -5,9 +5,7 @@ import net.jaju.subservermod.ModNetworking;
 import net.jaju.subservermod.Subservermod;
 import net.jaju.subservermod.integrated_menu.network.ClassDataRequestFromInformationPacket;
 import net.jaju.subservermod.integrated_menu.network.CommandExecutorPacket;
-import net.jaju.subservermod.integrated_menu.network.TemporaryOpRequestPacket;
 import net.jaju.subservermod.subclass.BaseClass;
-import net.jaju.subservermod.subclass.ClassManagement;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.ImageButton;
@@ -57,7 +55,7 @@ public class MyInformationScreen extends Screen {
                 standardY + 41,
                 width, height, 0, 0, 1,
                 new ResourceLocation(Subservermod.MOD_ID, "textures/gui/integrated_menu/stat.png"),
-                width, height, button -> ModNetworking.INSTANCE.sendToServer(new TemporaryOpRequestPacket())));
+                width, height, button -> Minecraft.getInstance().setScreen(new StatScreen(player))));
     }
 
     @Override

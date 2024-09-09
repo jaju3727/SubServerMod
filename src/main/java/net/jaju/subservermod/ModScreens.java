@@ -4,12 +4,16 @@ import net.jaju.subservermod.shopsystem.screen.ShopContainer;
 import net.jaju.subservermod.shopsystem.screen.ShopScreen;
 import net.jaju.subservermod.subclass.skill.alchemist.brewing.BrewingContainer;
 import net.jaju.subservermod.subclass.skill.alchemist.brewing.BrewingScreen;
+import net.jaju.subservermod.subclass.skill.farmer.large_oven.LargeOvenContainer;
+import net.jaju.subservermod.subclass.skill.farmer.large_oven.LargeOvenScreen;
 import net.jaju.subservermod.subclass.skill.farmer.middle_oven.MiddleOvenContainer;
 import net.jaju.subservermod.subclass.skill.farmer.middle_oven.MiddleOvenScreen;
 import net.jaju.subservermod.subclass.skill.miner.crafting.CraftingContainer;
 import net.jaju.subservermod.subclass.skill.miner.crafting.CraftingScreen;
 import net.jaju.subservermod.subclass.skill.farmer.oven.OvenContainer;
 import net.jaju.subservermod.subclass.skill.farmer.oven.OvenScreen;
+import net.jaju.subservermod.subclass.skill.miner.upgrade_crafting.UpgradeCraftingContainer;
+import net.jaju.subservermod.subclass.skill.miner.upgrade_crafting.UpgradeCraftingScreen;
 import net.jaju.subservermod.subclass.skill.woodcutter.woodcuttingunion.WoodcuttingUnionContainer;
 import net.jaju.subservermod.subclass.skill.woodcutter.woodcuttingunion.WoodcuttingUnionScreen;
 import net.minecraft.client.Minecraft;
@@ -27,7 +31,9 @@ public class ModScreens {
         });
         MenuScreens.<OvenContainer, OvenScreen>register(ModContainers.OVEN_MENU.get(), OvenScreen::new);
         MenuScreens.<MiddleOvenContainer, MiddleOvenScreen>register(ModContainers.MIDDLE_OVEN_MENU.get(), MiddleOvenScreen::new);
+        MenuScreens.<LargeOvenContainer, LargeOvenScreen>register(ModContainers.LARGE_OVEN_MENU.get(), LargeOvenScreen::new);
         MenuScreens.<CraftingContainer, CraftingScreen>register(ModContainers.CRAFTING_MENU.get(), CraftingScreen::new);
+        MenuScreens.<UpgradeCraftingContainer, UpgradeCraftingScreen>register(ModContainers.UPGRADE_CRAFTING_MENU.get(), UpgradeCraftingScreen::new);
         MenuScreens.<BrewingContainer, BrewingScreen>register(ModContainers.BREWING_MENU.get(), BrewingScreen::new);
         MenuScreens.<WoodcuttingUnionContainer, WoodcuttingUnionScreen>register(ModContainers.WOODCUTTINGUNION_MENU.get(), WoodcuttingUnionScreen::new);
     }

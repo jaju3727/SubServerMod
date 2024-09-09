@@ -1,13 +1,17 @@
 package net.jaju.subservermod.util;
 
 import net.jaju.subservermod.item.ModItem;
+import net.jaju.subservermod.subclass.BaseClass;
+import net.jaju.subservermod.subclass.ClassManagement;
 import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.ai.attributes.AttributeInstance;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
+import net.minecraft.world.item.Items;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -27,7 +31,7 @@ public class PlayerDeathEventHandler {
     public static void onPlayerDeath(LivingDeathEvent event) {
         if (event.getEntity() instanceof Player player) {
             if (hasSpecialItem(player)) {
-                playerExperience.put(player.getUUID(), player.totalExperience);
+                playerExperience.put(player.getUUID(), player.experienceLevel);
                 event.setCanceled(true);
                 ListTag inventoryList = new ListTag();
                 for (int i = 0; i < player.getInventory().getContainerSize(); i++) {
@@ -41,6 +45,28 @@ public class PlayerDeathEventHandler {
                 }
                 playerInventories.put(player.getUUID(), inventoryList);
                 player.sendSystemMessage(Component.literal("인벤토리 보호권이 사용되었습니다."));
+            } else {
+                ListTag inventoryList = new ListTag();
+                for (int i = 0; i < player.getInventory().getContainerSize(); i++) {
+                    ItemStack stack = player.getInventory().getItem(i);
+                    String name = stack.getHoverName().getString();
+                    if (stack.getItem().equals(Items.STONE_SWORD) && stack.hasCustomHoverName() &&
+                            (name.contains("Bow of Archer") ||
+                            name.contains("Mace of Cleric") ||
+                            name.contains("Blade of Assassin") ||
+                            name.contains("Staff of Mage") ||
+                            name.contains("Sword of Warrior"))) {
+                        CompoundTag itemTag = new CompoundTag();
+                        itemTag.putInt("Slot", i);
+                        itemTag.put("Item", stack.save(new CompoundTag()));
+                        inventoryList.add(itemTag);
+                        player.getInventory().removeItem(stack);
+                    }
+                }
+
+                if (!inventoryList.isEmpty()) {
+                    playerInventories.put(player.getUUID(), inventoryList);
+                }
             }
         }
     }
@@ -63,11 +89,28 @@ public class PlayerDeathEventHandler {
 
         if (playerExperience.containsKey(playerUUID)) {
             int experience = playerExperience.get(playerUUID);
-            player.giveExperiencePoints(experience);
+            player.giveExperienceLevels(experience);
             playerExperience.remove(playerUUID);
         }
+
+
     }
 
+    /**
+     * /mmocore admin attribute-points give {playerName} {num}
+     * /mmocore admin attribute-points set {playerName} {num}
+
+     * /mmocore admin attribute give {playerName} {stat} {num}
+     * /mmocore admin attribute take {playerName} {stat} {num}
+     * 스탯 목록:
+     * skill_damage
+     * cooldown_reduction
+     * health_regeneration
+     * armor
+     * knockback_resistance
+     * movement_speed
+     * max_health
+     */
     private static boolean hasSpecialItem(Player player) {
         for (int i = 0; i < player.getInventory().getContainerSize(); i++) {
             ItemStack stack = player.getInventory().getItem(i);

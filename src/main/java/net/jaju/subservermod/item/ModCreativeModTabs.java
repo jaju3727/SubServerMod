@@ -89,10 +89,14 @@ public class ModCreativeModTabs {
                         pOutput.accept(ModItem.PERRYGRASS_TELEPORT.get());
                         pOutput.accept(ModItem.GEMSHORE_TELEPORT.get());
                         pOutput.accept(ModItem.RUNEGROVE_TELEPORT.get());
+                        pOutput.accept(ModItem.STAT_RESET.get());
+                        pOutput.accept(ModItem.STAT_POINT.get());
+                        pOutput.accept(ModItem.CLASS_TRADE.get());
 
                         pOutput.accept(ModBlocks.SCARECROW_BLOCK.get());
                         pOutput.accept(ModBlocks.OVEN_BLOCK.get());
                         pOutput.accept(ModBlocks.MIDDLE_OVEN_BLOCK.get());
+                        pOutput.accept(ModBlocks.LARGE_OVEN_BLOCK.get());
                         pOutput.accept(ModBlocks.CRAFTING_BLOCK.get());
                         pOutput.accept(ModBlocks.BREWING_BLOCK.get());
                         pOutput.accept(ModBlocks.TELEPORT_BLOCK.get());

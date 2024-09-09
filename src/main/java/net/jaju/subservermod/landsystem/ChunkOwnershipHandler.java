@@ -129,6 +129,13 @@ public class ChunkOwnershipHandler {
                 event.setCanceled(true);
             }
         }
+
+        if (!player.level().isClientSide && player.level().dimension() == Level.OVERWORLD) {
+            if (!VillageProtectionManager.canPlayerModify(player, pos)) {
+                player.sendSystemMessage(Component.literal("마을을 망치지 마세요!"));
+                event.setCanceled(true);
+            }
+        }
     }
 
     @SubscribeEvent
@@ -144,6 +151,13 @@ public class ChunkOwnershipHandler {
             if ((!isOwner(chunkKey, player) && !isSharedWith(chunkKey, player)) && owner != null) {
                 if (landManager.getY(chunkKey) - pos.getY() <= 8) {
                     player.sendSystemMessage(Component.literal("이 청크에 대한 권한이 없습니다."));
+                    event.setCanceled(true);
+                }
+            }
+
+            if (player.level().dimension() == Level.OVERWORLD) {
+                if (!VillageProtectionManager.canPlayerModify(player, pos)) {
+                    player.sendSystemMessage(Component.literal("마을을 해치지 마세요!"));
                     event.setCanceled(true);
                 }
             }

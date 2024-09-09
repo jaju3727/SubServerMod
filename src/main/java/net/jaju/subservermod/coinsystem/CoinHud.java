@@ -150,6 +150,10 @@ public class CoinHud {
         return playerCoinDataMap.computeIfAbsent(player.getUUID(), p -> new CoinData());
     }
 
+    public static CoinData getCoinData(UUID playerUUID) {
+        return playerCoinDataMap.computeIfAbsent(playerUUID, p -> new CoinData());
+    }
+
     public static void saveCoinData() {
         try (FileWriter writer = new FileWriter(DATA_FILE_PATH)) {
             GSON.toJson(playerCoinDataMap, writer);

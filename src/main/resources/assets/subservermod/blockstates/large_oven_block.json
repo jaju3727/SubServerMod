@@ -1,0 +1,8 @@
+{
+  "variants": {
+    "facing=north": { "model": "subservermod:block/large_oven_block", "y": 0 },
+    "facing=south": { "model": "subservermod:block/large_oven_block", "y": 180 },
+    "facing=west": { "model": "subservermod:block/large_oven_block", "y": 270 },
+    "facing=east": { "model": "subservermod:block/large_oven_block", "y": 90 }
+  }
+}

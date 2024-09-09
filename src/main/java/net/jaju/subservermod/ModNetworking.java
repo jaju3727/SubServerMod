@@ -14,6 +14,8 @@ import net.jaju.subservermod.landsystem.network.packet.*;
 import net.jaju.subservermod.mailbox.network.AddItemToMailboxPacket;
 import net.jaju.subservermod.mailbox.network.packet.MailboxPacket;
 import net.jaju.subservermod.mailbox.network.packet.UpdateMailboxPacket;
+import net.jaju.subservermod.mmoclass.ClassDataSyncPacket;
+import net.jaju.subservermod.mmoclass.SyncClassDataPacket;
 import net.jaju.subservermod.shopsystem.network.ShopEntityDataPacket;
 import net.jaju.subservermod.shopsystem.network.UpdateInventoryPacket;
 import net.jaju.subservermod.shopsystem.network.UpdateShopEntityPacket;
@@ -73,10 +75,9 @@ public class ModNetworking {
         INSTANCE.registerMessage(id++, TemporaryOpResponsePacket.class, TemporaryOpResponsePacket::toBytes, TemporaryOpResponsePacket::new, TemporaryOpResponsePacket::handle);
         INSTANCE.registerMessage(id++, ShopEntityPositionPacket.class, ShopEntityPositionPacket::encode, ShopEntityPositionPacket::decode, ShopEntityPositionPacket::handle);
         INSTANCE.registerMessage(id++, PlayerEntityPositionPacket.class, PlayerEntityPositionPacket::encode, PlayerEntityPositionPacket::decode, PlayerEntityPositionPacket::handle);
-
         INSTANCE.registerMessage(id++, VillageHudPacket.class, VillageHudPacket::toBytes, VillageHudPacket::new, VillageHudPacket::handle);
-
         INSTANCE.registerMessage(id++, UpdateShopEntityPacket.class, UpdateShopEntityPacket::toBytes, UpdateShopEntityPacket::new, UpdateShopEntityPacket::handle);
+        INSTANCE.registerMessage(id++, SyncClassDataPacket.class, SyncClassDataPacket::toBytes, SyncClassDataPacket::new, SyncClassDataPacket::handle);
         INSTANCE.messageBuilder(CoinDataServerSyncPacket.class, id++, NetworkDirection.PLAY_TO_CLIENT)
                 .decoder(CoinDataServerSyncPacket::new)
                 .encoder(CoinDataServerSyncPacket::toBytes)
@@ -97,10 +98,20 @@ public class ModNetworking {
                 .encoder(UpdateMiddleOvenRecipePacket::encode)
                 .consumerMainThread(UpdateMiddleOvenRecipePacket::handle)
                 .add();
+        INSTANCE.messageBuilder(UpdateLargeOvenRecipePacket.class, id++, NetworkDirection.PLAY_TO_SERVER)
+                .decoder(UpdateLargeOvenRecipePacket::decode)
+                .encoder(UpdateLargeOvenRecipePacket::encode)
+                .consumerMainThread(UpdateLargeOvenRecipePacket::handle)
+                .add();
         INSTANCE.messageBuilder(UpdateWoodcuttingUnionRecipePacket.class, id++, NetworkDirection.PLAY_TO_SERVER)
                 .decoder(UpdateWoodcuttingUnionRecipePacket::decode)
                 .encoder(UpdateWoodcuttingUnionRecipePacket::encode)
                 .consumerMainThread(UpdateWoodcuttingUnionRecipePacket::handle)
+                .add();
+        INSTANCE.messageBuilder(ClassDataSyncPacket.class, id++, NetworkDirection.PLAY_TO_CLIENT)
+                .decoder(ClassDataSyncPacket::new)
+                .encoder(ClassDataSyncPacket::toBytes)
+                .consumerMainThread(ClassDataSyncPacket::handle)
                 .add();
     }
 

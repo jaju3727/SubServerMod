@@ -12,11 +12,13 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.level.BlockEvent;
 import net.minecraftforge.event.level.ExplosionEvent;
+import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 import java.util.UUID;
@@ -25,45 +27,20 @@ import static net.jaju.subservermod.landsystem.LandManager.isOwner;
 import static net.jaju.subservermod.landsystem.LandManager.isSharedWith;
 
 public class VillageEventHandlers {
-    @SubscribeEvent
-    public static void onBlockBreak(BlockEvent.BreakEvent event) {
-        Player player = event.getPlayer();
-        BlockPos pos = event.getPos();
-
-        if (!player.level().isClientSide && player.level().dimension() == Level.OVERWORLD) {
-            if (!VillageProtectionManager.canPlayerModify(player, pos)) {
-                player.sendSystemMessage(Component.literal("마을을 망치지 마세요!"));
-                event.setCanceled(true);
-            }
-        }
-    }
 
     @SubscribeEvent
-    public static void onBlockPlace(BlockEvent.EntityPlaceEvent event) {
-        if (event.getEntity() instanceof Player) {
-            Player player = (Player) event.getEntity();
-            BlockPos pos = event.getPos();
-
-            if (player.level().dimension() == Level.OVERWORLD) {
-                if (!VillageProtectionManager.canPlayerModify(player, pos)) {
-                    player.sendSystemMessage(Component.literal("마을을 해치지 마세요!"));
-                    event.setCanceled(true);
-                }
-            }
-        }
-    }
-
-    @SubscribeEvent
-    public static void onExplosionStart(ExplosionEvent.Start event) {
+    public static void onExplosionDetonate(ExplosionEvent.Detonate event) {
         if (event.getLevel().dimension() == Level.OVERWORLD) {
+            Explosion explosion = event.getExplosion();
             Vec3 explosionPosition = event.getExplosion().getPosition();
             BlockPos pos = new BlockPos((int) explosionPosition.x, (int) explosionPosition.y, (int) explosionPosition.z);
 
             if (VillageProtectionManager.isInProtectedVillage2(pos, event.getLevel())) {
-                event.setCanceled(true);
+                event.getAffectedBlocks().clear();
             }
         }
     }
+
 
     @SubscribeEvent
     public static void onPlayerTick(TickEvent.PlayerTickEvent event) {

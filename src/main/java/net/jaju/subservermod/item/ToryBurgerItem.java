@@ -27,7 +27,7 @@ public class ToryBurgerItem extends Item {
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
         if (!level.isClientSide) {
             if (player instanceof ServerPlayer) {
-                if (player.getHealth() < player.getMaxHealth()) { // 체력이 가득 차 있지 않을 때만 사용 가능
+                if (player.getFoodData().needsFood()) {
                     player.startUsingItem(hand);
                     player.displayClientMessage(Component.literal("직접 방문시 희원 or 희성 이름 대면 치즈스틱 서비스를 드려요~"), true);
                     return InteractionResultHolder.consume(player.getItemInHand(hand));

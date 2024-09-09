@@ -68,6 +68,9 @@
   "item.subservermod.gemshore_teleport": "젬쇼어 마을귀환서",
   "item.subservermod.perrygrass_teleport": "페리그라스 마을귀환서",
   "item.subservermod.runegrove_teleport": "룬그로브 마을귀환서",
+  "item.subservermod.stat_reset": "스탯 초기화권",
+  "item.subservermod.stat_point": "스탯 포인트",
+  "item.subservermod.class_trade": "직업변경권",
   "item.subservermod.howsweet": "뉴진스 음반 (How Sweet)",
 
 
@@ -75,7 +78,9 @@
   "block.subservermod.scarecrow_block": "허수아비",
   "block.subservermod.oven_block": "소형 오븐",
   "block.subservermod.middle_oven_block": "중형 오븐",
+  "block.subservermod.large_oven_block": "대형 오븐",
   "block.subservermod.crafting_block": "세공 작업대",
+  "block.subservermod.upgrade_crafting_block": "세공 작업대 3차",
   "block.subservermod.brewing_block": "자동 양조기",
   "block.subservermod.teleport_block": "텔포석",
   "block.subservermod.woodcutting_union_block": "목공 제작대",

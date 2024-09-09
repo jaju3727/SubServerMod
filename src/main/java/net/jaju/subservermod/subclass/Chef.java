@@ -21,10 +21,6 @@ public class Chef extends BaseClass {
     @Override
     public void performSkill(String skillName, ServerPlayer player) {
         if(getLevel() >= 2) {
-            AttributeInstance attribute = player.getAttribute(Attributes.MAX_HEALTH);
-            if (attribute != null) {
-                attribute.setBaseValue(30);
-            }
             RecipeManager recipeManager = player.server.getRecipeManager();
 
             recipeManager.byKey(new ResourceLocation(Subservermod.MOD_ID, "butter_recipe")).ifPresent(recipe -> {

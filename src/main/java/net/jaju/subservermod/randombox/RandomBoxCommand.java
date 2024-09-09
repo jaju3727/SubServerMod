@@ -7,6 +7,7 @@ import com.google.gson.reflect.TypeToken;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
+import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
 import net.jaju.subservermod.Subservermod;
 import net.jaju.subservermod.item.ModItem;
@@ -14,10 +15,9 @@ import net.kyori.adventure.text.TextComponent;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.*;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
-import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -108,23 +108,9 @@ public class RandomBoxCommand {
                 .then(Commands.literal("list")
                         .then(Commands.argument("name", StringArgumentType.string())
                                 .suggests(RANDOM_BOX_SUGGESTIONS)
-                                .executes(context -> {
-                                    String name = StringArgumentType.getString(context, "name");
-                                    RandomBox box = randomBoxes.get(name);
-
-                                    if (box != null) {
-                                        context.getSource().sendSuccess(() -> Component.literal("랜덤 박스 '" + name + "'의 아이템 목록:"), false);
-                                        for (int i = 0; i < box.getItems().size(); i++) {
-                                            RandomBox.RandomBoxItem item = box.getItems().get(i);
-                                            int finalI = i;
-                                            context.getSource().sendSuccess(() -> Component.literal(finalI +": "+item.getItem().getDisplayName().getString() + " - 확률: " + item.getChance() + "%"), false);
-                                        }
-                                    } else {
-                                        context.getSource().sendFailure(Component.literal("랜덤 박스를 찾을 수 없습니다."));
-                                    }
-
-                                    return 1;
-                                })))
+                                .executes(context -> listRandomBoxItems(context, 0))
+                                .then(Commands.argument("page", IntegerArgumentType.integer(0))
+                                        .executes(context -> listRandomBoxItems(context, IntegerArgumentType.getInteger(context, "page"))))))
                 .then(Commands.literal("remove")
                         .then(Commands.argument("name", StringArgumentType.string())
                                 .suggests(RANDOM_BOX_SUGGESTIONS)
@@ -162,6 +148,42 @@ public class RandomBoxCommand {
                                         }))))
 
         );
+    }
+
+    private static int listRandomBoxItems(CommandContext<CommandSourceStack> context, int page) {
+        String name = StringArgumentType.getString(context, "name");
+        RandomBox box = randomBoxes.get(name);
+
+        if (box != null) {
+            int itemsPerPage = 10;
+            int startIndex = page * itemsPerPage;
+            int endIndex = Math.min(startIndex + itemsPerPage, box.getItems().size());
+
+            if (startIndex >= box.getItems().size()) {
+                context.getSource().sendFailure(Component.literal("해당 페이지에 아이템이 없습니다."));
+                return 0;
+            }
+
+            context.getSource().sendSuccess(() -> Component.literal("랜덤 박스 '" + name + "'의 아이템 목록 (페이지 " + (page + 1) + "):"), false);
+
+            for (int i = startIndex; i < endIndex; i++) {
+                RandomBox.RandomBoxItem item = box.getItems().get(i);
+                int finalI = i;
+                context.getSource().sendSuccess(() -> Component.literal(finalI + ": " + item.getItem().getDisplayName().getString() + " - 확률: " + item.getChance() + "%"), false);
+            }
+
+            if (endIndex < box.getItems().size()) {
+                MutableComponent nextPage = Component.literal("[다음 페이지]").withStyle(Style.EMPTY
+                        .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal("다음 페이지로 이동")))
+                        .withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/randombox list " + name + " " + (page + 1))));
+                context.getSource().sendSuccess(() -> nextPage, false);
+            }
+
+        } else {
+            context.getSource().sendFailure(Component.literal("랜덤 박스를 찾을 수 없습니다."));
+        }
+
+        return 1;
     }
 
     public static RandomBox getRandomBox(String name) {

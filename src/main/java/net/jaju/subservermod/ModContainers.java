@@ -3,9 +3,11 @@ package net.jaju.subservermod;
 import net.jaju.subservermod.entity.ShopEntity;
 import net.jaju.subservermod.shopsystem.screen.ShopContainer;
 import net.jaju.subservermod.subclass.skill.alchemist.brewing.BrewingContainer;
+import net.jaju.subservermod.subclass.skill.farmer.large_oven.LargeOvenContainer;
 import net.jaju.subservermod.subclass.skill.farmer.middle_oven.MiddleOvenContainer;
 import net.jaju.subservermod.subclass.skill.miner.crafting.CraftingContainer;
 import net.jaju.subservermod.subclass.skill.farmer.oven.OvenContainer;
+import net.jaju.subservermod.subclass.skill.miner.upgrade_crafting.UpgradeCraftingContainer;
 import net.jaju.subservermod.subclass.skill.woodcutter.woodcuttingunion.WoodcuttingUnionContainer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.inventory.MenuType;
@@ -38,10 +40,20 @@ public class ModContainers {
                 BlockPos pos = data.readBlockPos();
                 return new MiddleOvenContainer(windowId, inv, (inv.player.level().getBlockEntity(pos)).getBlockPos());
             }));
+    public static final RegistryObject<MenuType<LargeOvenContainer>> LARGE_OVEN_MENU = CONTAINERS.register("large_oven_menu", () ->
+            IForgeMenuType.create((windowId, inv, data) -> {
+                BlockPos pos = data.readBlockPos();
+                return new LargeOvenContainer(windowId, inv, (inv.player.level().getBlockEntity(pos)).getBlockPos());
+            }));
     public static final RegistryObject<MenuType<CraftingContainer>> CRAFTING_MENU = CONTAINERS.register("crafting_menu", () ->
             IForgeMenuType.create((windowId, inv, data) -> {
                 BlockPos pos = data.readBlockPos();
                 return new CraftingContainer(windowId, inv, (inv.player.level().getBlockEntity(pos)).getBlockPos());
+            }));
+    public static final RegistryObject<MenuType<UpgradeCraftingContainer>> UPGRADE_CRAFTING_MENU = CONTAINERS.register("upgrade_crafting_menu", () ->
+            IForgeMenuType.create((windowId, inv, data) -> {
+                BlockPos pos = data.readBlockPos();
+                return new UpgradeCraftingContainer(windowId, inv, (inv.player.level().getBlockEntity(pos)).getBlockPos());
             }));
     public static final RegistryObject<MenuType<BrewingContainer>> BREWING_MENU = CONTAINERS.register("brewing_menu", () ->
             IForgeMenuType.create((windowId, inv, data) -> {
