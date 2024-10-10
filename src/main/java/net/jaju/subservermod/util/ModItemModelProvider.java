@@ -1,7 +1,7 @@
 package net.jaju.subservermod.util;
 
 import net.jaju.subservermod.Subservermod;
-import net.jaju.subservermod.item.ModItem;
+import net.jaju.subservermod.items.ModItems;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -26,7 +26,7 @@ public class ModItemModelProvider extends ItemModelProvider {
 
     @Override
     protected void registerModels() {
-        simpleItem(ModItem.HOWSWEET);
+        simpleItem(ModItems.HOWSWEET);
     }
 
     private ItemModelBuilder simpleItem(RegistryObject<Item> item) {

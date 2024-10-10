@@ -1,12 +1,12 @@
 package net.jaju.subservermod.entity;
 
-import net.jaju.subservermod.ModNetworking;
-import net.jaju.subservermod.entity.packet.ShopEntityPositionPacket;
-import net.jaju.subservermod.shopsystem.ShopItem;
-import net.jaju.subservermod.shopsystem.network.ShopEntityDataPacket;
-import net.jaju.subservermod.shopsystem.screen.ShopEntityContainerProvider;
+import net.jaju.subservermod.manager.ClassManager;
+import net.jaju.subservermod.network.ModNetworking;
+import net.jaju.subservermod.network.entity.packet.ShopEntityPositionPacket;
+import net.jaju.subservermod.util.ShopItem;
+import net.jaju.subservermod.network.shopsystem.ShopEntityDataPacket;
+import net.jaju.subservermod.screen.shopsystem.ShopEntityContainerProvider;
 import net.jaju.subservermod.subclass.BaseClass;
-import net.jaju.subservermod.subclass.ClassManagement;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -17,8 +17,6 @@ import net.minecraft.network.protocol.game.*;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
-import net.minecraft.server.level.ServerChunkCache;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -213,7 +211,7 @@ public class ShopEntity extends PathfinderMob {
 
     private BaseClass getBaseClassInstance(Player player, String baseClassName) {
         String playerName = player.getName().getString();
-        return ClassManagement.getClasses(playerName).get(baseClassName);
+        return ClassManager.getClasses(playerName).get(baseClassName);
     }
 
     @Override

@@ -1,11 +1,7 @@
 package net.jaju.subservermod.util;
 
-import net.jaju.subservermod.item.ModItem;
-import net.jaju.subservermod.subclass.BaseClass;
-import net.jaju.subservermod.subclass.ClassManagement;
+import net.jaju.subservermod.items.ModItems;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.entity.ai.attributes.AttributeInstance;
-import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
@@ -114,7 +110,7 @@ public class PlayerDeathEventHandler {
     private static boolean hasSpecialItem(Player player) {
         for (int i = 0; i < player.getInventory().getContainerSize(); i++) {
             ItemStack stack = player.getInventory().getItem(i);
-            if (stack.getItem().equals(ModItem.INVENTORY_SAVE_ITEM.get())) {
+            if (stack.getItem().equals(ModItems.INVENTORY_SAVE_ITEM.get())) {
                 stack.shrink(1);
                 if (stack.isEmpty()) {
                     player.getInventory().removeItem(i, 1);

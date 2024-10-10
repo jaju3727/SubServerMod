@@ -6,8 +6,6 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
 
-import java.util.List;
-
 @Mod.EventBusSubscriber(modid = Subservermod.MOD_ID, value = Dist.CLIENT)
 public class WoodcutterSkill {
     private transient Woodcutter woodcutter;

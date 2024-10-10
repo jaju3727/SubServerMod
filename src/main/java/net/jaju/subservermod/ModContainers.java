@@ -1,14 +1,14 @@
 package net.jaju.subservermod;
 
 import net.jaju.subservermod.entity.ShopEntity;
-import net.jaju.subservermod.shopsystem.screen.ShopContainer;
-import net.jaju.subservermod.subclass.skill.alchemist.brewing.BrewingContainer;
-import net.jaju.subservermod.subclass.skill.farmer.large_oven.LargeOvenContainer;
-import net.jaju.subservermod.subclass.skill.farmer.middle_oven.MiddleOvenContainer;
-import net.jaju.subservermod.subclass.skill.miner.crafting.CraftingContainer;
-import net.jaju.subservermod.subclass.skill.farmer.oven.OvenContainer;
-import net.jaju.subservermod.subclass.skill.miner.upgrade_crafting.UpgradeCraftingContainer;
-import net.jaju.subservermod.subclass.skill.woodcutter.woodcuttingunion.WoodcuttingUnionContainer;
+import net.jaju.subservermod.screen.shopsystem.ShopContainer;
+import net.jaju.subservermod.screen.subclass.alchemist.brewing.BrewingContainer;
+import net.jaju.subservermod.screen.subclass.farmer.large_oven.LargeOvenContainer;
+import net.jaju.subservermod.screen.subclass.farmer.middle_oven.MiddleOvenContainer;
+import net.jaju.subservermod.screen.subclass.miner.crafting.CraftingContainer;
+import net.jaju.subservermod.screen.subclass.farmer.oven.OvenContainer;
+import net.jaju.subservermod.screen.subclass.miner.upgrade_crafting.UpgradeCraftingContainer;
+import net.jaju.subservermod.screen.subclass.woodcutter.woodcuttingunion.WoodcuttingUnionContainer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.level.Level;

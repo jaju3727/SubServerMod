@@ -1,23 +1,23 @@
 package net.jaju.subservermod;
 
 import com.mojang.logging.LogUtils;
-import net.jaju.subservermod.block.ModBlockEntities;
-import net.jaju.subservermod.block.ModBlocks;
-import net.jaju.subservermod.coinsystem.CoinHud;
-import net.jaju.subservermod.item.ModCreativeModTabs;
-import net.jaju.subservermod.item.ModItem;
-import net.jaju.subservermod.landsystem.ChunkOwnershipHandler;
-import net.jaju.subservermod.landsystem.network.ServerSideEventHandler;
-import net.jaju.subservermod.mailbox.MailboxCommand;
-import net.jaju.subservermod.mailbox.MailboxManager;
+import net.jaju.subservermod.blocks.ModBlockEntities;
+import net.jaju.subservermod.blocks.ModBlocks;
+import net.jaju.subservermod.manager.ClassManager;
+import net.jaju.subservermod.manager.CoinManager;
+import net.jaju.subservermod.items.ModCreativeModTabs;
+import net.jaju.subservermod.items.ModItems;
+import net.jaju.subservermod.events.ChunkOwnershipHandler;
+import net.jaju.subservermod.network.ModNetworking;
+import net.jaju.subservermod.network.landsystem.ServerSideEventHandler;
+import net.jaju.subservermod.commands.mailbox.MailboxCommand;
+import net.jaju.subservermod.manager.MailboxManager;
 import net.jaju.subservermod.entity.ModEntities;
 import net.jaju.subservermod.sound.ModSounds;
-import net.jaju.subservermod.subclass.ClassManagement;
 import net.jaju.subservermod.util.KeyInputHandler;
 import net.jaju.subservermod.util.ModItemModelProvider;
 import net.jaju.subservermod.util.ModItemTagGenerator;
-import net.jaju.subservermod.village.VillageEventHandlers;
-import net.jaju.subservermod.village.VillageHudRenderer;
+import net.jaju.subservermod.events.VillageEventHandlers;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.HolderLookup;
@@ -52,7 +52,7 @@ public class Subservermod {
 
         ModSounds.register(modEventBus);
         ModCreativeModTabs.register(modEventBus);
-        ModItem.register(modEventBus);
+        ModItems.register(modEventBus);
         ModBlocks.register(modEventBus);
         ModBlockEntities.register(modEventBus);
         ModContainers.register(modEventBus);
@@ -63,7 +63,7 @@ public class Subservermod {
         MinecraftForge.EVENT_BUS.register(new ServerSideEventHandler());
         MinecraftForge.EVENT_BUS.register(MailboxManager.class);
         MinecraftForge.EVENT_BUS.register(MailboxCommand.class);
-        MinecraftForge.EVENT_BUS.register(CoinHud.class);
+        MinecraftForge.EVENT_BUS.register(CoinManager.class);
         MinecraftForge.EVENT_BUS.register(VillageEventHandlers.class);
 
         modEventBus.addListener(this::commonSetup);
@@ -99,7 +99,7 @@ public class Subservermod {
 
     private void commonSetup(final FMLCommonSetupEvent event) {
         ModNetworking.registerMessages();
-        ClassManagement.loadClassData();
+        ClassManager.loadClassData();
     }
 
     private void clientSetup(final FMLClientSetupEvent event) {
@@ -109,8 +109,6 @@ public class Subservermod {
             ItemBlockRenderTypes.setRenderLayer(ModBlocks.OVEN_BLOCK.get(), RenderType.cutout());
         });
 
-        MinecraftForge.EVENT_BUS.register(VillageHudRenderer.class);
-
     }
 
     private void addCreative(BuildCreativeModeTabContentsEvent event) {
@@ -119,14 +117,14 @@ public class Subservermod {
 
     @SubscribeEvent
     public static void onServerStarting(ServerStartingEvent event) {
-        ClassManagement.loadClassData();
-        CoinHud.loadCoinData();
+        ClassManager.loadClassData();
+        CoinManager.loadCoinData();
     }
 
     @SubscribeEvent
     public static void onServerStopping(ServerStoppingEvent event) {
-        ClassManagement.saveClassData();
-        CoinHud.saveCoinData();
+        ClassManager.saveClassData();
+        CoinManager.saveCoinData();
     }
 
     @Mod.EventBusSubscriber(modid = MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)

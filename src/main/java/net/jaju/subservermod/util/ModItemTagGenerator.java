@@ -1,7 +1,7 @@
 package net.jaju.subservermod.util;
 
 import net.jaju.subservermod.Subservermod;
-import net.jaju.subservermod.item.ModItem;
+import net.jaju.subservermod.items.ModItems;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.tags.ItemTagsProvider;
@@ -22,9 +22,9 @@ public class ModItemTagGenerator extends ItemTagsProvider {
     protected void addTags(HolderLookup.Provider pProvider) {
 
         this.tag(ItemTags.MUSIC_DISCS)
-                .add(ModItem.HOWSWEET.get());
+                .add(ModItems.HOWSWEET.get());
 
         this.tag(ItemTags.CREEPER_DROP_MUSIC_DISCS)
-                .add(ModItem.HOWSWEET.get());
+                .add(ModItems.HOWSWEET.get());
     }
 }

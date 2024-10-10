@@ -1,9 +1,7 @@
 package net.jaju.subservermod.entity;
 
-import net.jaju.subservermod.ModNetworking;
-import net.jaju.subservermod.entity.packet.PlayerEntityPositionPacket;
-import net.jaju.subservermod.shopsystem.network.ShopEntityDataPacket;
-import net.jaju.subservermod.shopsystem.screen.ShopEntityContainerProvider;
+import net.jaju.subservermod.network.ModNetworking;
+import net.jaju.subservermod.network.entity.packet.PlayerEntityPositionPacket;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;

@@ -1,14 +1,14 @@
 package net.jaju.subservermod;
 
 import com.mojang.brigadier.CommandDispatcher;
-import net.jaju.subservermod.coinsystem.CoinCommands;
+import net.jaju.subservermod.commands.coinsystem.CoinCommands;
 import net.jaju.subservermod.entity.ModEntities;
 import net.jaju.subservermod.entity.rederer.PlayerEntityRenderer;
-import net.jaju.subservermod.player.PlayerCommand;
+import net.jaju.subservermod.commands.player.PlayerCommand;
 import net.jaju.subservermod.entity.rederer.ShopEntityRenderer;
-import net.jaju.subservermod.shopsystem.ShopCommands;
-import net.jaju.subservermod.subclass.ClassCommand;
-import net.jaju.subservermod.village.VillageCommand;
+import net.jaju.subservermod.commands.shopsystem.ShopCommands;
+import net.jaju.subservermod.commands.subclass.ClassCommand;
+import net.jaju.subservermod.commands.village.VillageCommand;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraftforge.client.event.EntityRenderersEvent;

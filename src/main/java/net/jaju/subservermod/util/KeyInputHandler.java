@@ -1,8 +1,8 @@
 package net.jaju.subservermod.util;
 
 import net.jaju.subservermod.Subservermod;
-import net.jaju.subservermod.guide.GuideScreen;
-import net.jaju.subservermod.integrated_menu.IntegratedMenuScreen;
+import net.jaju.subservermod.screen.guide.GuideScreen;
+import net.jaju.subservermod.screen.integrated_menu.IntegratedMenuScreen;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.api.distmarker.Dist;

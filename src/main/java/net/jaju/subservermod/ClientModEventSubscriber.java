@@ -1,9 +1,9 @@
 package net.jaju.subservermod;
 
-import net.jaju.subservermod.block.ModBlockEntities;
-import net.jaju.subservermod.subclass.skill.chef.chefblock.ChefBlockRenderer;
-import net.jaju.subservermod.subclass.skill.fisherman.fishing_rod.FishingRodBlockRenderer;
-import net.jaju.subservermod.subclass.skill.fisherman.raw_fished.CuttingBoardBlockRenderer;
+import net.jaju.subservermod.blocks.ModBlockEntities;
+import net.jaju.subservermod.blocks.subclass.chef.chefblock.ChefBlockRenderer;
+import net.jaju.subservermod.blocks.subclass.fisherman.fishing_rod.FishingRodBlockRenderer;
+import net.jaju.subservermod.blocks.subclass.fisherman.raw_fished.CuttingBoardBlockRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.EntityRenderersEvent;
